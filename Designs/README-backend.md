@@ -35,7 +35,11 @@ For tracking donations, each donation needs a unique identifier (DTI). This can 
 // Using a Vector to store donations ensures that each donation has a unique index
 import Array "mo:base/Array";
 
-var donations: [Donation] = [];
+// Define the stable variable to persist donations data across upgrades.
+stable var stableDonations: [Donation.Donation] = [];
+
+// Mutable copy of donations for runtime operations.
+var donations: [Donation.Donation] = stableDonations;
 
 public func makeDonation(donation: Donation): async Nat {
     let index = donations.size();
@@ -50,6 +54,19 @@ public func getDonationDetails(dti: Nat): async ?Donation {
         return null;
     }
 }
+
+// System-provided lifecycle method called before an upgrade.
+system func preupgrade() {
+    // Copy the runtime state back into the stable variable before upgrade.
+    stableDonations := donations;
+}
+
+// System-provided lifecycle method called after an upgrade or on initial deploy.
+system func postupgrade() {
+    // After upgrade, reload the runtime state from the stable variable.
+    donations = stableDonations;
+}
+
 ```
 
 ### Part 3: Candid Interface
