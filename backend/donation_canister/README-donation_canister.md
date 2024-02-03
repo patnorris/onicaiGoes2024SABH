@@ -8,6 +8,10 @@
   - https://internetcomputer.org/how-it-works/bitcoin-integration/
   - https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/
 
+- README of bitcoin_basic example refers to:
+  - [Deploying your first Bitcoin dapp](https://internetcomputer.org/docs/current/samples/deploying-your-first-bitcoin-dapp).
+  - [Developing Bitcoin dapps locally](https://internetcomputer.org/docs/current/developer-docs/integrations/bitcoin/local-development).
+
 ## Architecture
 
 This example internally leverages the [ECDSA API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key)
@@ -94,21 +98,20 @@ $ dfx canister call donation_canister get_balance '("mkkzk2xTQcrrRYv8FPnj22ujHhk
 
 ---
 
-THE REST IS NOT YET TESTED AND UPDATED FROM THE ORIGINAL TUTORIAL
 ### Deploy the smart contract to the Internet Computer
 
 This is done only once.
 
 ```bash
-dfx deploy --network=ic donation_canister --argument '(variant { Testnet })'
+dfx deploy --network=ic donation_canister --argument '(variant { testnet })'
 ```
 
 #### What this does
 - `dfx deploy` tells the command line interface to `deploy` the smart contract
 - `--network=ic` tells the command line to deploy the smart contract to the mainnet ICP blockchain
-- `--argument '(variant { Testnet })'` passes the argument `Testnet` to initialize the smart contract, telling it to connect to the Bitcoin testnet
+- `--argument '(variant { testnet })'` passes the argument `Testnet` to initialize the smart contract, telling it to connect to the Bitcoin testnet
 
-**We're initializing the canister with `variant { Testnet }`, so that the canister connects to the the [Bitcoin testnet](https://en.bitcoin.it/wiki/Testnet). To be specific, this connects to `Testnet3`, which is the current Bitcoin test network used by the Bitcoin community.**
+**We're initializing the canister with `variant { testnet }`, so that the canister connects to the the [Bitcoin testnet](https://en.bitcoin.it/wiki/Testnet). To be specific, this connects to `Testnet3`, which is the current Bitcoin test network used by the Bitcoin community.**
 
 
 If successful, you should see an output that looks like this:
@@ -205,21 +208,6 @@ You can track the status of this transaction using a block explorer. Once the
 transaction has at least one confirmation, you should be able to see it
 reflected in your current balance.
 
-## Conclusion
-
-In this tutorial, you were able to:
-
-* Deploy a canister smart contract on the ICP blockchain that can receive & send Bitcoin.
-* Use a cycles faucet to deploy the canister to ICP blockchain on mainnet for free.
-* Connect the canister to the Bitcoin testnet.
-* Send the canister some testnet BTC.
-* Check the testnet BTC balance of the canister.
-* Use the canister to send testnet BTC to another BTC address. 
-
-This example is extensively documented in the following tutorials:
-
-* [Deploying your first Bitcoin dapp](https://internetcomputer.org/docs/current/samples/deploying-your-first-bitcoin-dapp).
-* [Developing Bitcoin dapps locally](https://internetcomputer.org/docs/current/developer-docs/integrations/bitcoin/local-development).
 
 ## Security considerations and best practices
 
