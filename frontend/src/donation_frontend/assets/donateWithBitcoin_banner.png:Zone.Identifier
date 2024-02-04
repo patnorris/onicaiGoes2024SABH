@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://cloudconvert.com/
+HostUrl=https://eu-central.storage.cloudconvert.com/tasks/c7a3a97d-0198-40c8-8b19-adeefd219b8e/donateWithBitcoin_banner.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=cloudconvert-production%2F20240204%2Ffra%2Fs3%2Faws4_request&X-Amz-Date=20240204T222124Z&X-Amz-Expires=86400&X-Amz-Signature=86875a0e4756dcac3bca0a813dd2cc0c07211b02c164816817ab4417e2b471d7&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22donateWithBitcoin_banner.png%22&response-content-type=image%2Fpng&x-id=GetObject
