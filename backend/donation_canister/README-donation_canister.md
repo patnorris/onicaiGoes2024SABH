@@ -65,6 +65,24 @@ This only works on Linux & Mac.
 
 ### Local Network
 
+#### Shared Local Network
+
+We use multiple canisters that we deploy separately on a shared local network. Create a file `~/.config/dfx/networks.json` to enable sharing of the local bitcoin canister:
+
+File: ~/.config/dfx/networks.json
+```json
+{
+  "local": {
+    "bitcoin": {
+      "enabled": true,
+      "log_level": "info",
+      "nodes": [
+        "127.0.0.1:18444"
+      ]
+    }
+  }
+}
+```
 #### Deploy
 
 [Reference](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#deploying-the-example-canister)
