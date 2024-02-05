@@ -9,7 +9,14 @@
   let loadedRecipients = [];
 
   const loadRecipients = async () => {
-    const recipients = await $store.backendActor.listRecipients({include: "schools"});
+    // Backend Canister Integration
+      // Parameters: record with filters ({include: "schools" | “studentsForSchool”, recipientIdForSchool: “id” | null})
+      // Returns: 
+        // Success: Ok wraps record with list of RecipientOverviews (including empty list (if none exist))
+        // Error: Err wraps more info
+        // Result<{recipient : [RecipientOverviews]}, ApiError>;
+    const listRecipientsInput = { include: "schools" };
+    const recipients = await $store.backendActor.listRecipients(listRecipientsInput);
     const numberOfAvailableRecipients = recipients.length;
     if (numberOfAvailableRecipients < 1) {
       document.getElementById("recipientsSubtext").innerText = "There are not recipients available yet. Do you know any school that would be interested?";

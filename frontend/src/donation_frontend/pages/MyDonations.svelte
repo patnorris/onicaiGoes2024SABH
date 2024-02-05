@@ -10,7 +10,14 @@
   let loadedUserDonations = [];
 
   const loadUserDonations = async () => {
-    const userDonations = await $store.backendActor.getMyDonations(); //TODO
+    // Backend Canister Integration
+      // Parameters: empty record
+      // Returns: 
+        // Success: Ok wraps record with list of Donations (including empty list if none exist)
+        // Error: Err wraps more info
+        // Result<{donations : [Donation]}, ApiError>;
+    const getMyDonationsInput = {}; //TODO 
+    const userDonations = await $store.backendActor.getMyDonations(getMyDonationsInput);
     const numberOfUserDonations = userDonations.length;
     if (numberOfUserDonations < 1) {
       document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";

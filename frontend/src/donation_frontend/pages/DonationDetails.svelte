@@ -16,13 +16,21 @@
   
   const loadDonationDetails = async () => {
     // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
-    // @ts-ignore
-    const donationResponse = await $store.backendActor.getDonationDetails(Number(params.donationId));
+    // Backend Canister Integration
+      // Parameters: record with DTI
+      // Returns: 
+        // Success: Ok wraps record with Donation
+        // Error: Err wraps more info (including if not found)
+        // Result<{donation : Donation}, ApiError>;
+    const getDonationDetailsInput = {
+      dti: Number(params.donationId)
+    };
+    const donationResponse = await $store.backendActor.getDonationDetails(getDonationDetailsInput);
     
     if (donationResponse.Err) {
       donationLoadingError = true;
     } else {
-      donation = donationResponse.Ok;
+      donation = donationResponse.Ok.donation;
       donationLoaded = true;
     };
 

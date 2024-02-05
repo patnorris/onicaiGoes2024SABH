@@ -13,11 +13,18 @@
   let donationsLoadingError = false;
 
   const getDonations = async () => {
-    const donationsResponse = await $store.backendActor.getDonations({}); //TODO 
+    // Backend Canister Integration
+      // Parameters: record with filters
+      // Returns: 
+        // Success: Ok wraps record with list of Donations (including empty list if none exist)
+        // Error: Err wraps more info 
+        // Result<{donations : [Donation]}, ApiError>;
+    const getDonationsInput = {}; //TODO 
+    const donationsResponse = await $store.backendActor.getDonations(getDonationsInput);
     if (donationsResponse.Err) {
       donationsLoadingError = true;
     } else {
-      loadedDonations = donationsResponse.Ok;
+      loadedDonations = donationsResponse.Ok.donations;
       hasLoadedDonations = true;
     };
 

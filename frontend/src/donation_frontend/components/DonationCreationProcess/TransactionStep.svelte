@@ -12,6 +12,12 @@
     // first check basic validity 
 
     // Call the backend which then checks with the Bitcoin API
+    // Backend Canister Integration
+      // Parameters: record with BTC transaction id ({bitcoinTransactionId : "..."})
+      // Returns: 
+        // Success: Ok wraps record with BtcTransaction (needs to include valueDonated)
+        // Error: Err wraps more info (including if not found)
+        // Result<{btcTransaction : BtcTransaction}, ApiError>;
     const transactionCheckInput = {
       bitcoinTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
     };

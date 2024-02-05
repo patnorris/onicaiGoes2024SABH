@@ -35,13 +35,22 @@
   async function finalizeDonation() {
     // Implement your logic to submit the donation details
     console.log('Finalizing donation with details: ', $currentDonationCreationObject);
+    // Backend Canister Integration
+      // Parameters: record with Donation ({donation : {totalAmount: …, allocation: …, …}})
+      // Returns: 
+        // Success: Ok wraps record with with DTI
+        // Error: Err wraps more info (including if not found)
+        // Result<{dti : DTI}, ApiError>;
 
-    const submitDonationInput : Donation = {
+    const finalDonation : Donation = {
       // TODO
       totalAmount: $currentDonationCreationObject.donation.totalDonation,
       allocation: $currentDonationCreationObject.donation.categorySplit,      
     };
-    const submitDonationResponse = await $store.backendActor.makeDonation(submitDonationInput);
+    const makeDonationInput = {
+      donation: finalDonation
+    };
+    const submitDonationResponse = await $store.backendActor.makeDonation(makeDonationInput);
     if (submitDonationResponse.Err) {
       submitDonationError = true;
     } else {

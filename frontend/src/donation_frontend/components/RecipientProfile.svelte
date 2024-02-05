@@ -32,8 +32,17 @@
     
     const loadRecipientDetails = async () => {
       // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
-      // @ts-ignore
-      const recipientResponse = await $store.backendActor.getRecipient(recipientId);
+      // Backend Canister Integration
+        // Parameters: record with id
+        // Returns: 
+          // Success: Ok wraps record with Recipient
+          // Error: Err wraps more info (including if not found)
+          // Result<{recipient : Recipient}, ApiError>;
+
+      const getRecipientInput = {
+        recipientId
+      };
+      const recipientResponse = await $store.backendActor.getRecipient(getRecipientInput);
       
       if (recipientResponse.Err) {
         recipientLoadingError = true;

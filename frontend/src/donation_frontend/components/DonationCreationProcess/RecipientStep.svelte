@@ -3,29 +3,6 @@
 
   import RecipientsList from "../RecipientsList.svelte";
 
-// Manage status of check to show buttons and subtexts appropriately
-  let bitcoinTransactionCheckError = false;
-  let bitcoinTransactionLoaded = false;
-
-  // Function to check the donation status
-  const checkDonationStatus = async () => {
-    console.log("Checking status for: ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId);
-    // Verify the Bitcoin transaction by its ID
-    // first check basic validity 
-
-    // Call the backend which then checks with the Bitcoin API
-    const transactionCheckInput = {
-      bitcoinTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
-    };
-    const transactionCheckResponse = await $store.backendActor.getBtcTransactionDetails(transactionCheckInput);
-    if (transactionCheckResponse.Err) {
-      bitcoinTransactionCheckError = true;
-    } else {
-      $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject = transactionCheckResponse.Ok;
-      bitcoinTransactionLoaded = true;
-    };
-  }
-
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
