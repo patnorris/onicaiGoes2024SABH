@@ -4,11 +4,18 @@ import type { HttpAgent, Identity } from "@dfinity/agent";
 import { StoicIdentity } from "ic-stoic-identity";
 import { AuthClient } from "@dfinity/auth-client";
 import {
-  donation_tracker_backend,
+  donation_tracker_canister,
   createActor as createBackendCanisterActor,
   canisterId as backendCanisterId,
   idlFactory as backendIdlFactory,
-} from "../../../backend/donation_tracker_backend/declarations/donation_tracker_backend"; //TODO
+} from "../declarations/donation_tracker_canister";
+
+export let donationTrackerCanisterDefintion = {
+  donation_tracker_canister,
+  createBackendCanisterActor,
+  backendCanisterId,
+  backendIdlFactory,
+};
 
 //__________Local vs Mainnet Development____________
 /* export const HOST =
@@ -49,13 +56,32 @@ const APPLICATION_LOGO_URL = "https://vdfyi-uaaaa-aaaai-acptq-cai.ic0.app/favico
 //"https%3A%2F%2Fx6occ-biaaa-aaaai-acqzq-cai.icp0.io%2FFutureWebInitiative%5Fimg.png";
 const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
 
+// Global variable to keep track of Donation Creation process
+export let currentDonationCreationObject = writable({
+  bitcoinTransaction: {
+    bitcoinTransactionId: '',
+    bitcoinTransactionObject: null,
+    valueLeftToDonate: 0.0,
+  },
+  recipient: {
+    recipientId: '',
+    type: '',
+    recipientObject: null,
+  },
+  donation: {
+    totalDonation: 0.0,
+    paymentType: 'BTC',
+    categorySplit: {},
+  },
+});
+
 const days = BigInt(30);
 const hours = BigInt(24);
 const nanosecondsPerHour = BigInt(3600000000000);
 
 type State = {
   isAuthed: "plug" | "stoic" | "nfid" | "bitfinity" | null;
-  backendActor: typeof donation_tracker_backend;
+  backendActor: typeof donation_tracker_canister;
   principal: Principal;
   accountId: string;
   error: string;
@@ -231,7 +257,7 @@ export const createStore = ({
     const backendActor = (await window.ic?.plug.createActor({
       canisterId: backendCanisterId,
       interfaceFactory: backendIdlFactory,
-    })) as typeof donation_tracker_backend;
+    })) as typeof donation_tracker_canister;
 
     if (!backendActor) {
       console.warn("couldn't create backend actor");
@@ -312,7 +338,7 @@ export const createStore = ({
       canisterId: backendCanisterId,
       interfaceFactory: backendIdlFactory,
       host,
-    })) as typeof donation_tracker_backend;
+    })) as typeof donation_tracker_canister;
 
     if (!backendActor) {
       console.warn("couldn't create backend actor");
@@ -413,7 +439,7 @@ declare global {
           whitelist?: string[];
           host?: string;
         }) => Promise<any>;
-        createActor: (options: {}) => Promise<typeof donation_tracker_backend>;
+        createActor: (options: {}) => Promise<typeof donation_tracker_canister>;
         isConnected: () => Promise<boolean>;
         disconnect: () => Promise<boolean>;
         createAgent: (args?: {
@@ -460,7 +486,7 @@ declare global {
           canisterId: string;
           interfaceFactory: any;
           host?: string;
-        }) => Promise<typeof donation_tracker_backend>;
+        }) => Promise<typeof donation_tracker_canister>;
         isConnected: () => Promise<boolean>;
         /* disconnect: () => Promise<boolean>;
         createAgent: (args?: {

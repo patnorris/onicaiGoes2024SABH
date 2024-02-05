@@ -8,6 +8,17 @@
         "dist/"
       ],
       "type": "assets"
+    },
+    "donation_tracker_canister": {
+      "type": "custom",
+      "candid": "../backend/donation_tracker_canister/.dfx/local/canisters/donation_tracker_canister/donation_tracker_canister.did",
+      "wasm": "../backend/donation_tracker_canister/.dfx/local/canisters/donation_tracker_canister/donation_tracker_canister.wasm",
+      "remote": {
+        "candid": "../backend/donation_tracker_canister/.dfx/local/canisters/donation_tracker_canister/donation_tracker_canister.did",
+        "id": {
+          "ic": "fj5jn-2qaaa-aaaag-acmfq-cai"
+        }
+      }
     }
   },
   "defaults": {

@@ -1,4 +1,4 @@
-# Open Internet Metaverse (OIM)
+# Bitcoin Donation App
 
 # Development & Deployment
 ## Running the project locally

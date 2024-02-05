@@ -2,17 +2,14 @@
   import { store } from "../store";
   import Topnav from "../components/Topnav.svelte";
   import Footer from "../components/Footer.svelte";
+  import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
+	import ProgressBar from '../components/DonationCreationProcess/ProgressBar.svelte';
 
-  //import { canisterId as backendCanisterId } from "canisters/donation_tracker_backend";
-  //import { canisterId as donation_frontend_canister_id } from "canisters/donation_frontend";
-
-// Subtexts to display
-  const loginSubtext = "Please log in first.";
-  const clickDefaultSubtext = "Click and we'll generate this 3D room for you (Your Space, Your Realm, Your Virtual Home) which you can edit afterwards. Fun fact: The Space is an NFT itself and will be sent to your wallet. This way you know it's truly yours!";
-  const clickFromModelSubtext = "Click and we'll generate this Space from the provided model for you. Fun fact: The Space is an NFT itself and will be sent to your wallet. This way you know it's truly yours!";
-  const inProgressSubtext = "Creating your Personal Web Space, just a moment...";
-  const createdSubtext = "Ohh yeah, you just got yourself a new Personal Web Space! You can see it on the My Spaces tab.";
-  const fileTooBigText = "Hmm, this file is too big. Please select a file smaller than 2 MB.";
+	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'], currentActive = 1, progressBar;
+	
+	const handleProgress = (stepIncrement) => {
+		progressBar.handleProgress(stepIncrement)
+	}
 
 // Manage status of creation to show buttons and subtexts appropriately
   let isDonationCreationInProgress = false;
@@ -49,6 +46,17 @@
     </div>
   </section>
 
+  <div class="container">
+		<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
+		
+		<div class="step-button">
+			<button id="createDonationProcessPrevButton" class="btn" on:click={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+			<button id="createDonationProcessNextButton" class="btn" on:click={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+		</div>
+
+		<Form active_step={steps[currentActive-1]}/>
+	</div>
+
 </section>
 
 <div class='clearfix'></div>
@@ -63,4 +71,50 @@
   .load-holder {
     background:url(../assets/loading.gif) center center no-repeat;
   }
+
+  @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+	
+	* {
+		box-sizing: border-box;
+	}
+
+	main {
+		font-family: 'Muli', sans-serif;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+		overflow: hidden;
+		margin: 0;
+	}
+
+	.btn {
+		background-color: #3498db;
+		color: #fff;
+		border: 0;
+		border-radius: 6px;
+		cursor: pointer;
+		font-family: inherit;
+		padding: 8px 30px;
+		margin: 5px;
+		font-size: 14px;
+	}
+
+	.btn:active {
+		transform: scale(0.98);
+	}
+
+	.btn:focus {
+		outline: 0;
+	}
+
+	.btn:disabled {
+		background-color: #e0e0e0;
+		cursor: not-allowed;
+	}
+	
+	.step-button{
+		margin-top: 1rem;
+		text-align: center;
+	}
 </style>

@@ -1,11 +1,12 @@
-import { PersonalWebSpace_backend } from "canisters/PersonalWebSpace_backend";
+//import { donation_tracker_canister } from "canisters/donation_tracker_canister";
 
 export async function submitEmailSignUpForm(emailAddress, pageSubmittedFrom) {
   const input = {
     emailAddress: emailAddress,
     pageSubmittedFrom: pageSubmittedFrom,
   };
-  let result = await PersonalWebSpace_backend.submitSignUpForm(input);
+  //let result = await donation_tracker_canister.submitSignUpForm(input);
+  let result = null;
   return result;
 }
 
