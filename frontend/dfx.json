@@ -21,12 +21,6 @@
       }
     }
   },
-  "defaults": {
-    "build": {
-      "packtool": "vessel sources",
-      "args": ""
-    }
-  },
   "networks": {
     "development": {
       "providers": [

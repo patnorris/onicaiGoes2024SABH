@@ -8,7 +8,8 @@ If you want to test your project locally, you can use the following commands:
 ```bash
 npm install
 ```
-2. Install Vessel which is a dependency: https://github.com/dfinity/vessel
+
+2. Follow the instructions in the backend canisters' Readmes
 
 3. Start the local replica
 ```bash
