@@ -9,7 +9,7 @@
 
 <Topnav />
 
-<RecipientProfile recipientId={Number(params.recipientId)} />
+<RecipientProfile recipientId={params.recipientId} />
 
 <Footer />
 

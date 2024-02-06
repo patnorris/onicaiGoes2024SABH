@@ -37,10 +37,10 @@
   {:else if active_step == 'Donation'}
   		<DonationStep />
 	{:else if active_step == 'Confirmation'}
-		<div class="message">
+		<!-- <div class="message">
 			<h2>Thank you for choosing us</h2>
 			<button class="btn submit">Finish </button>
-		</div>
+		</div> -->
 		<ConfirmationStep />
 	{/if}
 </form>

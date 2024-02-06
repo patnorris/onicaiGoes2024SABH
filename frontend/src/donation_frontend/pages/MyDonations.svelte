@@ -8,27 +8,39 @@
 
   let hasLoadedDonations = false;
   let loadedUserDonations = [];
+  let donationsLoadingError = false;
 
   const loadUserDonations = async () => {
-    // Backend Canister Integration
-      // Parameters: empty record
-      // Returns: 
-        // Success: Ok wraps record with list of Donations (including empty list if none exist)
-        // Error: Err wraps more info
-        // Result<{donations : [Donation]}, ApiError>;
-    const getMyDonationsInput = {}; //TODO 
-    const userDonations = await $store.backendActor.getMyDonations(getMyDonationsInput);
-    const numberOfUserDonations = userDonations.length;
-    if (numberOfUserDonations < 1) {
-      document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";
-    } else {
-      document.getElementById("donationsSubtext").innerText = numberOfUserDonations === 1 
-        ? `Big success, you have made ${numberOfUserDonations} donation! Let's take a look:`
-        : `Big success, you have made ${numberOfUserDonations} donations! Let's take a look:`;
+    if($store.isAuthed) {
+      // Backend Canister Integration
+        // Parameters: empty record
+        // Returns: 
+          // Success: Ok wraps record with list of Donations (including empty list if none exist)
+          // Error: Err wraps more info
+          // Result<{donations : [Donation]}, ApiError>;
+      const getMyDonationsInput = {
+        filters: []
+      };
+      const userDonationsResponse = await $store.backendActor.getMyDonations(getMyDonationsInput);
+      // @ts-ignore
+      if (userDonationsResponse.Err) {
+        donationsLoadingError = true;
+      } else {
+        // @ts-ignore
+        const userDonations = userDonationsResponse.Ok;
+        const numberOfUserDonations = userDonations.length;
+        if (numberOfUserDonations < 1) {
+          document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";
+        } else {
+          document.getElementById("donationsSubtext").innerText = numberOfUserDonations === 1 
+            ? `Big success, you have made ${numberOfUserDonations} donation! Let's take a look:`
+            : `Big success, you have made ${numberOfUserDonations} donations! Let's take a look:`;
 
-      loadedUserDonations = userDonations;
-      hasLoadedDonations = true;
-    }
+          loadedUserDonations = userDonations;
+          hasLoadedDonations = true;
+        };
+      };
+    };
   };
 
   onMount(loadUserDonations);
@@ -50,7 +62,7 @@
 
 <section class="py-7 space-y-6 items-center text-center">
   <h3 class="font-bold">Make a new donation</h3>
-  <button type='button' id='donateButton' on:click={() => push("#/donate")} class="active-app-button bg-slate-500 text-white font-bold py-2 px-4 rounded">New Donation</button>
+  <button type='button' id='donateButton' on:click|preventDefault={() => push("#/donate")} class="active-app-button bg-slate-500 text-white font-bold py-2 px-4 rounded">New Donation</button>
 </section>
 
 <div class='clearfix'></div>

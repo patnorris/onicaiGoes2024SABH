@@ -4,6 +4,8 @@
   import { store } from "../store";
 
   import NotFound from "./NotFound.svelte";
+  import Topnav from "../components/Topnav.svelte";
+  import Footer from "../components/Footer.svelte";
 
 // This is needed for URL params
   export let params;
@@ -15,23 +17,37 @@
   let donationLoaded = false;
   
   const loadDonationDetails = async () => {
-    // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
-    // Backend Canister Integration
-      // Parameters: record with DTI
-      // Returns: 
-        // Success: Ok wraps record with Donation
-        // Error: Err wraps more info (including if not found)
-        // Result<{donation : Donation}, ApiError>;
-    const getDonationDetailsInput = {
-      dti: Number(params.donationId)
-    };
-    const donationResponse = await $store.backendActor.getDonationDetails(getDonationDetailsInput);
-    
-    if (donationResponse.Err) {
+    if (isNaN(Number(params.donationId)) || params.donationId.includes('.')) {
       donationLoadingError = true;
     } else {
-      donation = donationResponse.Ok.donation;
-      donationLoaded = true;
+      // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
+      // Backend Canister Integration
+        // Parameters: record with DTI
+        // Returns: 
+          // Success: Ok wraps record with Donation
+          // Error: Err wraps more info (including if not found)
+          // Result<?{donation : Donation}, ApiError>;
+      console.log("DEBUG loadDonationDetails params.donationId ", params.donationId);
+      const getDonationDetailsInput = {
+        dti: BigInt(params.donationId)
+      };
+      console.log("DEBUG loadDonationDetails getDonationDetailsInput ", getDonationDetailsInput);
+      const donationResponse = await $store.backendActor.getDonationDetails(getDonationDetailsInput);
+      console.log("DEBUG loadDonationDetails donationResponse ", donationResponse);
+      // @ts-ignore
+      if (donationResponse.Err) {
+        donationLoadingError = true;
+      } else {
+        // @ts-ignore
+        const donationRecord = donationResponse.Ok;
+        console.log("DEBUG loadDonationDetails donationRecord ", donationRecord);
+        if (donationRecord.length > 0) {
+          donation = donationRecord[0].donation;
+          donationLoaded = true;
+        } else {
+          donationLoadingError = true;
+        };      
+      };
     };
 
     loadingInProgress = false;
@@ -40,13 +56,22 @@
   onMount(loadDonationDetails);
 </script>
 
-<div>
-  {#if loadingInProgress}
-    <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
-  {:else if donationLoadingError}
-    <NotFound />
-  {:else if donationLoaded}
-  TODO      
+<Topnav />
+
+<section id="donations-explorer" class="py-7 space-y-3 items-center text-center bg-slate-100">
+  <h3 class="text-xl font-bold">Donation Record</h3>
   
-  {/if}
-</div>
+  <div>
+    {#if loadingInProgress}
+      <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
+    {:else if donationLoadingError}
+      <p>Make sure the Donation Transaction Id is valid (it's a number)</p>
+      <NotFound />
+    {:else if donationLoaded}
+    TODO      
+    
+    {/if}
+  </div>
+</section>
+
+<Footer />

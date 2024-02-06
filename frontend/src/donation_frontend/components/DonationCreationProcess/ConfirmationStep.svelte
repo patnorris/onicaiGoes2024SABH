@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
   import { store, currentDonationCreationObject } from "../../store";
+    import { now } from "svelte/internal";
 
   let validationErrors = [];
 
@@ -19,7 +20,7 @@
     };
 
     // Validate categorySplit sums up to 100%
-    const totalPercent = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + percent, 0);
+    const totalPercent = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
     if (totalPercent !== 100) {
       validationErrors.push('The category split percentages must sum up to 100%. Please adjust your split on Donation.');
     };
@@ -44,16 +45,19 @@
 
     const finalDonation : Donation = {
       // TODO
-      totalAmount: $currentDonationCreationObject.donation.totalDonation,
-      allocation: $currentDonationCreationObject.donation.categorySplit,      
+      totalAmount: BigInt($currentDonationCreationObject.donation.totalDonation),
+      allocation: $currentDonationCreationObject.donation.categorySplit,
+      timestamp: BigInt(now()),
     };
     const makeDonationInput = {
       donation: finalDonation
     };
     const submitDonationResponse = await $store.backendActor.makeDonation(makeDonationInput);
+    // @ts-ignore
     if (submitDonationResponse.Err) {
       submitDonationError = true;
     } else {
+      // @ts-ignore
       createdDonationTransactionId = submitDonationResponse.Ok.dti;
       submitDonationSuccess = true;
     };
@@ -86,7 +90,7 @@
       </ul>
     {:else}
       <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={finalizeDonation}>
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
         Finalize Donation
       </button>
     {/if}

@@ -10,6 +10,11 @@ import {
   idlFactory as backendIdlFactory,
 } from "../declarations/donation_tracker_canister";
 
+console.log("DEBUG store donation_tracker_canister ", donation_tracker_canister);
+console.log("DEBUG store createBackendCanisterActor ", createBackendCanisterActor);
+console.log("DEBUG store backendCanisterId ", backendCanisterId);
+console.log("DEBUG store backendIdlFactory ", backendIdlFactory);
+
 export let donationTrackerCanisterDefintion = {
   donation_tracker_canister,
   createBackendCanisterActor,
@@ -71,7 +76,12 @@ export let currentDonationCreationObject = writable({
   donation: {
     totalDonation: 0.0,
     paymentType: 'BTC',
-    categorySplit: {},
+    categorySplit: {
+      curriculumDesign: BigInt(25),
+      teacherSupport: BigInt(25),
+      schoolSupplies: BigInt(25),
+      lunchAndSnacks: BigInt(25),
+    },
   },
 });
 
@@ -94,6 +104,7 @@ const defaultState: State = {
     agentOptions: { host: HOST },
   }),
   principal: null,
+  //principal: Principal.fromText("2vxsx-fae"),
   accountId: "",
   error: "",
   isLoading: false,

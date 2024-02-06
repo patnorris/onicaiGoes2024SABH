@@ -21,11 +21,15 @@
     const transactionCheckInput = {
       bitcoinTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
     };
+    console.log("DEBUG checkDonationStatus transactionCheckInput ", transactionCheckInput);
     const transactionCheckResponse = await $store.backendActor.getBtcTransactionDetails(transactionCheckInput);
+    console.log("DEBUG checkDonationStatus transactionCheckResponse ", transactionCheckResponse);
+    // @ts-ignore
     if (transactionCheckResponse.Err) {
       bitcoinTransactionCheckError = true;
     } else {
-      $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject = transactionCheckResponse.Ok;
+      // @ts-ignore
+      $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject = transactionCheckResponse.Ok.bitcoinTransaction;
       bitcoinTransactionLoaded = true;
     };
   };
@@ -40,7 +44,7 @@
     <p>Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
     <div class="mt-4">
       <input class="border p-2" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={checkDonationStatus}>
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkDonationStatus}>
         Check Now
       </button>
     </div>

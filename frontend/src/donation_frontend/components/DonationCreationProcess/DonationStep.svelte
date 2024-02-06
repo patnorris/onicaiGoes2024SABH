@@ -2,12 +2,24 @@
   import { onMount } from "svelte";
   import { store, currentDonationCreationObject } from "../../store";
 
+  const categoryNameTranslator = {
+    'Curriculum Design and Development': "curriculumDesign",
+    'Teacher Support': "teacherSupport",
+    'School Supplies': "schoolSupplies",
+    'Lunch and Snacks': "lunchAndSnacks",
+  };
+
   const setCurrentDonationCreationObject = () => {
     $currentDonationCreationObject.donation.totalDonation = totalDonationBTC;
     // only percentage split is needed
-    let categorySplit = {};
+    let categorySplit = {
+      curriculumDesign: BigInt(25),
+      teacherSupport: BigInt(25),
+      schoolSupplies: BigInt(25),
+      lunchAndSnacks: BigInt(25),
+    };
     for (let category in donationSplits) {
-      categorySplit[category] = donationSplits[category].percent;
+      categorySplit[categoryNameTranslator[category]] = donationSplits[category].percent;
     };
     $currentDonationCreationObject.donation.categorySplit = categorySplit;
   };
@@ -47,6 +59,7 @@
       totalDonationIsBiggerThanAvailableBTC = true;
     };
     updateToEqualDonationSplits();
+    validateSplits();
   };
 
   function setTotalDonationToAvailable() {
@@ -60,6 +73,7 @@
     
     // Update the isValidSplit based on whether the total percentage equals 100
     isValidSplit = totalPercentage === 100;
+    setCurrentDonationCreationObject();
   };
 
   // Function to update BTC amounts when total or percentages change
@@ -106,7 +120,7 @@
       Step 4: Specify Donation Details</h1>	
     <p class="mt-4">Please fill out the following details about your donation.</p>
     <p class="mt-4">Available BTC to Distribute (from the transaction step): {availableBTC}</p>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click={setTotalDonationToAvailable}>
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={setTotalDonationToAvailable}>
       Set Total Donation to Available BTC
     </button>
     {#if totalDonationIsBiggerThanAvailableBTC}

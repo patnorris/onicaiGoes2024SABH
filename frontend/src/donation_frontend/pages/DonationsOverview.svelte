@@ -19,12 +19,19 @@
         // Success: Ok wraps record with list of Donations (including empty list if none exist)
         // Error: Err wraps more info 
         // Result<{donations : [Donation]}, ApiError>;
-    const getDonationsInput = {}; //TODO 
+    const getDonationsInput = {
+      filters: []
+    };
+    console.log("DEBUG getDonations getDonationsInput ", getDonationsInput);
     const donationsResponse = await $store.backendActor.getDonations(getDonationsInput);
+    console.log("DEBUG getDonations donationsResponse ", donationsResponse);
+    // @ts-ignore
     if (donationsResponse.Err) {
       donationsLoadingError = true;
     } else {
+      // @ts-ignore
       loadedDonations = donationsResponse.Ok.donations;
+      console.log("DEBUG getDonations loadedDonations ", loadedDonations);
       hasLoadedDonations = true;
     };
 
@@ -49,7 +56,7 @@
 
 <section class="py-7 space-y-6 items-center text-center">
   <h3 class="font-bold">Make a new donation</h3>
-  <button type='button' id='donateButton' on:click={() => push("#/donate")} class="active-app-button bg-slate-500 text-white font-bold py-2 px-4 rounded">New Donation</button>
+  <button type='button' id='donateButton' on:click|preventDefault={() => push("#/donate")} class="active-app-button bg-slate-500 text-white font-bold py-2 px-4 rounded">New Donation</button>
 </section>
 
 <div class='clearfix'></div>
