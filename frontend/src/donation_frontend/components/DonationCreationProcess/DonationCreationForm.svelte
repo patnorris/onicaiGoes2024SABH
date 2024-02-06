@@ -54,7 +54,7 @@
 		padding: 50px 20px;
 		text-align: center;
 		max-width: 100%;
-		width: 350px;
+		/* width: 350px; */
 	}
 	.btn{
 		color: white;

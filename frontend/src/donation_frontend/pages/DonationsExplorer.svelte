@@ -30,7 +30,7 @@
 <Topnav />
 
 <section id="donations-explorer" class="py-7 space-y-3 items-center text-center bg-slate-100">
-  <h3 class="text-xl font-bold">Explore Donations</h3>
+  <h3 class="text-xl font-bold">Donation Transaction Explorer</h3>
 
   <section class="py-4 text-center">
     <h4 class="text-lg font-bold">Search For a Donation</h4>
