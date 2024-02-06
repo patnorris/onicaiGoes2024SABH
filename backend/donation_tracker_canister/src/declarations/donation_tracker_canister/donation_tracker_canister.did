@@ -1,0 +1,143 @@
+type StudentInfo = 
+ record {
+   grade: nat;
+   id: text;
+   name: text;
+   schoolId: text;
+   thumbnail: text;
+ };
+type SchoolInfo = 
+ record {
+   address: text;
+   id: text;
+   name: text;
+   thumbnail: text;
+ };
+type Satoshi = nat64;
+type RecipientsResult = 
+ variant {
+   Err: ApiError;
+   Ok: RecipientOverviewsRecord;
+ };
+type RecipientResult = 
+ variant {
+   Err: ApiError;
+   Ok: opt RecipientRecord;
+ };
+type RecipientRecord = record {recipient: Recipient;};
+type RecipientOverviewsRecord = record {recipients: vec RecipientOverview;};
+type RecipientOverview = 
+ record {
+   id: text;
+   name: text;
+   thumbnail: text;
+ };
+type RecipientIdRecord = record {recipientId: text;};
+type RecipientFiltersRecord = record {filters: vec RecipientFilter;};
+type RecipientFilter = 
+ record {
+   include: text;
+   recipientIdForSchool: opt text;
+ };
+type Recipient = 
+ variant {
+   School: SchoolInfo;
+   Student: StudentInfo;
+ };
+type PaymentTypeRecord = record {paymentType: PaymentType;};
+type PaymentType = variant {BTC;};
+type Filter = 
+ record {
+   endDate: opt nat64;
+   maxAmount: opt nat;
+   minAmount: opt nat;
+   startDate: opt nat64;
+ };
+type DtiResult = 
+ variant {
+   Err: ApiError;
+   Ok: DtiRecord;
+ };
+type DtiRecord = record {dti: DTI;};
+type DonationsResult = 
+ variant {
+   Err: ApiError;
+   Ok: DonationsRecord;
+ };
+type DonationsRecord = record {donations: vec Donation;};
+type DonationTracker = 
+ service {
+   getBtcTransactionDetails: (BitcoinTransactionIdRecord) ->
+    (BitcoinTransactionResult) query;
+   getBtcTransactionStatus: (BitcoinTransactionIdRecord) ->
+    (BitcoinTransactionResult) query;
+   getDonationDetails: (DtiRecord) -> (DonationResult);
+   getDonationWalletAddress: (PaymentTypeRecord) ->
+    (DonationAddressResult) query;
+   getDonations: (DonationFiltersRecord) -> (DonationsResult) query;
+   getMyDonations: (DonationFiltersRecord) -> (DonationsResult);
+   getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
+   getTotalDonationAmount: (PaymentTypeRecord) ->
+    (DonationAmountResult) query;
+   listRecipients: (RecipientFiltersRecord) -> (RecipientsResult) query;
+   makeDonation: (DonationRecord) -> (DtiResult);
+ };
+type DonationResult = 
+ variant {
+   Err: ApiError;
+   Ok: opt DonationRecord;
+ };
+type DonationRecord = record {donation: Donation;};
+type DonationFiltersRecord = record {filters: vec Filter;};
+type DonationCategories = 
+ record {
+   curriculumDesign: Satoshi;
+   lunchAndSnacks: Satoshi;
+   schoolSupplies: Satoshi;
+   teacherSupport: Satoshi;
+ };
+type DonationAmountResult = 
+ variant {
+   Err: ApiError;
+   Ok: DonationAmountRecord;
+ };
+type DonationAmountRecord = record {donationAmount: DonationAmount;};
+type DonationAmount = 
+ record {
+   amount: nat64;
+   paymentType: PaymentType;
+ };
+type DonationAddressResult = 
+ variant {
+   Err: ApiError;
+   Ok: DonationAddressRecord;
+ };
+type DonationAddressRecord = record {donationAddress: DonationAddress;};
+type DonationAddress = 
+ record {
+   address: text;
+   paymentType: PaymentType;
+ };
+type Donation = 
+ record {
+   allocation: DonationCategories;
+   timestamp: nat64;
+   totalAmount: Satoshi;
+ };
+type DTI = nat;
+type BitcoinTransactionResult = 
+ variant {
+   Err: ApiError;
+   Ok: BitcoinTransactionRecord;
+ };
+type BitcoinTransactionRecord = record {btcTransaction: BitcoinTransaction;};
+type BitcoinTransactionIdRecord = record {bitcoinTransactionId: text;};
+type BitcoinTransaction = record {bitcoinTransactionId: text;};
+type ApiError = 
+ variant {
+   InvalidId;
+   Other: text;
+   Unauthorized;
+   ZeroAddress;
+ };
+service : () -> DonationTracker
