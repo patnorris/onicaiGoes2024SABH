@@ -4,6 +4,7 @@ import Array "mo:base/Array";
 import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
+import Iter "mo:base/Iter";
 
 import Types "Types";
 import Utils "Utils";
@@ -21,10 +22,25 @@ actor class DonationTracker() {
     stable var stableDonations : [Donation] = [];
 
     // Mutable copy of donations for runtime operations.
-    var donations : [Donation] = stableDonations;
+    var donations : Buffer.Buffer<Donation> = Buffer.fromArray<Donation>(stableDonations);
 
     // Map each principal to a list of donation indices (DTIs)
-    private let donationsByPrincipal = HashMap.HashMap<Principal, Buffer.Buffer<DTI>>(0, Principal.equal, Principal.hash);
+    private var donationsByPrincipal = HashMap.HashMap<Principal, Buffer.Buffer<DTI>>(0, Principal.equal, Principal.hash);
+    //TODO: stable var donationsByPrincipalStable : [(Principal, Buffer.Buffer<DTI>)] = [];
+        // Alternative: use [DTI] instead of Buffer.Buffer<DTI>; less efficient but straightforward to make stable
+        // Or: stable Buffer implementation?
+
+    // Store recipients and map each recipientId to the corresponding Recipient record
+    private var recipientsById = HashMap.HashMap<Types.RecipientId, Types.Recipient>(0, Text.equal, Text.hash);
+    stable var recipientsByIdStable : [(Text, Types.Recipient)] = [];
+
+    // Map School (via its recipientId) to its Students (via their recipientIds)
+    private var studentsBySchool = HashMap.HashMap<Types.RecipientId, [Types.RecipientId]>(0, Text.equal, Text.hash);
+    stable var studentsBySchoolStable : [(Types.RecipientId, [Types.RecipientId])] = [];
+
+    // Map paymentTransactionId to a list of Donations (e.g. bitcoin transaction to the donations that were paid from it)
+    private var donationsByTxId = HashMap.HashMap<Types.PaymentTransactionId, [Donation]>(0, Text.equal, Text.hash);
+    stable var donationsByTxIdStable : [(Types.PaymentTransactionId, [Donation])] = [];
 
     // -------------------------------------------------------------------------------
     // Canister Endpoints
@@ -48,7 +64,7 @@ actor class DonationTracker() {
 
     public shared (msg) func getDonationDetails(dtiRecord : Types.DtiRecord) : async Types.DonationResult {
         if (dtiRecord.dti < donations.size()) {
-            return #Ok(?{donation = donations[dtiRecord.dti]});
+            return #Ok(?{donation = donations.get(dtiRecord.dti)});
         } else {
             return #Err(#InvalidId);
         };
@@ -259,13 +275,25 @@ actor class DonationTracker() {
     // System-provided lifecycle method called before an upgrade.
     system func preupgrade() {
         // Copy the runtime state back into the stable variable before upgrade.
-        stableDonations := donations;
+        stableDonations := Buffer.toArray<Donation>(donations);
+        //TODO: donationsByPrincipalStable := Iter.toArray(donationsByPrincipal.entries());
+        recipientsByIdStable := Iter.toArray(recipientsById.entries());
+        studentsBySchoolStable := Iter.toArray(studentsBySchool.entries());
+        donationsByTxIdStable := Iter.toArray(donationsByTxId.entries());
     };
 
     // System-provided lifecycle method called after an upgrade or on initial deploy.
     system func postupgrade() {
         // After upgrade, reload the runtime state from the stable variable.
-        donations := stableDonations;
+        donations := Buffer.fromArray<Donation>(stableDonations);
+        //TODO: donationsByPrincipal := HashMap.fromIter(Iter.fromArray(donationsByPrincipalStable), donationsByPrincipalStable.size(), Text.equal, Text.hash);
+        //TODO: donationsByPrincipalStable := [];
+        recipientsById := HashMap.fromIter(Iter.fromArray(recipientsByIdStable), recipientsByIdStable.size(), Text.equal, Text.hash);
+        recipientsByIdStable := [];
+        studentsBySchool := HashMap.fromIter(Iter.fromArray(studentsBySchoolStable), studentsBySchoolStable.size(), Text.equal, Text.hash);
+        studentsBySchoolStable := [];
+        donationsByTxId := HashMap.fromIter(Iter.fromArray(donationsByTxIdStable), donationsByTxIdStable.size(), Text.equal, Text.hash);
+        donationsByTxIdStable := [];
     };
     // -------------------------------------------------------------------------------
 };

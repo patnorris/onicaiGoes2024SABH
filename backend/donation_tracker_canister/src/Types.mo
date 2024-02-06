@@ -9,10 +9,24 @@ module Types {
         lunchAndSnacks: Satoshi;
     };
 
+    public type DonorType = {
+        #Anonymous;
+        #Principal : Principal;
+    };
+
+    public type PaymentTransactionId = Text;
+
     public type Donation = {
+        dti: DTI;
         totalAmount: Satoshi;
         allocation: DonationCategories;
         timestamp: Nat64;
+        paymentTransactionId: PaymentTransactionId;
+        paymentType: PaymentType; // Assuming payment types are strings, you might want to define an enum if you have a fixed set of payment types
+        recipientId: RecipientId;
+        donor: DonorType;
+        personalNote: ?Text; // Optional field for personal note from donor to recipient
+        rewardsHaveBeenClaimed: Bool;
     };
 
     public type ApiError = {
@@ -65,7 +79,7 @@ module Types {
 
     public type RecipientFilter = {
         include: Text; // "schools" | "studentsForSchool"
-        recipientIdForSchool: ?Text; // "id" for a specific school or null
+        recipientIdForSchool: ?RecipientId; // "id" for a specific school or null
     };
 
     public type RecipientFiltersRecord = {
@@ -100,8 +114,10 @@ module Types {
         #Student : StudentInfo;
     };
 
+    public type RecipientId = Text;
+
     public type RecipientIdRecord = {
-        recipientId: Text;
+        recipientId: RecipientId;
     };
 
     public type RecipientRecord = {
@@ -111,14 +127,14 @@ module Types {
     public type RecipientResult = Result<?RecipientRecord, ApiError>;
 
     public type BitcoinTransaction = {
-        bitcoinTransactionId: Text;
+        bitcoinTransactionId: PaymentTransactionId;
         //totalValue: Nat64; // Total value of the BTC transaction
         //valueDonated: Nat64; // How much of the total value has been donated
         // TODO: Add more fields as necessary, e.g., timestamp, confirmations, etc.
     };
 
     public type BitcoinTransactionIdRecord = {
-        bitcoinTransactionId: Text;
+        bitcoinTransactionId: PaymentTransactionId;
     };
 
     public type BitcoinTransactionRecord = {

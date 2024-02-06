@@ -5,8 +5,12 @@ export type ApiError = { 'InvalidId' : null } |
   { 'ZeroAddress' : null } |
   { 'Unauthorized' : null } |
   { 'Other' : string };
-export interface BitcoinTransaction { 'bitcoinTransactionId' : string }
-export interface BitcoinTransactionIdRecord { 'bitcoinTransactionId' : string }
+export interface BitcoinTransaction {
+  'bitcoinTransactionId' : PaymentTransactionId,
+}
+export interface BitcoinTransactionIdRecord {
+  'bitcoinTransactionId' : PaymentTransactionId,
+}
 export interface BitcoinTransactionRecord {
   'bitcoinTransaction' : BitcoinTransaction,
 }
@@ -14,9 +18,16 @@ export type BitcoinTransactionResult = { 'Ok' : BitcoinTransactionRecord } |
   { 'Err' : ApiError };
 export type DTI = bigint;
 export interface Donation {
+  'dti' : DTI,
+  'rewardsHaveBeenClaimed' : boolean,
+  'paymentTransactionId' : PaymentTransactionId,
   'totalAmount' : Satoshi,
   'timestamp' : bigint,
+  'paymentType' : PaymentType,
   'allocation' : DonationCategories,
+  'personalNote' : [] | [string],
+  'donor' : DonorType,
+  'recipientId' : RecipientId,
 }
 export interface DonationAddress {
   'address' : string,
@@ -69,6 +80,8 @@ export interface DonationTracker {
 export interface DonationsRecord { 'donations' : Array<Donation> }
 export type DonationsResult = { 'Ok' : DonationsRecord } |
   { 'Err' : ApiError };
+export type DonorType = { 'Anonymous' : null } |
+  { 'Principal' : Principal };
 export interface DtiRecord { 'dti' : DTI }
 export type DtiResult = { 'Ok' : DtiRecord } |
   { 'Err' : ApiError };
@@ -78,16 +91,18 @@ export interface Filter {
   'minAmount' : [] | [bigint],
   'startDate' : [] | [bigint],
 }
+export type PaymentTransactionId = string;
 export type PaymentType = { 'BTC' : null };
 export interface PaymentTypeRecord { 'paymentType' : PaymentType }
 export type Recipient = { 'School' : SchoolInfo } |
   { 'Student' : StudentInfo };
 export interface RecipientFilter {
   'include' : string,
-  'recipientIdForSchool' : [] | [string],
+  'recipientIdForSchool' : [] | [RecipientId],
 }
 export interface RecipientFiltersRecord { 'filters' : Array<RecipientFilter> }
-export interface RecipientIdRecord { 'recipientId' : string }
+export type RecipientId = string;
+export interface RecipientIdRecord { 'recipientId' : RecipientId }
 export interface RecipientOverview {
   'id' : string,
   'thumbnail' : string,
