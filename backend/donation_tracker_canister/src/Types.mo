@@ -122,7 +122,7 @@ module Types {
     };
 
     public type BitcoinTransactionRecord = {
-        btcTransaction: BitcoinTransaction;
+        bitcoinTransaction: BitcoinTransaction;
     };
 
     public type BitcoinTransactionResult = Result<BitcoinTransactionRecord, ApiError>;

@@ -4,7 +4,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const BitcoinTransaction = IDL.Record({ 'bitcoinTransactionId' : IDL.Text });
   const BitcoinTransactionRecord = IDL.Record({
-    'btcTransaction' : BitcoinTransaction,
+    'bitcoinTransaction' : BitcoinTransaction,
   });
   const ApiError = IDL.Variant({
     'InvalidId' : IDL.Null,

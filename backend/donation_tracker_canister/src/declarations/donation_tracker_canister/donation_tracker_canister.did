@@ -130,7 +130,8 @@ type BitcoinTransactionResult =
    Err: ApiError;
    Ok: BitcoinTransactionRecord;
  };
-type BitcoinTransactionRecord = record {btcTransaction: BitcoinTransaction;};
+type BitcoinTransactionRecord = record {
+                                  bitcoinTransaction: BitcoinTransaction;};
 type BitcoinTransactionIdRecord = record {bitcoinTransactionId: text;};
 type BitcoinTransaction = record {bitcoinTransactionId: text;};
 type ApiError = 

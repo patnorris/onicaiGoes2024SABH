@@ -8,7 +8,7 @@ export type ApiError = { 'InvalidId' : null } |
 export interface BitcoinTransaction { 'bitcoinTransactionId' : string }
 export interface BitcoinTransactionIdRecord { 'bitcoinTransactionId' : string }
 export interface BitcoinTransactionRecord {
-  'btcTransaction' : BitcoinTransaction,
+  'bitcoinTransaction' : BitcoinTransaction,
 }
 export type BitcoinTransactionResult = { 'Ok' : BitcoinTransactionRecord } |
   { 'Err' : ApiError };

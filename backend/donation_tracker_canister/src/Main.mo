@@ -172,7 +172,7 @@ actor class DonationTracker() {
             };
             case (?t) {
                 // Transaction found
-                return #Ok({btcTransaction = t});
+                return #Ok({bitcoinTransaction = t});
             };
         };
     };
@@ -194,7 +194,7 @@ actor class DonationTracker() {
         // Check if the transaction exists and has a valid value
         if (totalValue > 0) {
             return #Ok({
-                btcTransaction = {
+                bitcoinTransaction = {
                     bitcoinTransactionId = idRecord.bitcoinTransactionId;
                     totalValue = totalValue;
                     valueDonated = valueDonated;
