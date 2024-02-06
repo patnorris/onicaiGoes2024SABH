@@ -41,7 +41,7 @@
 <div class="progress-container" bind:this={circles}>
 	<div class="progress" bind:this={progress}></div>
 	{#each steps as step, i}
-	<div class="circle {i == 0 ? 'active' : ''}" data-title={step} >{i+1}</div>
+		<div class="circle {i == 0 ? 'active' : ''}" data-title={step} >{i+1}</div>
 	{/each}
 </div>
 
@@ -52,8 +52,11 @@
 		justify-content: space-between;
 		position: relative;
 		margin-bottom: 30px;
+		margin-left: 15px;
+		margin-right: 30px;
 		max-width: 100%;
-		width: 350px;
+		/* width: 350px; */
+		align-items: center;
 	}
 
 	.progress-container::before {

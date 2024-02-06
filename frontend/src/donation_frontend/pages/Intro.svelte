@@ -16,7 +16,7 @@
     <p class="intro-section-text">
       Donate bitcoin to schools and students here.
     </p>
-    <button type="button" id='donateButton' on:click={() => push("#/donate")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create Space</button>
+    <button type="button" id='donateButton' on:click|preventDefault={() => push("#/donate")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create Space</button>
   </div>
 </div>
 
@@ -26,7 +26,7 @@
     <p class="intro-section-text">
       View your donations, all donations or find a specific donation.
     </p>
-    <button type='button' id='exploreDonationsButton' on:click={() => push("#/explore")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">My Spaces</button>
+    <button type='button' id='exploreDonationsButton' on:click|preventDefault={() => push("#/explore")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">My Spaces</button>
   </div>
 
   <div style="background-color: #fff3e9">
@@ -46,7 +46,7 @@
     <p class="intro-section-text">
       Find out who the schools and students you can donate to are.
     </p>
-    <button type="button" id='recipientsButton' on:click={() => push("#/recipients")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Experience OIM Now</button>
+    <button type="button" id='recipientsButton' on:click|preventDefault={() => push("#/recipients")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Experience OIM Now</button>
   </div>
 </div>
 

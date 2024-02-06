@@ -31,24 +31,35 @@
     let recipientLoaded = false;
     
     const loadRecipientDetails = async () => {
-      // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
-      // Backend Canister Integration
-        // Parameters: record with id
-        // Returns: 
-          // Success: Ok wraps record with Recipient
-          // Error: Err wraps more info (including if not found)
-          // Result<{recipient : Recipient}, ApiError>;
-
-      const getRecipientInput = {
-        recipientId
-      };
-      const recipientResponse = await $store.backendActor.getRecipient(getRecipientInput);
-      
-      if (recipientResponse.Err) {
+      console.log("DEBUG loadRecipientDetails recipientId ", recipientId);
+      if (!recipientId) {
         recipientLoadingError = true;
       } else {
-        recipient = recipientResponse.Ok;
-        recipientLoaded = true;
+        // If viewer is logged in, make authenticated call (otherwise, default backendActor in store is used)
+        // Backend Canister Integration
+          // Parameters: record with id
+          // Returns: 
+            // Success: Ok wraps record with Recipient
+            // Error: Err wraps more info (including if not found)
+            // Result<?{recipient : Recipient}, ApiError>;
+
+        const getRecipientInput = {
+          recipientId
+        };
+        const recipientResponse = await $store.backendActor.getRecipient(getRecipientInput);
+        // @ts-ignore
+        if (recipientResponse.Err) {
+          recipientLoadingError = true;
+        } else {
+          // @ts-ignore
+          const recipientRecord = recipientResponse.Ok;
+          if (recipientRecord.length > 0) {
+            recipient = recipientRecord[0].recipient;
+            recipientLoaded = true;
+          } else {
+            recipientLoadingError = true;
+          };
+        };
       };
   
       loadingInProgress = false;
@@ -56,7 +67,10 @@
   
     onMount(loadRecipientDetails);
   </script>
-  
+
+<section id="recipient-profile" class="py-7 space-y-3 items-center text-center bg-slate-100">
+  <h3 class="text-xl font-bold">Recipient Profile</h3>
+
   <div>
     {#if loadingInProgress}
       <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
@@ -69,16 +83,18 @@
             <p>TODO: More info</p>
             </div>
             {#if embedded}
-                <button on:click={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
+                <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
                 {#if recipientProfileSelected}
                     <p>You have currently selected this recipient for your donation.</p>
                 {:else}
                     <p>This recipient is not selected for your donation currently.</p>
                 {/if}
             {:else}
-                <button on:click={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
+                <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
             {/if}
         </div>
     {/if}
-  </div>
+  </div>  
+  
+</section>
   

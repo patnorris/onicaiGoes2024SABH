@@ -46,15 +46,18 @@
     </div>
   </section>
 
-  <div class="container">
-		<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
-		
-		<div class="step-button">
-			<button id="createDonationProcessPrevButton" class="btn" on:click={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
-			<button id="createDonationProcessNextButton" class="btn" on:click={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+  	<div class="center-container">
+		<div>
+			<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
 		</div>
-
-		<Form active_step={steps[currentActive-1]}/>
+			
+		<div class="step-button">
+			<button id="createDonationProcessPrevButton" class="btn" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+			<button id="createDonationProcessNextButton" class="btn" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+		</div>
+		<div>
+			<Form active_step={steps[currentActive-1]}/>
+		</div>
 	</div>
 
 </section>
@@ -72,7 +75,12 @@
     background:url(../assets/loading.gif) center center no-repeat;
   }
 
-  @import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+  /* @import url('https://fonts.googleapis.com/css?family=Muli&display=swap'); */
+
+  .center-container {
+        align-items: center;
+        width: 100%; /* Use full viewport width */
+    }
 	
 	* {
 		box-sizing: border-box;

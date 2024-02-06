@@ -5,7 +5,11 @@
 </script>
 
 <div id='donationPreviews' class="space-y-4">
-  {#each donations as donation}
-    <DonationPreview donation={donation} />
-  {/each}
+  {#if !donations || donations.length === 0}
+    <p id='noDonationsSubtext'>There are no donations yet. You can be the first one to donate!</p>
+  {:else}
+    {#each donations as donation}
+      <DonationPreview donation={donation} />
+    {/each}
+  {/if}
 </div>

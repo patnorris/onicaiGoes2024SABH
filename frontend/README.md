@@ -11,7 +11,7 @@ npm install
 
 2. Follow the instructions in the backend canisters' Readmes
 
-3. Start the local replica
+3. Start the local replica (if you haven't started it yet)
 ```bash
 npm run dev
 ```
@@ -24,6 +24,7 @@ npm run erase-replica
 
 4. Deploy your canisters to the replica
 ```bash
+dfx generate
 dfx deploy
 ```
 --> Access frontend at http://localhost:4943/?canisterId=ryjl3-tyaaa-aaaaa-aaaba-cai

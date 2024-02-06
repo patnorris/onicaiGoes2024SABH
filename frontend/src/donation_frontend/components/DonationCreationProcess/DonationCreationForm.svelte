@@ -37,10 +37,10 @@
   {:else if active_step == 'Donation'}
   		<DonationStep />
 	{:else if active_step == 'Confirmation'}
-		<div class="message">
+		<!-- <div class="message">
 			<h2>Thank you for choosing us</h2>
 			<button class="btn submit">Finish </button>
-		</div>
+		</div> -->
 		<ConfirmationStep />
 	{/if}
 </form>
@@ -54,7 +54,7 @@
 		padding: 50px 20px;
 		text-align: center;
 		max-width: 100%;
-		width: 350px;
+		/* width: 350px; */
 	}
 	.btn{
 		color: white;

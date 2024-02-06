@@ -9,6 +9,7 @@ First to into donation_canister folder, where you start the local network & depl
 Then go into donation_tracker_canister folder, and deploy the donation_tracker_canister with:
 
 ```bash
+dfx generate
 dfx deploy
 ```
 

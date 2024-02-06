@@ -26,7 +26,7 @@
         <p>{recipientPreview.name}</p>
         <p>TODO: Image</p>
       </div>
-      <button on:click={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">View Profile</button>
+      <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">View Profile</button>
     </div>
   {/if}
 </div>
