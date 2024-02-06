@@ -76,12 +76,13 @@ export let currentDonationCreationObject = writable({
   donation: {
     totalDonation: 0.0,
     paymentType: 'BTC',
-    categorySplit: {
-      curriculumDesign: BigInt(25),
-      teacherSupport: BigInt(25),
-      schoolSupplies: BigInt(25),
-      lunchAndSnacks: BigInt(25),
+    categorySplit: { // each category is in Satoshi (100,000,000 Satoshi = 1 bitcoin)
+      curriculumDesign: BigInt(0.0),
+      teacherSupport: BigInt(0.0),
+      schoolSupplies: BigInt(0.0),
+      lunchAndSnacks: BigInt(0.0),
     },
+    personalNote: "",
   },
 });
 

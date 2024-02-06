@@ -6,22 +6,10 @@
 	import ConfirmationStep from './ConfirmationStep.svelte';
 
 	export let active_step;
-	let formData = {
-		name: '',
-		surname: '',
-		email: '',
-		password: '',
-		address: '',
-		city: '',
-		country: '',
-		postcode: '',
-		account_name: '',
-		card_no: ''
-	}
 	
 	const handleSubmit = () => {
-		console.log("Your form data => ", formData)
-	}
+		console.log("form submitted");
+	};
 
 </script>
 
@@ -37,10 +25,6 @@
   {:else if active_step == 'Donation'}
   		<DonationStep />
 	{:else if active_step == 'Confirmation'}
-		<!-- <div class="message">
-			<h2>Thank you for choosing us</h2>
-			<button class="btn submit">Finish </button>
-		</div> -->
 		<ConfirmationStep />
 	{/if}
 </form>

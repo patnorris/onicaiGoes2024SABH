@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { store, currentDonationCreationObject } from "../../store";
+  import { currentDonationCreationObject } from "../../store";
+
+  let updateToggle = 0;
 
   const categoryNameTranslator = {
     'Curriculum Design and Development': "curriculumDesign",
@@ -13,15 +15,17 @@
     $currentDonationCreationObject.donation.totalDonation = totalDonationBTC;
     // only percentage split is needed
     let categorySplit = {
-      curriculumDesign: BigInt(25),
-      teacherSupport: BigInt(25),
-      schoolSupplies: BigInt(25),
-      lunchAndSnacks: BigInt(25),
+      curriculumDesign: BigInt(0.0),
+      teacherSupport: BigInt(0.0),
+      schoolSupplies: BigInt(0.0),
+      lunchAndSnacks: BigInt(0.0),
     };
     for (let category in donationSplits) {
-      categorySplit[categoryNameTranslator[category]] = donationSplits[category].percent;
+      categorySplit[categoryNameTranslator[category]] = donationSplits[category].btc;
     };
     $currentDonationCreationObject.donation.categorySplit = categorySplit;
+    $currentDonationCreationObject.donation.personalNote = personalNote;
+    updateToggle += 1;
   };
 
   let availableBTC = 0.0;
@@ -39,10 +43,10 @@
   // Donation details
   let totalDonationBTC = 0.0;
   let donationSplits = {
-    'Curriculum Design and Development': { percent: 25, btc: 0 },
-    'Teacher Support': { percent: 25, btc: 0 },
-    'School Supplies': { percent: 25, btc: 0 },
-    'Lunch and Snacks': { percent: 25, btc: 0 },
+    'Curriculum Design and Development': { percent: 25, btc: 0.0 },
+    'Teacher Support': { percent: 25, btc: 0.0 },
+    'School Supplies': { percent: 25, btc: 0.0 },
+    'Lunch and Snacks': { percent: 25, btc: 0.0 },
   };
   let personalNote = '';
 
@@ -58,7 +62,7 @@
     if (totalDonationBTC > availableBTC) {
       totalDonationIsBiggerThanAvailableBTC = true;
     };
-    updateToEqualDonationSplits();
+    updateCategoryBTC();
     validateSplits();
   };
 
@@ -132,12 +136,13 @@
         type="number"
         id="totalDonation"
         min="0"
-        step="0.00000001"
+        step="1"
         bind:value={totalDonationBTC}
         on:input={handleTotalDonationUpdate}
         class="border p-2 w-full"
-        placeholder="Enter amount in BTC"
+        placeholder="Enter amount in Satoshi"
       />
+      <p>Satoshi (equals {(totalDonationBTC / 100000000.0).toFixed(8)} BTC)</p>
     </div>
     {#if !isValidSplit}
       <p id='categorySplitNotValidSubtext'>Your Category split needs to sum up to 100% and the allocated BTC to your Total Donation!</p>
@@ -146,24 +151,30 @@
       {#each Object.entries(donationSplits) as [category, categoryValues], index}
         <div class="mt-4">
           <label class="block mb-2">{category}:</label>
-          <input
-            type="number"
-            min="0"
-            max="100"
-            class="border p-2 w-1/2"
-            placeholder="Percentage"
-            bind:value={donationSplits[category].percent}
-            on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0)}
-          />
-          <input
-            type="number"
-            min="0"
-            step="0.00000001"
-            class="border p-2 w-1/2"
-            placeholder="BTC amount"
-            bind:value={donationSplits[category].btc}
-            on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0, true)}
-          />
+          <div>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              class="border p-2 w-1/2"
+              placeholder="Percentage"
+              bind:value={donationSplits[category].percent}
+              on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0.0)}
+            />
+            <p>% of Total Donation</p>
+          </div>
+          <div>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              class="border p-2 w-1/2"
+              placeholder="BTC amount"
+              bind:value={donationSplits[category].btc}
+              on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0.0, true)}
+            />
+            <p>Satoshi (equals {(donationSplits[category].btc / 100000000.0).toFixed(8)} BTC)</p>
+          </div>
         </div>
       {/each}
     </div>

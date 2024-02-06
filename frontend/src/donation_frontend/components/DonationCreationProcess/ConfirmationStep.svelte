@@ -44,10 +44,20 @@
         // Result<{dti : DTI}, ApiError>;
 
     const finalDonation : Donation = {
-      // TODO
-      totalAmount: BigInt($currentDonationCreationObject.donation.totalDonation),
-      allocation: $currentDonationCreationObject.donation.categorySplit,
-      timestamp: BigInt(now()),
+        totalAmount: BigInt($currentDonationCreationObject.donation.totalDonation),
+        allocation: $currentDonationCreationObject.donation.categorySplit,
+        timestamp: BigInt(now()),
+        dti: 0n,
+        rewardsHaveBeenClaimed: false,
+        paymentTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
+        paymentType: {
+          BTC: null
+        },
+        personalNote: [$currentDonationCreationObject.donation.personalNote],
+        donor: {
+          Anonymous: null
+        },
+        recipientId: $currentDonationCreationObject.recipient.recipientId
     };
     const makeDonationInput = {
       donation: finalDonation
@@ -73,11 +83,11 @@
     <!-- Display donation details -->
     <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
     <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientObject?.name}</p>
-    <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} BTC</p>
+    <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType}</p>
     <p>Category Split:</p>
     <ul>
-      {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, percent]}
-        <li>{category}: {percent}%</li>
+      {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}
+        <li>{category}: {btc} Satoshi</li>
       {/each}
     </ul>
     <!-- Conditional rendering based on validationErrors -->

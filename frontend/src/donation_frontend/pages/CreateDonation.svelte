@@ -1,30 +1,15 @@
 <script lang="ts">
-  import { store } from "../store";
-  import Topnav from "../components/Topnav.svelte";
-  import Footer from "../components/Footer.svelte";
-  import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
+	import { store } from "../store";
+	import Topnav from "../components/Topnav.svelte";
+	import Footer from "../components/Footer.svelte";
+	import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
 	import ProgressBar from '../components/DonationCreationProcess/ProgressBar.svelte';
 
 	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'], currentActive = 1, progressBar;
 	
 	const handleProgress = (stepIncrement) => {
 		progressBar.handleProgress(stepIncrement)
-	}
-
-// Manage status of creation to show buttons and subtexts appropriately
-  let isDonationCreationInProgress = false;
-  let donationToCreate = "";
-  let wasDonationCreatedSuccessfully = false;
-
-  const setCreationInProgress = (donation) => {
-    isDonationCreationInProgress = true;
-    donationToCreate = donation;
-  };
-
-  const setDonationWasCreated = () => {
-    isDonationCreationInProgress = false;
-    wasDonationCreatedSuccessfully = true;
-  };
+	};
 
 </script>
 
