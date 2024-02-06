@@ -1,8 +1,11 @@
 export const idlFactory = ({ IDL }) => {
+  const PaymentTransactionId = IDL.Text;
   const BitcoinTransactionIdRecord = IDL.Record({
-    'bitcoinTransactionId' : IDL.Text,
+    'bitcoinTransactionId' : PaymentTransactionId,
   });
-  const BitcoinTransaction = IDL.Record({ 'bitcoinTransactionId' : IDL.Text });
+  const BitcoinTransaction = IDL.Record({
+    'bitcoinTransactionId' : PaymentTransactionId,
+  });
   const BitcoinTransactionRecord = IDL.Record({
     'bitcoinTransaction' : BitcoinTransaction,
   });
@@ -19,23 +22,35 @@ export const idlFactory = ({ IDL }) => {
   const DTI = IDL.Nat;
   const DtiRecord = IDL.Record({ 'dti' : DTI });
   const Satoshi = IDL.Nat64;
+  const PaymentType = IDL.Variant({ 'BTC' : IDL.Null });
   const DonationCategories = IDL.Record({
     'curriculumDesign' : Satoshi,
     'teacherSupport' : Satoshi,
     'lunchAndSnacks' : Satoshi,
     'schoolSupplies' : Satoshi,
   });
+  const DonorType = IDL.Variant({
+    'Anonymous' : IDL.Null,
+    'Principal' : IDL.Principal,
+  });
+  const RecipientId = IDL.Text;
   const Donation = IDL.Record({
+    'dti' : DTI,
+    'rewardsHaveBeenClaimed' : IDL.Bool,
+    'paymentTransactionId' : PaymentTransactionId,
     'totalAmount' : Satoshi,
     'timestamp' : IDL.Nat64,
+    'paymentType' : PaymentType,
     'allocation' : DonationCategories,
+    'personalNote' : IDL.Opt(IDL.Text),
+    'donor' : DonorType,
+    'recipientId' : RecipientId,
   });
   const DonationRecord = IDL.Record({ 'donation' : Donation });
   const DonationResult = IDL.Variant({
     'Ok' : IDL.Opt(DonationRecord),
     'Err' : ApiError,
   });
-  const PaymentType = IDL.Variant({ 'BTC' : IDL.Null });
   const PaymentTypeRecord = IDL.Record({ 'paymentType' : PaymentType });
   const DonationAddress = IDL.Record({
     'address' : IDL.Text,
@@ -60,7 +75,7 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationsRecord,
     'Err' : ApiError,
   });
-  const RecipientIdRecord = IDL.Record({ 'recipientId' : IDL.Text });
+  const RecipientIdRecord = IDL.Record({ 'recipientId' : RecipientId });
   const SchoolInfo = IDL.Record({
     'id' : IDL.Text,
     'thumbnail' : IDL.Text,
@@ -96,7 +111,7 @@ export const idlFactory = ({ IDL }) => {
   });
   const RecipientFilter = IDL.Record({
     'include' : IDL.Text,
-    'recipientIdForSchool' : IDL.Opt(IDL.Text),
+    'recipientIdForSchool' : IDL.Opt(RecipientId),
   });
   const RecipientFiltersRecord = IDL.Record({
     'filters' : IDL.Vec(RecipientFilter),

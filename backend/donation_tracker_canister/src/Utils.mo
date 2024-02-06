@@ -3,6 +3,8 @@ import Debug "mo:base/Debug";
 import Iter "mo:base/Iter";
 import Nat8 "mo:base/Nat8";
 import Prelude "mo:base/Prelude";
+import UUID "mo:uuid/UUID";
+import Source "mo:uuid/async/SourceV4";
 import Text "mo:base/Text";
 
 module {
@@ -73,6 +75,11 @@ module {
     /// Returns the hexadecimal representation of a byte array.
     public func bytesToText(bytes : [Nat8]) : Text {
         Text.join("", Iter.map<Nat8, Text>(Iter.fromArray(bytes), func (n) { nat8ToText(n) }))
+    };
+
+    public func newRandomUniqueId() : async Text {
+        let g = Source.Source();
+        UUID.toText(await g.new());
     };
 }
 

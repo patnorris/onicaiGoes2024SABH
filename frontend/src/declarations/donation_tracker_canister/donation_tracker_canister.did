@@ -32,12 +32,13 @@ type RecipientOverview =
    name: text;
    thumbnail: text;
  };
-type RecipientIdRecord = record {recipientId: text;};
+type RecipientIdRecord = record {recipientId: RecipientId;};
+type RecipientId = text;
 type RecipientFiltersRecord = record {filters: vec RecipientFilter;};
 type RecipientFilter = 
  record {
    include: text;
-   recipientIdForSchool: opt text;
+   recipientIdForSchool: opt RecipientId;
  };
 type Recipient = 
  variant {
@@ -46,6 +47,7 @@ type Recipient =
  };
 type PaymentTypeRecord = record {paymentType: PaymentType;};
 type PaymentType = variant {BTC;};
+type PaymentTransactionId = text;
 type Filter = 
  record {
    endDate: opt nat64;
@@ -59,6 +61,11 @@ type DtiResult =
    Ok: DtiRecord;
  };
 type DtiRecord = record {dti: DTI;};
+type DonorType = 
+ variant {
+   Anonymous;
+   Principal: principal;
+ };
 type DonationsResult = 
  variant {
    Err: ApiError;
@@ -121,6 +128,13 @@ type DonationAddress =
 type Donation = 
  record {
    allocation: DonationCategories;
+   donor: DonorType;
+   dti: DTI;
+   paymentTransactionId: PaymentTransactionId;
+   paymentType: PaymentType;
+   personalNote: opt text;
+   recipientId: RecipientId;
+   rewardsHaveBeenClaimed: bool;
    timestamp: nat64;
    totalAmount: Satoshi;
  };
@@ -132,8 +146,11 @@ type BitcoinTransactionResult =
  };
 type BitcoinTransactionRecord = record {
                                   bitcoinTransaction: BitcoinTransaction;};
-type BitcoinTransactionIdRecord = record {bitcoinTransactionId: text;};
-type BitcoinTransaction = record {bitcoinTransactionId: text;};
+type BitcoinTransactionIdRecord = record {
+                                    bitcoinTransactionId:
+                                     PaymentTransactionId;};
+type BitcoinTransaction = record {bitcoinTransactionId: PaymentTransactionId;
+                          };
 type ApiError = 
  variant {
    InvalidId;
