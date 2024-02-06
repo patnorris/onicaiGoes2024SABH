@@ -1,0 +1,21 @@
+type Satoshi = nat64;
+type DonationTracker = 
+ service {
+   getDonationDetails: (nat) -> (opt Donation);
+   getMyDonations: () -> (vec DTI);
+   makeDonation: (Donation) -> (DTI);
+ };
+type DonationCategories = 
+ record {
+   curriculumDesign: Satoshi;
+   lunchAndSnacks: Satoshi;
+   schoolSupplies: Satoshi;
+   teacherSupport: Satoshi;
+ };
+type Donation = 
+ record {
+   allocation: DonationCategories;
+   totalAmount: Satoshi;
+ };
+type DTI = nat;
+service : () -> DonationTracker
