@@ -43,3 +43,17 @@ def test__whoami_default(identity_default: dict[str, str], network: str) -> None
     )
     expected_response = f'(principal "{identity_default["principal"]}")'
     assert response == expected_response
+
+
+def test__listRecipients_all(identity_anonymous: dict[str, str], network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="listRecipients",
+        canister_argument='(record {"filters" = vec {} })',
+        network=network,
+        timeout_seconds=10,
+    )
+    # For now, just check the Mock Data is coming back
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "thumbnail1.jpg"; name = "School One";}; record { id = "student1"; thumbnail = "thumbnail2.jpg"; name = "Student One";};};} })'
+    assert response == expected_response
