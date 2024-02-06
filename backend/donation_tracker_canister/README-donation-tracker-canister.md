@@ -2,6 +2,15 @@
 
 ### Local Network
 
+#### Setup
+
+Install mops (https://mops.one/docs/install)
+Install motoko dependencies:
+
+```bash
+mops install
+```
+
 #### Deploy
 
 First to into donation_canister folder, where you start the local network & deploy the donation_canister.
@@ -25,6 +34,7 @@ pip install -r requirements.txt
 ```
 
 **Run tests of test/ folder**
+
 ```bash
 pytest
 ```
@@ -77,7 +87,6 @@ This streamlined approach, using the index as a DTI, offers a straightforward wa
 By following this approach, the canister's `donations` data benefits from orthogonal persistence, and we ensure data longevity and integrity across canister upgrades on the Internet Computer.
 
 This solution sets up a basic framework for a Donation Transaction Explorer on the Internet Computer, allowing for both specific queries by DTI and public exploration of all donation records.
-
 
 # Bitcoin Donation & Tracking System
 
@@ -135,14 +144,14 @@ public func makeDonation(donation: Donation): async DTI {
     let caller = Principal.toText(Principal.caller());
     let dti = donations.size(); // Simply use index into donations Array as the DTI
     donations := Array.append<Donation>(donations, [donation]);
-    
+
     // Update the map for the caller's principal
     let existingDonations = switch (donationsByPrincipal.get(Principal.caller())) {
         case (null) { [] };
         case (?ds) { ds };
     };
     donationsByPrincipal.put(Principal.caller(), Array.append<DTI>(existingDonations, [dti]));
-    
+
     return dti;
 }
 

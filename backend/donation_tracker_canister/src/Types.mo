@@ -3,10 +3,10 @@ module Types {
     public type Satoshi = Nat64;
 
     public type DonationCategories = {
-        curriculumDesign: Satoshi;
-        teacherSupport: Satoshi;
-        schoolSupplies: Satoshi;
-        lunchAndSnacks: Satoshi;
+        curriculumDesign : Satoshi;
+        teacherSupport : Satoshi;
+        schoolSupplies : Satoshi;
+        lunchAndSnacks : Satoshi;
     };
 
     public type DonorType = {
@@ -17,23 +17,23 @@ module Types {
     public type PaymentTransactionId = Text;
 
     public type Donation = {
-        dti: DTI;
-        totalAmount: Satoshi;
-        allocation: DonationCategories;
-        timestamp: Nat64;
-        paymentTransactionId: PaymentTransactionId;
-        paymentType: PaymentType; // Assuming payment types are strings, you might want to define an enum if you have a fixed set of payment types
-        recipientId: RecipientId;
-        donor: DonorType;
-        personalNote: ?Text; // Optional field for personal note from donor to recipient
-        rewardsHaveBeenClaimed: Bool;
+        dti : DTI;
+        totalAmount : Satoshi;
+        allocation : DonationCategories;
+        timestamp : Nat64;
+        paymentTransactionId : PaymentTransactionId;
+        paymentType : PaymentType; // Assuming payment types are strings, you might want to define an enum if you have a fixed set of payment types
+        recipientId : RecipientId;
+        donor : DonorType;
+        personalNote : ?Text; // Optional field for personal note from donor to recipient
+        rewardsHaveBeenClaimed : Bool;
     };
 
     public type ApiError = {
         #Unauthorized;
         #InvalidId;
         #ZeroAddress;
-        #Other: Text;
+        #Other : Text;
     };
 
     public type Result<S, E> = {
@@ -42,48 +42,44 @@ module Types {
     };
 
     public type DtiRecord = {
-        dti: DTI;
+        dti : DTI;
     };
 
     public type DtiResult = Result<DtiRecord, ApiError>;
 
     public type DonationRecord = {
-        donation: Donation;
+        donation : Donation;
     };
 
     public type DonationResult = Result<?DonationRecord, ApiError>;
 
     public type DonationsRecord = {
-        donations: [Donation];
+        donations : [Donation];
     };
 
     public type DonationsResult = Result<DonationsRecord, ApiError>;
 
     type Filter = {
         // TODO: Define the exact filters
-        minAmount: ?Nat;
-        maxAmount: ?Nat;
-        startDate: ?Nat64;
-        endDate: ?Nat64;
+        minAmount : ?Nat;
+        maxAmount : ?Nat;
+        startDate : ?Nat64;
+        endDate : ?Nat64;
     };
 
     public type DonationFiltersRecord = {
-        filters: [Filter];
+        filters : [Filter];
     };
 
     public type RecipientOverview = {
-        id: Text;
-        name: Text;
-        thumbnail: Text; // URL or CID for the thumbnail image
+        id : Text;
+        name : Text;
+        thumbnail : Text; // URL or CID for the thumbnail image
     };
 
     public type RecipientFilter = {
-        include: Text; // "schools" | "studentsForSchool"
-        recipientIdForSchool: ?RecipientId; // "id" for a specific school or null
-    };
-
-    public type RecipientFiltersRecord = {
-        filters: [RecipientFilter];
+        include : Text; // "schools" | "studentsForSchool"
+        recipientIdForSchool : ?RecipientId; // "id" for a specific school or null
     };
 
     public type RecipientOverviewsRecord = {
@@ -92,20 +88,14 @@ module Types {
 
     public type RecipientsResult = Result<RecipientOverviewsRecord, ApiError>;
 
-    public type SchoolInfo = {
-        id: Text;
-        name: Text;
-        address: Text;
-        thumbnail: Text; // URL or CID for the thumbnail image
+    public type SchoolInfo = RecipientOverview and {
+        address : Text;
         // Add more school-specific fields as necessary
     };
 
-    public type StudentInfo = {
-        id: Text;
-        name: Text;
-        grade: Nat;
-        schoolId: Text;
-        thumbnail: Text; // URL or CID for the thumbnail image
+    public type StudentInfo = RecipientOverview and {
+        grade : Nat;
+        schoolId : Text;
         // Add more student-specific fields as necessary
     };
 
@@ -117,28 +107,28 @@ module Types {
     public type RecipientId = Text;
 
     public type RecipientIdRecord = {
-        recipientId: RecipientId;
+        recipientId : RecipientId;
     };
 
     public type RecipientRecord = {
-        recipient: Recipient;
+        recipient : Recipient;
     };
 
     public type RecipientResult = Result<?RecipientRecord, ApiError>;
 
     public type BitcoinTransaction = {
-        bitcoinTransactionId: PaymentTransactionId;
+        bitcoinTransactionId : PaymentTransactionId;
         //totalValue: Nat64; // Total value of the BTC transaction
         //valueDonated: Nat64; // How much of the total value has been donated
         // TODO: Add more fields as necessary, e.g., timestamp, confirmations, etc.
     };
 
     public type BitcoinTransactionIdRecord = {
-        bitcoinTransactionId: PaymentTransactionId;
+        bitcoinTransactionId : PaymentTransactionId;
     };
 
     public type BitcoinTransactionRecord = {
-        bitcoinTransaction: BitcoinTransaction;
+        bitcoinTransaction : BitcoinTransaction;
     };
 
     public type BitcoinTransactionResult = Result<BitcoinTransactionRecord, ApiError>;
@@ -149,28 +139,28 @@ module Types {
     };
 
     public type DonationAddress = {
-        paymentType: PaymentType;
-        address: Text;
+        paymentType : PaymentType;
+        address : Text;
     };
 
     public type PaymentTypeRecord = {
-        paymentType: PaymentType;
+        paymentType : PaymentType;
     };
 
     public type DonationAddressRecord = {
-        donationAddress: DonationAddress;
+        donationAddress : DonationAddress;
     };
 
     public type DonationAddressResult = Result<DonationAddressRecord, ApiError>;
 
     public type DonationAmount = {
-        paymentType: PaymentType;
-        amount: Nat64; // Use Nat64 assuming large numbers for cryptocurrency amounts, adjust based on your needs
+        paymentType : PaymentType;
+        amount : Nat64; // Use Nat64 assuming large numbers for cryptocurrency amounts, adjust based on your needs
     };
 
     public type DonationAmountRecord = {
-        donationAmount: DonationAmount;
+        donationAmount : DonationAmount;
     };
 
     public type DonationAmountResult = Result<DonationAmountRecord, ApiError>;
-}
+};

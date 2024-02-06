@@ -27,8 +27,8 @@ actor class DonationTracker() {
     // Map each principal to a list of donation indices (DTIs)
     private var donationsByPrincipal = HashMap.HashMap<Principal, Buffer.Buffer<DTI>>(0, Principal.equal, Principal.hash);
     //TODO: stable var donationsByPrincipalStable : [(Principal, Buffer.Buffer<DTI>)] = [];
-        // Alternative: use [DTI] instead of Buffer.Buffer<DTI>; less efficient but straightforward to make stable
-        // Or: stable Buffer implementation?
+    // Alternative: use [DTI] instead of Buffer.Buffer<DTI>; less efficient but straightforward to make stable
+    // Or: stable Buffer implementation?
 
     // Store recipients and map each recipientId to the corresponding Recipient record
     private var recipientsById = HashMap.HashMap<Types.RecipientId, Types.Recipient>(0, Text.equal, Text.hash);
@@ -68,7 +68,7 @@ actor class DonationTracker() {
 
     public shared (msg) func getDonationDetails(dtiRecord : Types.DtiRecord) : async Types.DonationResult {
         if (dtiRecord.dti < donations.size()) {
-            return #Ok(?{donation = donations.get(dtiRecord.dti)});
+            return #Ok(?{ donation = donations.get(dtiRecord.dti) });
         } else {
             return #Err(#InvalidId);
         };
@@ -99,10 +99,10 @@ actor class DonationTracker() {
         // };
     };
 
-    public query func listRecipients(filtersRecord : Types.RecipientFiltersRecord) : async Types.RecipientsResult {
+    public query func listRecipients(recipientFilter : Types.RecipientFilter) : async Types.RecipientsResult {
         // TODO: Mock implementation - replace with actual logic to fetch and filter recipients
 
-        let mockRecipients : [Types.RecipientOverview] = [
+        let mockRecipientsSchools : [Types.RecipientOverview] = [
             // Mock data - replace with actual recipient data
             {
                 id = "school1";
@@ -110,15 +110,29 @@ actor class DonationTracker() {
                 thumbnail = "thumbnail1.jpg";
             },
             {
+                id = "school2";
+                name = "School Two";
+                thumbnail = "thumbnail1.jpg";
+            },
+            // Add more mock recipients as needed
+        ];
+        let mockRecipientsStudents : [Types.RecipientOverview] = [
+            // Mock data - replace with actual recipient data
+            {
                 id = "student1";
                 name = "Student One";
                 thumbnail = "thumbnail2.jpg";
-            }
+            },
+            {
+                id = "student2";
+                name = "Student Two";
+                thumbnail = "thumbnail2.jpg";
+            },
             // Add more mock recipients as needed
         ];
 
         // Example filter application
-        let filteredRecipients = mockRecipients;
+        let filteredRecipients = mockRecipientsSchools;
         /* let filteredRecipients = switch (filtersRecord.filters.include) {
             case ("schools") {
                 // Return only schools
