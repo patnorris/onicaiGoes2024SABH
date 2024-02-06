@@ -13,7 +13,21 @@ dfx generate
 dfx deploy
 ```
 
+#### Test with pytest
 
+**Create a conda environment**
+
+```bash
+conda create --name 2024SABH python=3.10
+conda activate 2024SABH
+
+pip install -r requirements.txt
+```
+
+**Run tests of test/ folder**
+```bash
+pytest
+```
 
 # Candid Interface
 

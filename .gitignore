@@ -131,3 +131,10 @@ dist
 
 # dfx
 .dfx
+
+# python
+__pycache__/
+*.pyc
+
+# misc
+.vscode/launch.json
