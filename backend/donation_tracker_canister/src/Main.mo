@@ -22,7 +22,8 @@ actor class DonationTracker() {
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
-        get_balance : (address : Types.BitcoinAddress) -> async Satoshi;
+        get_balance : (address : Types.BitcoinAddress) -> async Types.Satoshi;
+        get_utxos : (address : Types.BitcoinAddress) -> async Types.GetUtxosResponse;
     };
 
     // -------------------------------------------------------------------------------
@@ -356,7 +357,6 @@ actor class DonationTracker() {
         switch (req.paymentType) {
             case (#BTC) {
                 try {
-                    // Assuming get_balance returns the balance as Nat64 for the specified payment type
                     let btcAddress = await donationCanister.get_p2pkh_address();
                     let balance : Satoshi = await donationCanister.get_balance(btcAddress);
                     return #Ok({
@@ -371,6 +371,20 @@ actor class DonationTracker() {
                 };
             };
             // Handle other payment types as they are added
+        };
+    };
+
+    // public query func getUTXOS() : async Types.GetUtxosResponse {
+    public func getUTXOS() : async Types.GetUtxosResponseResult {
+        try {
+            let btcAddress = await donationCanister.get_p2pkh_address();
+            let utxos : Types.GetUtxosResponse = await donationCanister.get_utxos(btcAddress);
+            return #Ok({
+                getUtxosResponse = utxos;
+            });
+        } catch (error : Error) {
+            // Handle errors, such as donation canister not responding
+            return #Err(#Other("Failed to retrieve utxos: "));
         };
     };
 
