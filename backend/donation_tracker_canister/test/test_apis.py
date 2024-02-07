@@ -45,7 +45,7 @@ def test__whoami_default(identity_default: dict[str, str], network: str) -> None
     assert response == expected_response
 
 
-def test__full_flow(identity_anonymous: dict[str, str], network: str) -> None:
+def test__initRecipients(identity_anonymous: dict[str, str], network: str) -> None:
     # Initialize the mock schools and students
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
@@ -56,7 +56,7 @@ def test__full_flow(identity_anonymous: dict[str, str], network: str) -> None:
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat } })"
+    expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat;} })"
     assert response == expected_response
 
 
@@ -72,7 +72,7 @@ def test__listRecipients_schools_all(
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "thumbnail1.jpg"; name = "School One";}; record { id = "school2"; thumbnail = "thumbnail1.jpg"; name = "School Two";};};} })'
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "url_to_thumbnail_1"; name = "Green Valley High";}; record { id = "school2"; thumbnail = "url_to_thumbnail_4"; name = "Sunnydale Elementary";};};} })'
     assert response == expected_response
 
 
@@ -83,12 +83,12 @@ def test__listRecipients_schools_filter(
         dfx_json_path=DFX_JSON_PATH,
         canister_name=CANISTER_NAME,
         canister_method="listRecipients",
-        canister_argument='( record {include = "students"; recipientIdForSchool = opt "school1"} )',
+        canister_argument='( record {include = "studentsForSchool"; recipientIdForSchool = opt "school1"} )',
         canister_input="idl",
         canister_output="idl",
         network=network,
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1"; thumbnail = "thumbnail2.jpg"; name = "Student One";}; record { id = "student2"; thumbnail = "thumbnail2.jpg"; name = "Student Two";};};} })'
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1School1"; thumbnail = "url_to_thumbnail_2"; name = "Alex Johnson";}; record { id = "student2School1"; thumbnail = "url_to_thumbnail_3"; name = "Jamie Smith";};};} })'
     assert response == expected_response

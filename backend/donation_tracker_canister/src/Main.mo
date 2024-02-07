@@ -103,7 +103,8 @@ actor class DonationTracker() {
             schoolId = "school2";
         };
 
-        // Initialize recipientsById HashMap
+        // (re)Initialize recipientsById HashMap
+        recipientsById := HashMap.HashMap<Types.RecipientId, Types.Recipient>(0, Text.equal, Text.hash);
         recipientsById.put("school1", school1);
         recipientsById.put("student1School1", student1School1);
         recipientsById.put("student2School1", student2School1);
@@ -111,7 +112,8 @@ actor class DonationTracker() {
         recipientsById.put("student1School2", student1School2);
         recipientsById.put("student2School2", student2School2);
 
-        // Initialize studentsBySchool HashMap
+        // (re)Initialize studentsBySchool HashMap
+        studentsBySchool := HashMap.HashMap<Types.RecipientId, [Types.RecipientId]>(0, Text.equal, Text.hash);
         studentsBySchool.put("school1", ["student1School1", "student2School1"]);
         studentsBySchool.put("school2", ["student1School2", "student2School2"]);
 
@@ -188,73 +190,44 @@ actor class DonationTracker() {
     };
 
     public query func listRecipients(recipientFilter : Types.RecipientFilter) : async Types.RecipientsResult {
-        // TODO: Mock implementation - replace with actual logic to fetch and filter recipients
 
-        let mockRecipientsSchools : [Types.RecipientOverview] = [
-            // Mock data - replace with actual recipient data
-            {
-                id = "school1";
-                name = "School One";
-                thumbnail = "thumbnail1.jpg";
-            },
-            {
-                id = "school2";
-                name = "School Two";
-                thumbnail = "thumbnail1.jpg";
-            },
-            // Add more mock recipients as needed
-        ];
-        let mockRecipientsStudentsForSchool1 : [Types.RecipientOverview] = [
-            // Mock data - replace with actual recipient data
-            {
-                id = "student1";
-                name = "Student One";
-                thumbnail = "thumbnail2.jpg";
-            },
-            {
-                id = "student2";
-                name = "Student Two";
-                thumbnail = "thumbnail2.jpg";
-            },
-            // Add more mock recipients as needed
-        ];
-
-        // Mocked application of the filter
-        let filteredRecipients : [Types.RecipientOverview] = switch (recipientFilter.include) {
-            case ("schools") {
-                // Return only schools
-                mockRecipientsSchools;
-            };
-            case ("students") {
-                mockRecipientsStudentsForSchool1;
-            };
-            case _ {
-                // Invalid filter
-                [];
+        var filteredRecipients : [Types.RecipientOverview] = [];
+        for ((key, value : Types.Recipient) in recipientsById.entries()) {
+            D.print("Key: " # key);
+            D.print(debug_show (value));
+            if (recipientFilter.include == "schools") {
+                switch (value) {
+                    case (#School(schoolInfo)) {
+                        let recipientOverview : Types.RecipientOverview = {
+                            id = schoolInfo.id;
+                            name = schoolInfo.name;
+                            thumbnail = schoolInfo.thumbnail;
+                        };
+                        filteredRecipients := Array.append<Types.RecipientOverview>(filteredRecipients, [recipientOverview]);
+                    };
+                    case (#Student(studentInfo)) {};
+                };
+            } else if (recipientFilter.include == "studentsForSchool") {
+                switch (value) {
+                    case (#School(schoolInfo)) {};
+                    case (#Student(studentInfo)) {
+                        switch (recipientFilter.recipientIdForSchool) {
+                            case (null) {};
+                            case (?RecipientId) {
+                                if (studentInfo.schoolId == RecipientId) {
+                                    let recipientOverview : Types.RecipientOverview = {
+                                        id = studentInfo.id;
+                                        name = studentInfo.name;
+                                        thumbnail = studentInfo.thumbnail;
+                                    };
+                                    filteredRecipients := Array.append<Types.RecipientOverview>(filteredRecipients, [recipientOverview]);
+                                };
+                            };
+                        };
+                    };
+                };
             };
         };
-
-        // Example filter application
-        // let filteredRecipients = mockRecipientsSchools;
-        /* let filteredRecipients = switch (filtersRecord.filters.include) {
-            case ("schools") {
-                // Return only schools
-                mockRecipients.filter(recipient -> recipient.id.startsWith("school"))
-            };
-            case ("studentsForSchool") {
-                // Return students for a specific school if recipientIdForSchool is not null
-                filtersRecord.filters.recipientIdForSchool == null ? [] :
-                mockRecipients.filter(recipient ->
-                    recipient.id.startsWith("student") and
-                    // Assuming a convention to relate students to schools by ID
-                    recipient.id.endsWith(filtersRecord.filters.recipientIdForSchool.unwrap())
-                )
-            };
-            case _ {
-                // Invalid filter
-                []
-            };
-        }; */
 
         if (filteredRecipients.size() > 0) {
             return #Ok({ recipients = filteredRecipients });
