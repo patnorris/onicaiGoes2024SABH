@@ -51,7 +51,7 @@ Ensure that all changes needed for Mainnet deployment have been made (e.g. defin
 
 Production Canisters:
 ```bash
-dfx deploy --network ic
+dfx deploy --network ic donation_frontend
 ```
 
 In case there are authentication issues, you could try this command
