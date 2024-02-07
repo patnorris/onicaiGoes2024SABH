@@ -68,6 +68,8 @@ actor class DonationTracker() {
 
     // Initialize recipients and their relationships
     public shared func initRecipients() : async Types.initRecipientsResult {
+        // TODO: secure endpoint
+
         // Define school and student recipients
         let school1 : Types.Recipient =
         #School {
@@ -191,20 +193,35 @@ actor class DonationTracker() {
 
         // On success, return the list of donations
         let donationsRecord = {
-            donations : [Donation] = [];
+            donations : [Donation] = Buffer.toArray(donations);
         };
         return #Ok(donationsRecord);
     };
 
     //TODO: input: Types.DonationFiltersRecord or empty record?
     public shared (msg) func getMyDonations(filtersRecord : Types.DonationFiltersRecord) : async Types.DonationsResult {
-        let caller = Principal.toText(msg.caller);
-        // TODO
-        return #Ok({ donations = [] });
-        // return switch (donationsByPrincipal.get(caller)) {
-        //     case (null) { [] };
-        //     case (?ds) { ds };
-        // };
+        // don't allow anonymous Principal
+        if (Principal.isAnonymous(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
+        let donationsByPrincipalLookup = donationsByPrincipal.get(msg.caller);
+        switch (donationsByPrincipalLookup) {
+            case (null) {
+                // No donations found
+                return #Ok({ donations = [] });
+            };
+            case (?dtiBuffer) {
+                // Donations found for user
+                let dtis : [DTI] = Buffer.toArray(dtiBuffer);
+                // Iterate over dtis, get donation for each dti
+                    // push to return array
+                let userDonations : Buffer.Buffer<Donation> = Buffer.Buffer<Donation>(dtiBuffer.capacity());
+                for (i : Nat in dtis.keys()) {
+                    userDonations.add(donations.get(dtis[i]));
+                };
+                return #Ok({ donations = Buffer.toArray(userDonations) });
+            };
+        };
     };
 
     public query func listRecipients(recipientFilter : Types.RecipientFilter) : async Types.RecipientsResult {
@@ -273,32 +290,23 @@ actor class DonationTracker() {
         return #Err(#Other("Recipient not found."));
     };
 
-    public query func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
-        // Example: Check against a mock list of known transaction IDs
-        let knownTransactions : [Types.BitcoinTransaction] = [
-            // Mock transactions
-            { bitcoinTransactionId = "txid1" },
-            { bitcoinTransactionId = "txid2" }
-            // Add more mock transactions as necessary
-        ];
+    public func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
+        // Query the Bitcoin canister for the total transaction value
+        let totalValue = await getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
 
-        // Attempt to find the transaction by ID
-        let transaction = Array.find<Types.BitcoinTransaction>(
-            knownTransactions,
-            func(t) : Bool {
-                t.bitcoinTransactionId == idRecord.bitcoinTransactionId;
-            },
-        );
+        // Check if the transaction exists and has a valid value
+        if (totalValue > 0) {
+            var valueDonated : Types.Satoshi = 0; // No need to calculate this here
 
-        switch (transaction) {
-            case (null) {
-                // Transaction not found
-                return #Err(#Other("Bitcoin transaction not found."));
-            };
-            case (?t) {
-                // Transaction found
-                return #Ok({ bitcoinTransaction = t });
-            };
+            return #Ok({
+                bitcoinTransaction = {
+                    bitcoinTransactionId = idRecord.bitcoinTransactionId;
+                    totalValue = totalValue;
+                    valueDonated = valueDonated;
+                };
+            });
+        } else {
+            return #Err(#Other("Bitcoin transaction not found or has no value."));
         };
     };
 
