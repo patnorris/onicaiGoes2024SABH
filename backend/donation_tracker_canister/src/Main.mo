@@ -22,6 +22,7 @@ actor class DonationTracker() {
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
+        get_balance : (address : Types.BitcoinAddress) -> async Satoshi;
     };
 
     // -------------------------------------------------------------------------------
@@ -350,12 +351,14 @@ actor class DonationTracker() {
         };
     };
 
-    public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
+    // public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
+    public func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
         switch (req.paymentType) {
             case (#BTC) {
                 try {
                     // Assuming get_balance returns the balance as Nat64 for the specified payment type
-                    let balance : Nat64 = 5; //await donationCanister.get_balance(#BTC);
+                    let btcAddress = await donationCanister.get_p2pkh_address();
+                    let balance : Satoshi = await donationCanister.get_balance(btcAddress);
                     return #Ok({
                         donationAmount = {
                             paymentType = #BTC;

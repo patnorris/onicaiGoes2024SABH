@@ -1,6 +1,18 @@
 module Types {
-    public type DTI = Nat;
+    //-------------------------------------------------------------------------
+    // Copied from donation_canister types
+    /// The type of Bitcoin network the dapp will be interacting with.
+    public type Network = {
+        #mainnet;
+        #testnet;
+        #regtest;
+    };
+
+    public type BitcoinAddress = Text;
     public type Satoshi = Nat64;
+
+    //-------------------------------------------------------------------------
+    public type DTI = Nat;
 
     public type DonationCategories = {
         curriculumDesign : Satoshi;
