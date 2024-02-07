@@ -8,7 +8,7 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
   <div style="background-color: #007bc2">
-    <img class="w-full p-32" src="/images/create-donation.svg" alt="Protocol intro graphic" />
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_donate.png" alt="Create Donation graphic" />
   </div>
   <!-- ... -->
   <div class="p-12 flex flex-col justify-center">
@@ -30,13 +30,13 @@
   </div>
 
   <div style="background-color: #fff3e9">
-    <img class="w-full p-32" src="/images/intro.svg" alt="Protocol intro graphic" />
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_explore.png" alt="Explore Donations graphic" />
   </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
   <div style="background-color: #ffce47">
-    <img class="w-full p-32" src="/images/my-donation.svg" alt="Protocol intro graphic" />
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_recipients.png" alt="Discover Recipients graphic" />
   </div>
   <!-- ... -->
   <div class="p-12 flex flex-col justify-center">

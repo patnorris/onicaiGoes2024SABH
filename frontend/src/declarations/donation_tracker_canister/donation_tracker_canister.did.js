@@ -109,6 +109,30 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationAmountRecord,
     'Err' : ApiError,
   });
+  const Page = IDL.Vec(IDL.Nat8);
+  const BlockHash = IDL.Vec(IDL.Nat8);
+  const OutPoint = IDL.Record({
+    'txid' : IDL.Vec(IDL.Nat8),
+    'vout' : IDL.Nat32,
+  });
+  const Utxo = IDL.Record({
+    'height' : IDL.Nat32,
+    'value' : Satoshi,
+    'outpoint' : OutPoint,
+  });
+  const GetUtxosResponse = IDL.Record({
+    'next_page' : IDL.Opt(Page),
+    'tip_height' : IDL.Nat32,
+    'tip_block_hash' : BlockHash,
+    'utxos' : IDL.Vec(Utxo),
+  });
+  const GetUtxosResponseRecord = IDL.Record({
+    'getUtxosResponse' : GetUtxosResponse,
+  });
+  const GetUtxosResponseResult = IDL.Variant({
+    'Ok' : GetUtxosResponseRecord,
+    'Err' : ApiError,
+  });
   const initRecipientsRecord = IDL.Record({
     'num_students' : IDL.Nat,
     'num_schools' : IDL.Nat,
@@ -138,18 +162,18 @@ export const idlFactory = ({ IDL }) => {
     'getBtcTransactionDetails' : IDL.Func(
         [BitcoinTransactionIdRecord],
         [BitcoinTransactionResult],
-        ['query'],
+        [],
       ),
     'getBtcTransactionStatus' : IDL.Func(
         [BitcoinTransactionIdRecord],
         [BitcoinTransactionResult],
-        ['query'],
+        [],
       ),
     'getDonationDetails' : IDL.Func([DtiRecord], [DonationResult], []),
     'getDonationWalletAddress' : IDL.Func(
         [PaymentTypeRecord],
         [DonationAddressResult],
-        ['query'],
+        [],
       ),
     'getDonations' : IDL.Func(
         [DonationFiltersRecord],
@@ -165,8 +189,9 @@ export const idlFactory = ({ IDL }) => {
     'getTotalDonationAmount' : IDL.Func(
         [PaymentTypeRecord],
         [DonationAmountResult],
-        ['query'],
+        [],
       ),
+    'getUTXOS' : IDL.Func([], [GetUtxosResponseResult], []),
     'initRecipients' : IDL.Func([], [initRecipientsResult], []),
     'listRecipients' : IDL.Func(
         [RecipientFilter],

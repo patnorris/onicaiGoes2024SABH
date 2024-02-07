@@ -21,7 +21,7 @@
 <nav class="bg-gray-800 border-gray-200 dark:bg-gray-900">
   <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
     <a href="#top" class="flex items-center">
-      <img src="/images/bitcoin-donation.svg" class="h-8 mr-3" alt="OIM Logo" />
+      <img src="/images/bitcoinDonationApp_logo_app.png" class="h-14 mr-14" alt="Logo" />
     </a>
     <div class="flex items-center">
       {#if !$store.isAuthed}

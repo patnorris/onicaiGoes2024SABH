@@ -8,6 +8,12 @@ type initRecipientsRecord =
    num_schools: nat;
    num_students: nat;
  };
+type Utxo = 
+ record {
+   height: nat32;
+   outpoint: OutPoint;
+   value: Satoshi;
+ };
 type StudentInfo = 
  record {
    grade: nat;
@@ -57,6 +63,25 @@ type Recipient =
 type PaymentTypeRecord = record {paymentType: PaymentType;};
 type PaymentType = variant {BTC;};
 type PaymentTransactionId = text;
+type Page = vec nat8;
+type OutPoint = 
+ record {
+   txid: blob;
+   vout: nat32;
+ };
+type GetUtxosResponseResult = 
+ variant {
+   Err: ApiError;
+   Ok: GetUtxosResponseRecord;
+ };
+type GetUtxosResponseRecord = record {getUtxosResponse: GetUtxosResponse;};
+type GetUtxosResponse = 
+ record {
+   next_page: opt Page;
+   tip_block_hash: BlockHash;
+   tip_height: nat32;
+   utxos: vec Utxo;
+ };
 type Filter = 
  record {
    endDate: opt nat64;
@@ -84,17 +109,16 @@ type DonationsRecord = record {donations: vec Donation;};
 type DonationTracker = 
  service {
    getBtcTransactionDetails: (BitcoinTransactionIdRecord) ->
-    (BitcoinTransactionResult) query;
+    (BitcoinTransactionResult);
    getBtcTransactionStatus: (BitcoinTransactionIdRecord) ->
-    (BitcoinTransactionResult) query;
+    (BitcoinTransactionResult);
    getDonationDetails: (DtiRecord) -> (DonationResult);
-   getDonationWalletAddress: (PaymentTypeRecord) ->
-    (DonationAddressResult) query;
+   getDonationWalletAddress: (PaymentTypeRecord) -> (DonationAddressResult);
    getDonations: (DonationFiltersRecord) -> (DonationsResult) query;
    getMyDonations: (DonationFiltersRecord) -> (DonationsResult);
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
-   getTotalDonationAmount: (PaymentTypeRecord) ->
-    (DonationAmountResult) query;
+   getTotalDonationAmount: (PaymentTypeRecord) -> (DonationAmountResult);
+   getUTXOS: () -> (GetUtxosResponseResult);
    initRecipients: () -> (initRecipientsResult);
    listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
@@ -150,6 +174,7 @@ type Donation =
    totalAmount: Satoshi;
  };
 type DTI = nat;
+type BlockHash = vec nat8;
 type BitcoinTransactionResult = 
  variant {
    Err: ApiError;

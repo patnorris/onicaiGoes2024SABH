@@ -1,4 +1,4 @@
-//import { donation_tracker_canister } from "canisters/donation_tracker_canister";
+import { donation_tracker_canister } from "canisters/donation_tracker_canister";
 
 export async function submitEmailSignUpForm(emailAddress, pageSubmittedFrom) {
   const input = {

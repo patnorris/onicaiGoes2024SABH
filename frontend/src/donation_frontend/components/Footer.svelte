@@ -12,7 +12,10 @@
 
 <footer class='py-12 items-center text-center bg-slate-100' style="background: #fff3e9;" id='about'>
   <div>
-    <p class="text-gray-500 mb-2 mt-12"><sup>*</sup>part of <a href='https://u4375-ryaaa-aaaai-acqsq-cai.icp0.io/' target='_blank' rel="noreferrer" class='underline '>Future Web Initiative</a> and hosted on <a href='https://internetcomputer.org/' target='_blank' rel="noreferrer" class='underline'>Internet Computer</a></p>
+    <p class="text-gray-500 mb-2 mt-12"><sup>*</sup>developed for 
+      <a href='https://summit.immersiveeducation.org/SouthAfrica/2024/hackathon.html' target='_blank' rel="noreferrer" class='underline '>2024 SOUTH AFRICAN BLOCKCHAIN Hackathon</a>
+      by <a href='https://knowledgefound.org/token.html' target='_blank' rel="noreferrer" class='underline '>Knowledge Token</a>
+      and hosted on <a href='https://internetcomputer.org/' target='_blank' rel="noreferrer" class='underline'>Internet Computer</a></p>
     <p class="text-4xl text-gray-700  mt-0 mb-12">Want to be the first to hear about updates?</p>
 
     <form on:submit={submitForm} class="email-signup-form mb-12">
@@ -29,7 +32,7 @@
   <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
     <div class="sm:flex sm:items-center sm:justify-between">
       <a href="#top" class="flex items-center mb-4 sm:mb-0">
-        <img src="/images/bitcoin-donation.svg" class="h-8 mr-3" alt="OIM logo" />
+        <img src="/images/bitcoinDonationApp_logo_app.svg" class="h-9 mr-8" alt="logo" />
       </a>
       <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
         <li>
