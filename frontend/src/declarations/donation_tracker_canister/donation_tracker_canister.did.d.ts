@@ -74,8 +74,9 @@ export interface DonationTracker {
     [PaymentTypeRecord],
     DonationAmountResult
   >,
-  'listRecipients' : ActorMethod<[RecipientFiltersRecord], RecipientsResult>,
+  'listRecipients' : ActorMethod<[RecipientFilter], RecipientsResult>,
   'makeDonation' : ActorMethod<[DonationRecord], DtiResult>,
+  'whoami' : ActorMethod<[], Principal>,
 }
 export interface DonationsRecord { 'donations' : Array<Donation> }
 export type DonationsResult = { 'Ok' : DonationsRecord } |
@@ -100,7 +101,6 @@ export interface RecipientFilter {
   'include' : string,
   'recipientIdForSchool' : [] | [RecipientId],
 }
-export interface RecipientFiltersRecord { 'filters' : Array<RecipientFilter> }
 export type RecipientId = string;
 export interface RecipientIdRecord { 'recipientId' : RecipientId }
 export interface RecipientOverview {

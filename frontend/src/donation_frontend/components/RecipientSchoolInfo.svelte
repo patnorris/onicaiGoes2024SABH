@@ -2,12 +2,12 @@
   export let schoolInfo;
 </script>
 
-<div>
+<div class="py-2 space-y-3 items-center text-center">
   <div>
     <div>
-      <p>{schoolInfo.name}</p>
+      <p class="font-semibold text-lg">{schoolInfo.name}</p>
       <p>{schoolInfo.address}</p>
-      <img alt="The student thumbnail" src={schoolInfo.thumbnail} />
+      <img alt="The school thumbnail" src={schoolInfo.thumbnail} />
     </div>
   </div>
 </div>

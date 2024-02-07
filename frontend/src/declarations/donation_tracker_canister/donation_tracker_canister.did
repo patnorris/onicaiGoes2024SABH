@@ -34,7 +34,6 @@ type RecipientOverview =
  };
 type RecipientIdRecord = record {recipientId: RecipientId;};
 type RecipientId = text;
-type RecipientFiltersRecord = record {filters: vec RecipientFilter;};
 type RecipientFilter = 
  record {
    include: text;
@@ -86,8 +85,9 @@ type DonationTracker =
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
    getTotalDonationAmount: (PaymentTypeRecord) ->
     (DonationAmountResult) query;
-   listRecipients: (RecipientFiltersRecord) -> (RecipientsResult) query;
+   listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
+   whoami: () -> (principal);
  };
 type DonationResult = 
  variant {

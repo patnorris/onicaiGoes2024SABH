@@ -6,6 +6,7 @@
     import NotFound from "../pages/NotFound.svelte";
     import RecipientSchoolInfo from "./RecipientSchoolInfo.svelte";
     import RecipientStudentInfo from "./RecipientStudentInfo.svelte";
+    import RecipientsList from "./RecipientsList.svelte";
 
     import { push } from "svelte-spa-router";
 
@@ -85,7 +86,7 @@
     onMount(loadRecipientDetails);
   </script>
 
-<section id="recipient-profile" class="py-7 space-y-3 items-center text-center bg-slate-100">
+<section id="recipient-profile" class="py-7 space-y-3 items-center text-center bg-slate-200">
   <h3 class="text-xl font-bold">Recipient Profile</h3>
 
   <div>
@@ -100,18 +101,21 @@
           {:else if recipientType === "Student"}
             <RecipientStudentInfo studentInfo={recipientInfo} />
           {/if}
-          <div>
+          <div class="py-3 space-y-3 items-center text-center">
             {#if embedded}
-                <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
-                {#if recipientProfileSelected}
-                    <p>You have currently selected this recipient for your donation.</p>
-                {:else}
-                    <p>This recipient is not selected for your donation currently.</p>
-                {/if}
+              <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
+              {#if recipientProfileSelected}
+                  <p>You have currently selected this recipient for your donation. Please continue on the Donate tab.</p>
+              {:else}
+                  <p>This recipient is not selected for your donation currently.</p>
+              {/if}
             {:else}
-                <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
+              <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
             {/if}
           </div>
+          {#if recipientType === "School"}
+            <RecipientsList embedded={true} recipientType={"StudentsForSchool"} schoolRecipientId={recipientId} />
+          {/if}
         </div>
     {/if}
   </div>  

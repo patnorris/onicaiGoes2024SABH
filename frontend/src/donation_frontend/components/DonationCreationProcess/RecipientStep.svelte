@@ -26,7 +26,7 @@
       {/if}
     {/key}
     <div class="mt-4">
-      <RecipientsList embedded={true}/>
+      <RecipientsList embedded={true} recipientType={"School"} />
     </div>
   </div>
 </section>

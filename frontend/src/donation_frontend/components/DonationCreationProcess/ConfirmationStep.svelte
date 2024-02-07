@@ -20,10 +20,11 @@
       validationErrors.push('Total donation must be greater than 0. Please adjust your donation on Donation.');
     };
 
-    // Validate categorySplit sums up to 100%
-    const totalPercent = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
-    if (totalPercent !== 100) {
-      validationErrors.push('The category split percentages must sum up to 100%. Please adjust your split on Donation.');
+    // Validate categorySplit sums up to total donation
+    const totalSum = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
+    console.log("DEBUG validateDonationDetails totalSum ", totalSum);
+    if (totalSum !== $currentDonationCreationObject.donation.totalDonation) {
+      validationErrors.push('The category split must sum up to your total donation. Please adjust your split on Donation.');
     };
   }
 

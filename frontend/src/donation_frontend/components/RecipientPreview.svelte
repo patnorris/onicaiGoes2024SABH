@@ -19,16 +19,16 @@
   };
 </script>
 
-<div class="responsive">
+<div class="items-center text-center space-y-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out">
   {#if loadRecipientProfile}
     <RecipientProfile recipientId={recipientPreview.id} embedded={embedded} />
   {:else}
     <div class="space space-y-1">
-      <div class="recipient-preview-content">
-        <p>{recipientPreview.name}</p>
-        <img alt="The recipient thumbnail" src={recipientPreview.thumbnail} />
+      <div class="flex items-center space-x-3">
+        <img class="w-16 h-16 rounded-full object-cover" alt="Recipient thumbnail" src={recipientPreview.thumbnail} />
+        <p class="font-semibold text-lg">{recipientPreview.name}</p>
       </div>
-      <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">View Profile</button>
+      <button on:click={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">View Profile</button>
     </div>
   {/if}
 </div>

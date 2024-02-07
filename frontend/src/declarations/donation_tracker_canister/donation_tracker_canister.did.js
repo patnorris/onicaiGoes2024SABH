@@ -113,9 +113,6 @@ export const idlFactory = ({ IDL }) => {
     'include' : IDL.Text,
     'recipientIdForSchool' : IDL.Opt(RecipientId),
   });
-  const RecipientFiltersRecord = IDL.Record({
-    'filters' : IDL.Vec(RecipientFilter),
-  });
   const RecipientOverview = IDL.Record({
     'id' : IDL.Text,
     'thumbnail' : IDL.Text,
@@ -163,11 +160,12 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'listRecipients' : IDL.Func(
-        [RecipientFiltersRecord],
+        [RecipientFilter],
         [RecipientsResult],
         ['query'],
       ),
     'makeDonation' : IDL.Func([DonationRecord], [DtiResult], []),
+    'whoami' : IDL.Func([], [IDL.Principal], []),
   });
   return DonationTracker;
 };
