@@ -5,6 +5,7 @@ import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Iter "mo:base/Iter";
+import Blob "mo:base/Blob";
 
 import Types "Types";
 import Utils "Utils";
@@ -301,22 +302,30 @@ actor class DonationTracker() {
         };
     };
 
-    // Assume this is a function that can query the Bitcoin canister or an external API to get the transaction value
-    private func getTransactionValueFromCanister(bitcoinTransactionId : Text) : Nat64 {
-        // Mock implementation - replace with actual call to Bitcoin canister
-        // For example: return await BitcoinCanister.getTransactionValue(bitcoinTransactionId);
-        return 10_000; // Mock value in satoshis
-    };
-
-    public query func getBtcTransactionDetails(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
-        // First, determine the total value donated from this transaction
-        let valueDonated = ""; // Calculate this based on your internal records
-
-        // Then, query the Bitcoin canister or external service for the total transaction value
-        let totalValue = getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
+    public func getBtcTransactionDetails(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
+        // Query the Bitcoin canister for the total transaction value
+        let totalValue = await getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
 
         // Check if the transaction exists and has a valid value
         if (totalValue > 0) {
+            // Determine the total value already donated from this transaction
+            var valueDonated : Types.Satoshi = 0; // Calculate this based on your internal records
+            let donationsLookup = donationsByTxId.get(idRecord.bitcoinTransactionId);
+            switch (donationsLookup) {
+                case (null) {
+                    // No transactions found
+                    valueDonated := 0;
+                };
+                case (?donations) {
+                    // Donations found for transaction
+                    // Iterate over donations, access field totalAmount on each donation
+                        // add up all donations' totalAmount
+                    for (i : Nat in donations.keys()) {
+                        valueDonated += donations[i].totalAmount;
+                    };
+                };
+            };
+
             return #Ok({
                 bitcoinTransaction = {
                     bitcoinTransactionId = idRecord.bitcoinTransactionId;
@@ -385,6 +394,34 @@ actor class DonationTracker() {
         } catch (error : Error) {
             // Handle errors, such as donation canister not responding
             return #Err(#Other("Failed to retrieve utxos: "));
+        };
+    };
+
+    // Query the Bitcoin canister to get the transaction value
+    private func getTransactionValueFromCanister(bitcoinTransactionId : Text) : async Nat64 {
+        let getUTXOSResponse : Types.GetUtxosResponseResult = await getUTXOS();
+        switch (getUTXOSResponse) {
+            case (#Err(error)) {
+                // No transactions found
+                return 0;
+            };
+            case (#Ok(getUTXOSResponseObject)) {
+                // Transactions found
+                 let utxosResponse : Types.GetUtxosResponse = getUTXOSResponseObject.getUtxosResponse;
+                 let utxos : [Types.Utxo] = utxosResponse.utxos;
+                 // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
+                    // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
+                    // if they match, return field value on utxo
+                 for (i : Nat in utxos.keys()) {
+                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    if (txidText == bitcoinTransactionId) {
+                        // If they match, return the value field on utxo
+                        return utxos[i].value;
+                    };
+                };
+                // If no matching transaction is found, return 0
+                return 0;
+            };
         };
     };
 
