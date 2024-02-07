@@ -4,6 +4,8 @@ export const idlFactory = ({ IDL }) => {
     'bitcoinTransactionId' : PaymentTransactionId,
   });
   const BitcoinTransaction = IDL.Record({
+    'totalValue' : IDL.Nat64,
+    'valueDonated' : IDL.Nat64,
     'bitcoinTransactionId' : PaymentTransactionId,
   });
   const BitcoinTransactionRecord = IDL.Record({
@@ -75,6 +77,11 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationsRecord,
     'Err' : ApiError,
   });
+  const EmailSubscriber = IDL.Record({
+    'subscribedAt' : IDL.Nat64,
+    'emailAddress' : IDL.Text,
+    'pageSubmittedFrom' : IDL.Text,
+  });
   const RecipientIdRecord = IDL.Record({ 'recipientId' : RecipientId });
   const SchoolInfo = IDL.Record({
     'id' : IDL.Text,
@@ -107,6 +114,11 @@ export const idlFactory = ({ IDL }) => {
   });
   const DonationAmountResult = IDL.Variant({
     'Ok' : DonationAmountRecord,
+    'Err' : ApiError,
+  });
+  const TxidstextRecord = IDL.Record({ 'txidstext' : IDL.Vec(IDL.Text) });
+  const TxidstextResult = IDL.Variant({
+    'Ok' : TxidstextRecord,
     'Err' : ApiError,
   });
   const Page = IDL.Vec(IDL.Nat8);
@@ -158,7 +170,12 @@ export const idlFactory = ({ IDL }) => {
     'Err' : ApiError,
   });
   const DtiResult = IDL.Variant({ 'Ok' : DtiRecord, 'Err' : ApiError });
+  const SignUpFormInput = IDL.Record({
+    'emailAddress' : IDL.Text,
+    'pageSubmittedFrom' : IDL.Text,
+  });
   const DonationTracker = IDL.Service({
+    'deleteEmailSubscriber' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getBtcTransactionDetails' : IDL.Func(
         [BitcoinTransactionIdRecord],
         [BitcoinTransactionResult],
@@ -180,6 +197,11 @@ export const idlFactory = ({ IDL }) => {
         [DonationsResult],
         ['query'],
       ),
+    'getEmailSubscribers' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, EmailSubscriber))],
+        [],
+      ),
     'getMyDonations' : IDL.Func([DonationFiltersRecord], [DonationsResult], []),
     'getRecipient' : IDL.Func(
         [RecipientIdRecord],
@@ -191,6 +213,7 @@ export const idlFactory = ({ IDL }) => {
         [DonationAmountResult],
         [],
       ),
+    'getTxidstext' : IDL.Func([], [TxidstextResult], []),
     'getUTXOS' : IDL.Func([], [GetUtxosResponseResult], []),
     'initRecipients' : IDL.Func([], [initRecipientsResult], []),
     'listRecipients' : IDL.Func(
@@ -199,6 +222,7 @@ export const idlFactory = ({ IDL }) => {
         ['query'],
       ),
     'makeDonation' : IDL.Func([DonationRecord], [DtiResult], []),
+    'submitSignUpForm' : IDL.Func([SignUpFormInput], [IDL.Text], []),
     'whoami' : IDL.Func([], [IDL.Principal], []),
   });
   return DonationTracker;

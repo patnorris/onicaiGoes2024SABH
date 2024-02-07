@@ -1,13 +1,18 @@
 <script lang="ts">
   import { store, currentDonationCreationObject } from "../../store";
+  import spinner from "../../assets/loading.gif";
 
 // Manage status of check to show buttons and subtexts appropriately
+  let isLoading = false;
   let bitcoinTransactionCheckError = false;
   let bitcoinTransactionLoaded = false;
 
   // Function to check the donation status
   const checkDonationStatus = async () => {
     console.log("Checking status for: ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId);
+    isLoading = true;
+    bitcoinTransactionCheckError = false;
+    bitcoinTransactionLoaded = false;
     // Verify the Bitcoin transaction by its ID
     // first check basic validity 
 
@@ -32,11 +37,12 @@
       $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject = transactionCheckResponse.Ok.bitcoinTransaction;
       bitcoinTransactionLoaded = true;
     };
+    isLoading = false;
   };
 
 </script>
 
-<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
+<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 2: Check Bitcoin Transaction</h1>	
@@ -47,12 +53,17 @@
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkDonationStatus}>
         Check Now
       </button>
+      {#if isLoading}
+        <div class="items-center">
+          <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
+        </div>
+      {/if}
     </div>
     {#if bitcoinTransactionCheckError}
       <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
     {:else if bitcoinTransactionLoaded}
       <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
-      <p id='bitcoinTransactionCheckSubtext'>There is {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.value - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated} transaction value left to donate.</p>
+      <p id='bitcoinTransactionCheckSubtext'>There is {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated} transaction value left to donate.</p>
       <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
     {/if}
   </div>

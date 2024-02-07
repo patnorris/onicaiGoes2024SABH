@@ -5,8 +5,7 @@ export async function submitEmailSignUpForm(emailAddress, pageSubmittedFrom) {
     emailAddress: emailAddress,
     pageSubmittedFrom: pageSubmittedFrom,
   };
-  //let result = await donation_tracker_canister.submitSignUpForm(input);
-  let result = null;
+  let result = await donation_tracker_canister.submitSignUpForm(input);
   return result;
 }
 

@@ -9,6 +9,8 @@
     
   import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
 
+  import spinner from "../assets/loading.gif";
+
   let hasLoadedDonations = false;
   let loadedDonations : [Donation] = [] as unknown as [Donation];
   let loadingInProgress = true;
@@ -49,6 +51,7 @@
   <h3 class="text-xl font-bold">Donations</h3>
   {#if loadingInProgress}
     <p id='donationsSubtext'>Loading Donations For You...</p>
+    <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
   {:else}
     {#if hasLoadedDonations}
       <DonationsList donations={loadedDonations} />

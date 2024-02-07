@@ -42,7 +42,7 @@
     {/if}
     {#if loading}
       <p id='searchingDonationSubtext'>Searching the Donation record for you...</p>
-      <img class="h-12 mx-auto" src={spinner} alt="loading animation" />
+      <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {/if}
   </section>
 

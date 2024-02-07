@@ -14,6 +14,12 @@ type Utxo =
    outpoint: OutPoint;
    value: Satoshi;
  };
+type TxidstextResult = 
+ variant {
+   Err: ApiError;
+   Ok: TxidstextRecord;
+ };
+type TxidstextRecord = record {txidstext: vec text;};
 type StudentInfo = 
  record {
    grade: nat;
@@ -21,6 +27,11 @@ type StudentInfo =
    name: text;
    schoolId: text;
    thumbnail: text;
+ };
+type SignUpFormInput = 
+ record {
+   emailAddress: text;
+   pageSubmittedFrom: text;
  };
 type SchoolInfo = 
  record {
@@ -89,6 +100,12 @@ type Filter =
    minAmount: opt nat;
    startDate: opt nat64;
  };
+type EmailSubscriber = 
+ record {
+   emailAddress: text;
+   pageSubmittedFrom: text;
+   subscribedAt: nat64;
+ };
 type DtiResult = 
  variant {
    Err: ApiError;
@@ -108,6 +125,7 @@ type DonationsResult =
 type DonationsRecord = record {donations: vec Donation;};
 type DonationTracker = 
  service {
+   deleteEmailSubscriber: (text) -> (bool);
    getBtcTransactionDetails: (BitcoinTransactionIdRecord) ->
     (BitcoinTransactionResult);
    getBtcTransactionStatus: (BitcoinTransactionIdRecord) ->
@@ -115,13 +133,19 @@ type DonationTracker =
    getDonationDetails: (DtiRecord) -> (DonationResult);
    getDonationWalletAddress: (PaymentTypeRecord) -> (DonationAddressResult);
    getDonations: (DonationFiltersRecord) -> (DonationsResult) query;
+   getEmailSubscribers: () -> (vec record {
+                                     text;
+                                     EmailSubscriber;
+                                   });
    getMyDonations: (DonationFiltersRecord) -> (DonationsResult);
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
    getTotalDonationAmount: (PaymentTypeRecord) -> (DonationAmountResult);
+   getTxidstext: () -> (TxidstextResult);
    getUTXOS: () -> (GetUtxosResponseResult);
    initRecipients: () -> (initRecipientsResult);
    listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
+   submitSignUpForm: (SignUpFormInput) -> (text);
    whoami: () -> (principal);
  };
 type DonationResult = 
@@ -185,8 +209,12 @@ type BitcoinTransactionRecord = record {
 type BitcoinTransactionIdRecord = record {
                                     bitcoinTransactionId:
                                      PaymentTransactionId;};
-type BitcoinTransaction = record {bitcoinTransactionId: PaymentTransactionId;
-                          };
+type BitcoinTransaction = 
+ record {
+   bitcoinTransactionId: PaymentTransactionId;
+   totalValue: nat64;
+   valueDonated: nat64;
+ };
 type ApiError = 
  variant {
    InvalidId;

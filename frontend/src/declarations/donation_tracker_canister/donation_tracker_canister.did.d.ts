@@ -6,6 +6,8 @@ export type ApiError = { 'InvalidId' : null } |
   { 'Unauthorized' : null } |
   { 'Other' : string };
 export interface BitcoinTransaction {
+  'totalValue' : bigint,
+  'valueDonated' : bigint,
   'bitcoinTransactionId' : PaymentTransactionId,
 }
 export interface BitcoinTransactionIdRecord {
@@ -55,6 +57,7 @@ export interface DonationRecord { 'donation' : Donation }
 export type DonationResult = { 'Ok' : [] | [DonationRecord] } |
   { 'Err' : ApiError };
 export interface DonationTracker {
+  'deleteEmailSubscriber' : ActorMethod<[string], boolean>,
   'getBtcTransactionDetails' : ActorMethod<
     [BitcoinTransactionIdRecord],
     BitcoinTransactionResult
@@ -69,16 +72,19 @@ export interface DonationTracker {
     DonationAddressResult
   >,
   'getDonations' : ActorMethod<[DonationFiltersRecord], DonationsResult>,
+  'getEmailSubscribers' : ActorMethod<[], Array<[string, EmailSubscriber]>>,
   'getMyDonations' : ActorMethod<[DonationFiltersRecord], DonationsResult>,
   'getRecipient' : ActorMethod<[RecipientIdRecord], RecipientResult>,
   'getTotalDonationAmount' : ActorMethod<
     [PaymentTypeRecord],
     DonationAmountResult
   >,
+  'getTxidstext' : ActorMethod<[], TxidstextResult>,
   'getUTXOS' : ActorMethod<[], GetUtxosResponseResult>,
   'initRecipients' : ActorMethod<[], initRecipientsResult>,
   'listRecipients' : ActorMethod<[RecipientFilter], RecipientsResult>,
   'makeDonation' : ActorMethod<[DonationRecord], DtiResult>,
+  'submitSignUpForm' : ActorMethod<[SignUpFormInput], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
 export interface DonationsRecord { 'donations' : Array<Donation> }
@@ -89,6 +95,11 @@ export type DonorType = { 'Anonymous' : null } |
 export interface DtiRecord { 'dti' : DTI }
 export type DtiResult = { 'Ok' : DtiRecord } |
   { 'Err' : ApiError };
+export interface EmailSubscriber {
+  'subscribedAt' : bigint,
+  'emailAddress' : string,
+  'pageSubmittedFrom' : string,
+}
 export interface Filter {
   'maxAmount' : [] | [bigint],
   'endDate' : [] | [bigint],
@@ -139,6 +150,10 @@ export interface SchoolInfo {
   'name' : string,
   'address' : string,
 }
+export interface SignUpFormInput {
+  'emailAddress' : string,
+  'pageSubmittedFrom' : string,
+}
 export interface StudentInfo {
   'id' : string,
   'thumbnail' : string,
@@ -146,6 +161,9 @@ export interface StudentInfo {
   'schoolId' : string,
   'grade' : bigint,
 }
+export interface TxidstextRecord { 'txidstext' : Array<string> }
+export type TxidstextResult = { 'Ok' : TxidstextRecord } |
+  { 'Err' : ApiError };
 export interface Utxo {
   'height' : number,
   'value' : Satoshi,

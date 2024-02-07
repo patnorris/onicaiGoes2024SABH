@@ -45,22 +45,27 @@
         // Error: Err wraps more info (including if not found)
         // Result<{dti : DTI}, ApiError>;
 
+    const totalAmountConverted = BigInt($currentDonationCreationObject.donation.totalDonation);
+    console.log('DEBUG totalAmountConverted ', totalAmountConverted);
+
     const finalDonation : Donation = {
-        totalAmount: BigInt($currentDonationCreationObject.donation.totalDonation),
-        allocation: $currentDonationCreationObject.donation.categorySplit,
-        timestamp: BigInt(now()),
-        dti: 0n,
-        rewardsHaveBeenClaimed: false,
-        paymentTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
-        paymentType: {
-          BTC: null
-        },
-        personalNote: [$currentDonationCreationObject.donation.personalNote],
-        donor: {
-          Anonymous: null
-        },
-        recipientId: $currentDonationCreationObject.recipient.recipientId
+      totalAmount: totalAmountConverted,
+      allocation: $currentDonationCreationObject.donation.categorySplit,
+      paymentTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
+      paymentType: {
+        BTC: null
+      },
+      personalNote: [$currentDonationCreationObject.donation.personalNote],
+      recipientId: $currentDonationCreationObject.recipient.recipientId,
+      // The following fields will be updated by the backend
+      timestamp: 0n,
+      dti: 0n,
+      rewardsHaveBeenClaimed: false,
+      donor: {
+        Anonymous: null
+      },
     };
+    console.log('DEBUG finalDonation ', finalDonation);
     const makeDonationInput = {
       donation: finalDonation
     };
@@ -81,7 +86,7 @@
 
 </script>
 
-<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
+<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 5: Confirm Donation</h1>
@@ -98,7 +103,8 @@
         <!-- Display donation details -->
         <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
         <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientInfo?.name}</p>
-        <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType}</p>
+        <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType === "BTC" ? "Satoshi" : ""}</p>
+        <p>Payment Type: {$currentDonationCreationObject.donation.paymentType}</p>
         <p>Category Split:</p>
         <ul>
           {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}

@@ -11,6 +11,8 @@
     import { push } from "svelte-spa-router";
 
     import type { RecipientResult, Recipient, SchoolInfo, StudentInfo } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+
+    import spinner from "../assets/loading.gif";
   
   // This is needed for URL params
     export let recipientId;
@@ -92,6 +94,7 @@
   <div>
     {#if loadingInProgress}
       <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
+      <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {:else if recipientLoadingError}
       <NotFound />
     {:else if recipientLoaded}

@@ -65,7 +65,11 @@ const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicati
 export let currentDonationCreationObject = writable({
   bitcoinTransaction: {
     bitcoinTransactionId: '',
-    bitcoinTransactionObject: null,
+    bitcoinTransactionObject: null, /* e.g. {
+      bitcoinTransactionId: "4f87979ffb1a60a0dfbf07762d10840fc6ad8f1237b87df201d99f52ffab015a",
+      totalValue: 74278n,
+      valueDonated: 0n,
+    }, */
     valueLeftToDonate: 0.0,
   },
   recipient: {

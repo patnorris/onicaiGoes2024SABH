@@ -10,6 +10,8 @@
   import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
   import DonationRecord from "../components/DonationRecord.svelte";
 
+  import spinner from "../assets/loading.gif";
+
 // This is needed for URL params
   export let params;
 
@@ -67,6 +69,7 @@
   <div>
     {#if loadingInProgress}
       <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
+      <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {:else if donationLoadingError}
       <p>Make sure the Donation Transaction Id is valid (it's a number)</p>
       <NotFound />

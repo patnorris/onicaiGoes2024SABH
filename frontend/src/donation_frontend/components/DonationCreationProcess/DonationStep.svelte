@@ -33,9 +33,14 @@
   let isValidSplit = true;
 
   const calculateAvailableBTC = async () => {
-    if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.value && $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated) {
-      availableBTC = $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.value - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated;
+    console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
+    console.log("DEBUG calculateAvailableBTC totalValue ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue);
+    console.log("DEBUG calculateAvailableBTC valueDonated ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated);
+    if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
+      availableBTC = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
+      console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
     };
+    $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableBTC;
   };
 
   onMount(calculateAvailableBTC);
@@ -118,7 +123,7 @@
 
 </script>
 
-<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
+<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 4: Specify Donation Details</h1>	
