@@ -6,6 +6,9 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Iter "mo:base/Iter";
 import Blob "mo:base/Blob";
+import Nat64 "mo:base/Nat64";
+import Time "mo:base/Time";
+import Int "mo:base/Int";
 
 import Types "Types";
 import Utils "Utils";
@@ -160,20 +163,48 @@ actor class DonationTracker() {
     };
 
     public shared (msg) func makeDonation(donationRecord : Types.DonationRecord) : async Types.DtiResult {
-        let caller = Principal.toText(msg.caller);
-        let dti = donations.size(); // Simply use index into donations Array as the DTI
+        let donationInput = donationRecord.donation;
+        // Potential TODO: checks on inputs
 
-        // TODO
-        // donations := Array.append<Donation>(donations, [donation]);
+        let newDti = donations.size(); // Simply use index into donations Array as the DTI
+        var newDonor : Types.DonorType = #Anonymous;
+        if (Principal.isAnonymous(msg.caller)) {
+            newDonor := #Anonymous;
+        } else {
+            newDonor := #Principal(msg.caller);
+        };
+        var newDonation : Donation = {
+            dti : DTI = newDti;
+            totalAmount : Satoshi = donationInput.totalAmount;
+            allocation : DonationCategories = donationInput.allocation;
+            timestamp : Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+            paymentTransactionId : Types.PaymentTransactionId = donationInput.paymentTransactionId;
+            paymentType : Types.PaymentType = donationInput.paymentType; // Assuming payment types are strings, you might want to define an enum if you have a fixed set of payment types
+            recipientId : Types.RecipientId = donationInput.recipientId;
+            donor : Types.DonorType = newDonor;
+            personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
+            rewardsHaveBeenClaimed : Bool = false;
+        };
+        
+        let newDonationResult = donations.add(newDonation);
 
-        // // Update the map for the caller's principal
-        // let existingDonations = switch (donationsByPrincipal.get(Principal.caller())) {
-        //     case (null) { [] };
-        //     case (?ds) { ds };
-        // };
-        // donationsByPrincipal.put(Principal.caller(), Array.append<DTI>(existingDonations, [dti]));
+        // Update the map for the caller's principal
+        if (Principal.isAnonymous(msg.caller)) { } else {
+            let existingDonations = switch (donationsByPrincipal.get(msg.caller)) {
+                case (null) { Buffer.Buffer<DTI>(0) };
+                case (?ds) { ds };
+            };
+            let addDonationResult = existingDonations.add(newDti);
+            donationsByPrincipal.put(msg.caller, existingDonations);
+        };
 
-        return #Ok({ dti });
+        let associatedDonations = switch (donationsByTxId.get(donationInput.paymentTransactionId)) {
+            case (null) { [] };
+            case (?ds) { ds };
+        };
+        donationsByTxId.put(donationInput.paymentTransactionId, Array.append<Donation>(associatedDonations, [newDonation]));
+
+        return #Ok({ dti = newDti });
     };
 
     public shared (msg) func getDonationDetails(dtiRecord : Types.DtiRecord) : async Types.DonationResult {
