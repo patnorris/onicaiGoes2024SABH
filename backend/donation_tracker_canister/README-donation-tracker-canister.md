@@ -20,6 +20,9 @@ Then go into donation_tracker_canister folder, and deploy the donation_tracker_c
 ```bash
 dfx generate
 dfx deploy
+
+# Initialize the mock schools & students (the recipients)
+dfx canister call donation_tracker_canister initRecipients
 ```
 
 #### Test with pytest
