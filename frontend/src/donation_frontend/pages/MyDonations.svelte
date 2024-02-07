@@ -6,13 +6,17 @@
   import Footer from "../components/Footer.svelte";
   import DonationsList from "../components/DonationsList.svelte";
 
+  import spinner from "../assets/loading.gif";
+
   import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
 
+  let isLoading = false;
   let hasLoadedDonations = false;
   let loadedUserDonations : [Donation] = [] as unknown as [Donation];
   let donationsLoadingError = false;
 
   const loadUserDonations = async () => {
+    isLoading = true;
     if($store.isAuthed) {
       // Backend Canister Integration
         // Parameters: empty record
@@ -46,6 +50,7 @@
         };
       };
     };
+    isLoading = false;
   };
 
   onMount(loadUserDonations);
@@ -60,7 +65,9 @@
   {:else}
     <p id='donationsSubtext'>Let's see which Donations you have made...</p>
     {#if hasLoadedDonations}
-      <DonationsList donations={loadedUserDonations} />
+      <DonationsList donations={loadedUserDonations} newestToOldest={true} />
+    {:else if isLoading}
+      <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {:else}
       <p hidden>{loadUserDonations()}</p>
     {/if}

@@ -19,7 +19,18 @@
     <div>
       <p>Total Amount: {donation.totalAmount} {Object.keys(donation.paymentType)[0] === "BTC" ? "Satoshi" : ""}</p>
       <p>Payment Type: {Object.keys(donation.paymentType)[0]}</p>
-      <p>Payment Transaction Id: {donation.paymentTransactionId}</p>     
+      {#if Object.keys(donation.paymentType)[0] === "BTC"}
+        <p>Payment Transaction Id: 
+          <a href={`https://blockstream.info/testnet/tx/${donation.paymentTransactionId}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class='underline'>
+            {donation.paymentTransactionId}
+          </a>
+        </p>
+      {:else}
+        <p>Payment Transaction Id: {donation.paymentTransactionId}</p>
+      {/if}
       <p>Date: {new Date(Number(donation.timestamp) / 1000000)}</p>
       <p>Donor: {donorToDisplay}</p>
       <p>Allocation: </p> 

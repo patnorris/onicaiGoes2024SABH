@@ -54,7 +54,7 @@
     <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
   {:else}
     {#if hasLoadedDonations}
-      <DonationsList donations={loadedDonations} />
+      <DonationsList donations={loadedDonations} newestToOldest={true} />
     {/if}
   {/if}
 </section>

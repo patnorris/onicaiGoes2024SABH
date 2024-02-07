@@ -19,7 +19,6 @@
     {#key recipientInfo}
       {#if recipientInfo}
         <p id='currentRecipientSubtext'>You have currently selected this recipient:</p>
-        <!-- <p id='currentRecipientObjectSubtext'>TODO: {$currentDonationCreationObject.recipient.recipientObject}</p> -->
         <RecipientPreview recipientPreview={recipientInfo} embedded={true}/>
       {:else}
         <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>

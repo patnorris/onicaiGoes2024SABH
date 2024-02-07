@@ -4,7 +4,7 @@
   import Topnav from "../components/Topnav.svelte";
   import Footer from "../components/Footer.svelte";
 
-  import spinner from "../assets/loading.gif"; // TODO: load other assets (e.g. html pages) similarly (see https://vitejs.dev/guide/assets.html: Referenced assets are included as part of the build assets graph, will get hashed file names, and can be processed by plugins for optimization)
+  import spinner from "../assets/loading.gif"; // load other assets (e.g. html pages) similarly (see https://vitejs.dev/guide/assets.html: Referenced assets are included as part of the build assets graph, will get hashed file names, and can be processed by plugins for optimization)
 
   let loading = false;
   let dtiToSearchFor = "";
