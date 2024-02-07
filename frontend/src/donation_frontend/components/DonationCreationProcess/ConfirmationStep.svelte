@@ -1,10 +1,10 @@
 <script lang="ts">
     import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
     import { store, currentDonationCreationObject } from "../../store";
-    import { now } from "svelte/internal";
     import { push } from "svelte-spa-router";
 
   let validationErrors = [];
+  let confirmNewTotal = false;
 
   // Function to validate the donation details
   function validateDonationDetails() {
@@ -24,7 +24,8 @@
     const totalSum = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
     console.log("DEBUG validateDonationDetails totalSum ", totalSum);
     if (totalSum !== $currentDonationCreationObject.donation.totalDonation) {
-      validationErrors.push('The category split must sum up to your total donation. Please adjust your split on Donation.');
+      $currentDonationCreationObject.donation.totalDonation = totalSum;
+      confirmNewTotal = true;
     };
   }
 
@@ -112,6 +113,9 @@
           {/each}
         </ul>
         <!-- Conditional rendering based on validationErrors -->
+        {#if confirmNewTotal}
+          <p class="mt-4">The category split did not sum up to your total donation. We thus corrected the total. Please adjust if needed.</p>
+        {/if}
         {#if validationErrors.length}
           <p class="mt-4">Please correct the following details:</p>
           <ul class="text-red-500">
