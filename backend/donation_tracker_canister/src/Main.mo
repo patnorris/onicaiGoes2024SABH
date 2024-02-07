@@ -451,7 +451,7 @@ actor class DonationTracker() {
                 // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
                 // pass txid to Utils.bytesToText and store it in an array
                 for (i : Nat in utxos.keys()) {
-                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    let txidText = Utils.btcTxIdToText(utxos[i].outpoint.txid);
                     txids.add(txidText);
                 };
                 // Return the list of txids in text format
