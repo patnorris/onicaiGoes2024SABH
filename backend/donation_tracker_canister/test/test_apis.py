@@ -70,5 +70,5 @@ def test__listRecipients_schools_filter(identity_anonymous: dict[str, str], netw
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "thumbnail1.jpg"; name = "School One";}; record { id = "student1"; thumbnail = "thumbnail2.jpg"; name = "Student One";};};} })'
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1"; thumbnail = "thumbnail2.jpg"; name = "Student One";}; record { id = "student2"; thumbnail = "thumbnail2.jpg"; name = "Student Two";};};} })'
     assert response == expected_response

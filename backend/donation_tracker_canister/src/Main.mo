@@ -116,7 +116,7 @@ actor class DonationTracker() {
             },
             // Add more mock recipients as needed
         ];
-        let mockRecipientsStudents : [Types.RecipientOverview] = [
+        let mockRecipientsStudentsForSchool1 : [Types.RecipientOverview] = [
             // Mock data - replace with actual recipient data
             {
                 id = "student1";
@@ -131,8 +131,23 @@ actor class DonationTracker() {
             // Add more mock recipients as needed
         ];
 
+        // Mocked application of the filter
+        let filteredRecipients : [Types.RecipientOverview] = switch (recipientFilter.include) {
+            case ("schools") {
+                // Return only schools
+                mockRecipientsSchools;
+            };
+            case ("students") {
+                mockRecipientsStudentsForSchool1;
+            };
+            case _ {
+                // Invalid filter
+                [];
+            };
+        };
+
         // Example filter application
-        let filteredRecipients = mockRecipientsSchools;
+        // let filteredRecipients = mockRecipientsSchools;
         /* let filteredRecipients = switch (filtersRecord.filters.include) {
             case ("schools") {
                 // Return only schools
