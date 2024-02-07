@@ -23,7 +23,7 @@
     let recipientIdForSchool : [string] = [] as unknown as [string];
     let include = "schools";
     if (recipientType === "StudentsForSchool") {
-      include = "students";
+      include = "studentsForSchool";
       recipientIdForSchool = [schoolRecipientId];
     };
     let listRecipientsInput = {
