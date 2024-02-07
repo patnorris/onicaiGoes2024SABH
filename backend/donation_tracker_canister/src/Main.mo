@@ -10,6 +10,21 @@ import Types "Types";
 import Utils "Utils";
 
 actor class DonationTracker() {
+
+    // -------------------------------------------------------------------------------
+    // Define the donation_canister (bitcoin canister) with endpoints to call
+
+    // Select one of these. For local, also update the value to match your local deployment !!
+    // LOCAL NETWORK
+    let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
+    // IC MAINNET
+    // let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+
+    let donationCanister = actor (DONATION_CANISTER_ID) : actor {
+        get_p2pkh_address : () -> async Text;
+    };
+
+    // -------------------------------------------------------------------------------
     type DTI = Types.DTI;
     type Satoshi = Types.Satoshi;
     type DonationCategories = Types.DonationCategories;
@@ -312,12 +327,14 @@ actor class DonationTracker() {
         };
     };
 
-    public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
+    // Cannot use await in a query function...???
+    // public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
+    public func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
         switch (req.paymentType) {
             case (#BTC) {
                 // Make an inter-canister call to get the BTC donation address
                 try {
-                    let btcAddress = ""; //await donationCanister.get_p2pkh_address();
+                    let btcAddress = await donationCanister.get_p2pkh_address();
                     return #Ok({
                         donationAddress = {
                             paymentType = #BTC;

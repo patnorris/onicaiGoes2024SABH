@@ -144,3 +144,21 @@ def test__listRecipients_schools_filter(
     # For now, just check the Mock Data is coming back
     expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1School1"; thumbnail = "url_to_thumbnail_2"; name = "Alex Johnson";}; record { id = "student2School1"; thumbnail = "url_to_thumbnail_3"; name = "Jamie Smith";};};} })'
     assert response == expected_response
+
+
+def test__getDonationWalletAddress(
+    identity_anonymous: dict[str, str], network: str
+) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="getDonationWalletAddress",
+        canister_argument="(record {paymentType = variant {BTC}})",
+        canister_input="idl",
+        canister_output="idl",
+        network=network,
+        timeout_seconds=10,
+    )
+    # Verify the response
+    assert "variant { Ok = record { donationAddress = record { address = " in response
+    assert "paymentType = variant { BTC }" in response
