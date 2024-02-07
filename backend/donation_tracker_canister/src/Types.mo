@@ -41,6 +41,11 @@ module Types {
         #Err : E;
     };
 
+    public type initRecipientsRecord = {
+        num_schools : Nat;
+    };
+    public type initRecipientsResult = Result<?initRecipientsRecord, ApiError>;
+
     public type DtiRecord = {
         dti : DTI;
     };

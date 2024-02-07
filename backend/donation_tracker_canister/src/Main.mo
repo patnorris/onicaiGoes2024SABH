@@ -16,13 +16,12 @@ actor class DonationTracker() {
     type Donation = Types.Donation;
 
     // -------------------------------------------------------------------------------
-    // Data storage
+    // Orthogonal Persisted Data storage
 
+    // Donations for runtime operations.
+    private var donations : Buffer.Buffer<Donation> = Buffer.fromArray<Donation>([]);
     // Define the stable variable to persist donations data across upgrades.
-    stable var stableDonations : [Donation] = [];
-
-    // Mutable copy of donations for runtime operations.
-    var donations : Buffer.Buffer<Donation> = Buffer.fromArray<Donation>(stableDonations);
+    stable var donationsStable : [Donation] = [];
 
     // Map each principal to a list of donation indices (DTIs)
     private var donationsByPrincipal = HashMap.HashMap<Principal, Buffer.Buffer<DTI>>(0, Principal.equal, Principal.hash);
@@ -47,6 +46,95 @@ actor class DonationTracker() {
 
     public shared (msg) func whoami() : async Principal {
         return msg.caller;
+    };
+
+    // Initialize recipients and their relationships
+    public shared func initRecipients() : async Types.initRecipientsResult {
+        // Define school and student recipients
+        let school1 : Types.Recipient =
+        #School {
+            id = "school1";
+            name = "Green Valley High";
+            thumbnail = "url_to_thumbnail_1";
+            address = "123 Green Valley Rd";
+        };
+
+        let student1School1 : Types.Recipient =
+        #Student {
+            id = "student1School1";
+            name = "Alex Johnson";
+            thumbnail = "url_to_thumbnail_2";
+            grade = 10;
+            schoolId = "school1";
+        };
+
+        let student2School1 : Types.Recipient =
+        #Student {
+            id = "student2School1";
+            name = "Jamie Smith";
+            thumbnail = "url_to_thumbnail_3";
+            grade = 11;
+            schoolId = "school1";
+        };
+
+        let school2 : Types.Recipient =
+        #School {
+            id = "school2";
+            name = "Sunnydale Elementary";
+            thumbnail = "url_to_thumbnail_4";
+            address = "456 Sunnydale St";
+        };
+
+        let student1School2 : Types.Recipient =
+        #Student {
+            id = "student1School2";
+            name = "Robin Doe";
+            thumbnail = "url_to_thumbnail_5";
+            grade = 8;
+            schoolId = "school2";
+        };
+
+        let student2School2 : Types.Recipient =
+        #Student {
+            id = "student2School2";
+            name = "Taylor Ray";
+            thumbnail = "url_to_thumbnail_6";
+            grade = 9;
+            schoolId = "school2";
+        };
+
+        // Initialize recipientsById HashMap
+        recipientsById.put("school1", school1);
+        recipientsById.put("student1School1", student1School1);
+        recipientsById.put("student2School1", student2School1);
+        recipientsById.put("school2", school2);
+        recipientsById.put("student1School2", student1School2);
+        recipientsById.put("student2School2", student2School2);
+
+        // Initialize studentsBySchool HashMap
+        studentsBySchool.put("school1", ["student1School1", "student2School1"]);
+        studentsBySchool.put("school2", ["student1School2", "student2School2"]);
+
+        // Initialize the counters for schools and students
+        var num_schools = 0;
+        var num_students = 0;
+
+        // Iterate over the recipientsById to count schools and students
+        for ((key, value : Types.Recipient) in recipientsById.entries()) {
+            D.print("Key: " # key);
+            D.print(debug_show (value));
+            switch (value) {
+                case (#School(schoolInfo)) { num_schools += 1 };
+                case (#Student(studentInfo)) { num_students += 1 };
+            };
+        };
+
+        D.print("Number of schools: " # debug_show (num_schools));
+        D.print("Number of students: " # debug_show (num_students));
+
+        // Return the result with the dynamic counts of schools and students
+        return #Ok(?{ num_schools = num_schools; num_students = num_students });
+
     };
 
     public shared (msg) func makeDonation(donationRecord : Types.DonationRecord) : async Types.DtiResult {
@@ -324,7 +412,7 @@ actor class DonationTracker() {
     // System-provided lifecycle method called before an upgrade.
     system func preupgrade() {
         // Copy the runtime state back into the stable variable before upgrade.
-        stableDonations := Buffer.toArray<Donation>(donations);
+        donationsStable := Buffer.toArray<Donation>(donations);
         //TODO: donationsByPrincipalStable := Iter.toArray(donationsByPrincipal.entries());
         recipientsByIdStable := Iter.toArray(recipientsById.entries());
         studentsBySchoolStable := Iter.toArray(studentsBySchool.entries());
@@ -334,7 +422,8 @@ actor class DonationTracker() {
     // System-provided lifecycle method called after an upgrade or on initial deploy.
     system func postupgrade() {
         // After upgrade, reload the runtime state from the stable variable.
-        donations := Buffer.fromArray<Donation>(stableDonations);
+        donations := Buffer.fromArray<Donation>(donationsStable);
+        donationsStable := [];
         //TODO: donationsByPrincipal := HashMap.fromIter(Iter.fromArray(donationsByPrincipalStable), donationsByPrincipalStable.size(), Text.equal, Text.hash);
         //TODO: donationsByPrincipalStable := [];
         recipientsById := HashMap.fromIter(Iter.fromArray(recipientsByIdStable), recipientsByIdStable.size(), Text.equal, Text.hash);
