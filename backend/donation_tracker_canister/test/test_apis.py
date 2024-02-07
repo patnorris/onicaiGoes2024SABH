@@ -60,6 +60,58 @@ def test__initRecipients(identity_anonymous: dict[str, str], network: str) -> No
     assert response == expected_response
 
 
+def test__getRecipient_school(identity_anonymous: dict[str, str], network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="getRecipient",
+        canister_argument='(record {recipientId = "school1"})',
+        canister_input="idl",
+        canister_output="idl",
+        network=network,
+        timeout_seconds=10,
+    )
+    # For now, just check the Mock Data is coming back
+    expected_response = '(variant { Ok = opt record { recipient = variant { School = record { id = "school1"; thumbnail = "url_to_thumbnail_1"; name = "Green Valley High"; address = "123 Green Valley Rd";} };} })'
+    assert response == expected_response
+
+
+def test__getRecipient_student(
+    identity_anonymous: dict[str, str], network: str
+) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="getRecipient",
+        canister_argument='(record {recipientId = "student2School1"})',
+        canister_input="idl",
+        canister_output="idl",
+        network=network,
+        timeout_seconds=10,
+    )
+    # For now, just check the Mock Data is coming back
+    expected_response = '(variant { Ok = opt record { recipient = variant { Student = record { id = "student2School1"; thumbnail = "url_to_thumbnail_3"; name = "Jamie Smith"; schoolId = "school1"; grade = 11 : nat;} };} })'
+    assert response == expected_response
+
+
+def test__getRecipient_not_found(
+    identity_anonymous: dict[str, str], network: str
+) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="getRecipient",
+        canister_argument='(record {recipientId = "non-existent-id"})',
+        canister_input="idl",
+        canister_output="idl",
+        network=network,
+        timeout_seconds=10,
+    )
+    # For now, just check the Mock Data is coming back
+    expected_response = '(variant { Err = variant { Other = "Recipient not found." } })'
+    assert response == expected_response
+
+
 def test__listRecipients_schools_all(
     identity_anonymous: dict[str, str], network: str
 ) -> None:

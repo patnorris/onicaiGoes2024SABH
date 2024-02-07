@@ -237,41 +237,22 @@ actor class DonationTracker() {
     };
 
     public query func getRecipient(idRecord : Types.RecipientIdRecord) : async Types.RecipientResult {
-        // Mock recipient data for demonstration
-        let mockRecipients : [Types.Recipient] = [
-            // Mock schools
-            #School({
-                id = "school1";
-                name = "Primary School One";
-                address = "123 Main St";
-                thumbnail = "school-thumbnail1.jpg";
-            }),
-            // Mock students
-            #Student({
-                id = "student1";
-                name = "John Doe";
-                grade = 5;
-                schoolId = "school1";
-                thumbnail = "student-thumbnail1.jpg";
-            })
-            // Add more mock recipients as needed
-        ];
-        let recipient = Array.find<Types.Recipient>(
-            mockRecipients,
-            func(r) : Bool {
-                switch (r) {
-                    case (#School(school)) { school.id == idRecord.recipientId };
-                    case (#Student(student)) {
-                        student.id == idRecord.recipientId;
+        for ((key, value : Types.Recipient) in recipientsById.entries()) {
+            switch (value) {
+                case (#School(schoolInfo)) {
+                    if (idRecord.recipientId == schoolInfo.id) {
+                        return #Ok(?{ recipient = value });
                     };
                 };
-            },
-        );
-
-        switch (recipient) {
-            case (null) { return #Err(#Other("Recipient not found.")) };
-            case (?r) { return #Ok(?{ recipient = r }) };
+                case (#Student(studentInfo)) {
+                    if (idRecord.recipientId == studentInfo.id) {
+                        return #Ok(?{ recipient = value });
+                    };
+                };
+            };
         };
+
+        return #Err(#Other("Recipient not found."));
     };
 
     public query func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
