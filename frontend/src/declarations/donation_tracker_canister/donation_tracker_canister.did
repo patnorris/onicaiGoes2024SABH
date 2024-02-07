@@ -1,3 +1,13 @@
+type initRecipientsResult = 
+ variant {
+   Err: ApiError;
+   Ok: opt initRecipientsRecord;
+ };
+type initRecipientsRecord = 
+ record {
+   num_schools: nat;
+   num_students: nat;
+ };
 type StudentInfo = 
  record {
    grade: nat;
@@ -85,6 +95,7 @@ type DonationTracker =
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
    getTotalDonationAmount: (PaymentTypeRecord) ->
     (DonationAmountResult) query;
+   initRecipients: () -> (initRecipientsResult);
    listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
    whoami: () -> (principal);

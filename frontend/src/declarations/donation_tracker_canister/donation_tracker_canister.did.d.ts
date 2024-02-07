@@ -74,6 +74,7 @@ export interface DonationTracker {
     [PaymentTypeRecord],
     DonationAmountResult
   >,
+  'initRecipients' : ActorMethod<[], initRecipientsResult>,
   'listRecipients' : ActorMethod<[RecipientFilter], RecipientsResult>,
   'makeDonation' : ActorMethod<[DonationRecord], DtiResult>,
   'whoami' : ActorMethod<[], Principal>,
@@ -130,4 +131,10 @@ export interface StudentInfo {
   'schoolId' : string,
   'grade' : bigint,
 }
+export interface initRecipientsRecord {
+  'num_students' : bigint,
+  'num_schools' : bigint,
+}
+export type initRecipientsResult = { 'Ok' : [] | [initRecipientsRecord] } |
+  { 'Err' : ApiError };
 export interface _SERVICE extends DonationTracker {}

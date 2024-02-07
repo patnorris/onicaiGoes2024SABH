@@ -109,6 +109,14 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationAmountRecord,
     'Err' : ApiError,
   });
+  const initRecipientsRecord = IDL.Record({
+    'num_students' : IDL.Nat,
+    'num_schools' : IDL.Nat,
+  });
+  const initRecipientsResult = IDL.Variant({
+    'Ok' : IDL.Opt(initRecipientsRecord),
+    'Err' : ApiError,
+  });
   const RecipientFilter = IDL.Record({
     'include' : IDL.Text,
     'recipientIdForSchool' : IDL.Opt(RecipientId),
@@ -159,6 +167,7 @@ export const idlFactory = ({ IDL }) => {
         [DonationAmountResult],
         ['query'],
       ),
+    'initRecipients' : IDL.Func([], [initRecipientsResult], []),
     'listRecipients' : IDL.Func(
         [RecipientFilter],
         [RecipientsResult],
