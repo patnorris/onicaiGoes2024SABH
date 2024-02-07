@@ -7,6 +7,8 @@
   let bitcoinTransactionCheckError = false;
   let bitcoinTransactionLoaded = false;
 
+  let amountLeft = 0;
+
   // Function to check the donation status
   const checkDonationStatus = async () => {
     console.log("Checking status for: ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId);
@@ -35,6 +37,7 @@
     } else {
       // @ts-ignore
       $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject = transactionCheckResponse.Ok.bitcoinTransaction;
+      amountLeft = $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated;
       bitcoinTransactionLoaded = true;
     };
     isLoading = false;
@@ -63,8 +66,12 @@
       <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
     {:else if bitcoinTransactionLoaded}
       <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
-      <p id='bitcoinTransactionCheckSubtext'>There is {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated} transaction value left to donate.</p>
-      <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
+      <p id='bitcoinTransactionCheckSubtext'>There is {amountLeft} transaction value left to donate.</p>
+      {#if amountLeft > 0}
+        <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
+      {:else}
+        <p id='bitcoinTransactionCheckSubtext'>Please use another transaction which has value left to donate.</p>
+      {/if}
     {/if}
   </div>
 </section>

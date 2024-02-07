@@ -43,8 +43,6 @@
     $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableBTC;
   };
 
-  onMount(calculateAvailableBTC);
-
   // Donation details
   let totalDonationBTC = 0.0;
   let donationSplits = {
@@ -73,6 +71,7 @@
 
   function setTotalDonationToAvailable() {
     totalDonationBTC = availableBTC;
+    handleTotalDonationUpdate();
   };
 
   function validateSplits() {
@@ -89,7 +88,8 @@
   function updateCategoryBTC() {
     const totalPercent = 100; // Assuming the total percent should always equal 100
     Object.entries(donationSplits).forEach(([category, { percent }]) => {
-      donationSplits[category].btc = (totalDonationBTC * percent) / totalPercent;
+      //donationSplits[category].btc = (totalDonationBTC * percent) / totalPercent;
+      donationSplits[category].btc = parseFloat((totalDonationBTC * percent / totalPercent).toFixed(0));
     });
   };
 
@@ -121,6 +121,8 @@
     validateSplits();
   };
 
+  onMount(calculateAvailableBTC);
+
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
@@ -128,7 +130,7 @@
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 4: Specify Donation Details</h1>	
     <p class="mt-4">Please fill out the following details about your donation.</p>
-    <p class="mt-4">Available BTC to Distribute (from the transaction step): {availableBTC}</p>
+    <p class="mt-4">Available bitcoin (from the transaction step): {availableBTC} Satoshi</p>
     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={setTotalDonationToAvailable}>
       Set Total Donation to Available BTC
     </button>
@@ -136,7 +138,7 @@
       <p id='totalDonationTooBigSubtext'>Your Total Donation cannot be bigger than your available BTC!</p>
     {/if}
     <div class="mt-4">
-      <label for="totalDonation" class="block mb-2">Total Donation (in BTC):</label>
+      <label for="totalDonation" class="block mb-2">Total Donation:</label>
       <input
         type="number"
         id="totalDonation"
