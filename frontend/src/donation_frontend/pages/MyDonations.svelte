@@ -23,13 +23,16 @@
       const getMyDonationsInput = {
         filters: []
       };
+      console.log("DEBUG loadUserDonations getMyDonationsInput ", getMyDonationsInput);
       const userDonationsResponse = await $store.backendActor.getMyDonations(getMyDonationsInput);
+      console.log("DEBUG loadUserDonations userDonationsResponse ", userDonationsResponse);
       // @ts-ignore
       if (userDonationsResponse.Err) {
         donationsLoadingError = true;
       } else {
         // @ts-ignore
         const userDonations = userDonationsResponse.Ok.donations;
+      console.log("DEBUG loadUserDonations userDonations ", userDonations);
         const numberOfUserDonations = userDonations.length;
         if (numberOfUserDonations < 1) {
           document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";
@@ -58,6 +61,8 @@
     <p id='donationsSubtext'>Let's see which Donations you have made...</p>
     {#if hasLoadedDonations}
       <DonationsList donations={loadedUserDonations} />
+    {:else}
+      <p hidden>{loadUserDonations()}</p>
     {/if}
   {/if}
 </section>
