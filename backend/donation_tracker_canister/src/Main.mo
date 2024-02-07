@@ -5,6 +5,7 @@ import HashMap "mo:base/HashMap";
 import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Iter "mo:base/Iter";
+import Blob "mo:base/Blob";
 
 import Types "Types";
 import Utils "Utils";
@@ -67,6 +68,8 @@ actor class DonationTracker() {
 
     // Initialize recipients and their relationships
     public shared func initRecipients() : async Types.initRecipientsResult {
+        // TODO: secure endpoint
+
         // Define school and student recipients
         let school1 : Types.Recipient =
         #School {
@@ -190,20 +193,35 @@ actor class DonationTracker() {
 
         // On success, return the list of donations
         let donationsRecord = {
-            donations : [Donation] = [];
+            donations : [Donation] = Buffer.toArray(donations);
         };
         return #Ok(donationsRecord);
     };
 
     //TODO: input: Types.DonationFiltersRecord or empty record?
     public shared (msg) func getMyDonations(filtersRecord : Types.DonationFiltersRecord) : async Types.DonationsResult {
-        let caller = Principal.toText(msg.caller);
-        // TODO
-        return #Ok({ donations = [] });
-        // return switch (donationsByPrincipal.get(caller)) {
-        //     case (null) { [] };
-        //     case (?ds) { ds };
-        // };
+        // don't allow anonymous Principal
+        if (Principal.isAnonymous(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
+        let donationsByPrincipalLookup = donationsByPrincipal.get(msg.caller);
+        switch (donationsByPrincipalLookup) {
+            case (null) {
+                // No donations found
+                return #Ok({ donations = [] });
+            };
+            case (?dtiBuffer) {
+                // Donations found for user
+                let dtis : [DTI] = Buffer.toArray(dtiBuffer);
+                // Iterate over dtis, get donation for each dti
+                    // push to return array
+                let userDonations : Buffer.Buffer<Donation> = Buffer.Buffer<Donation>(dtiBuffer.capacity());
+                for (i : Nat in dtis.keys()) {
+                    userDonations.add(donations.get(dtis[i]));
+                };
+                return #Ok({ donations = Buffer.toArray(userDonations) });
+            };
+        };
     };
 
     public query func listRecipients(recipientFilter : Types.RecipientFilter) : async Types.RecipientsResult {
@@ -272,51 +290,50 @@ actor class DonationTracker() {
         return #Err(#Other("Recipient not found."));
     };
 
-    public query func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
-        // Example: Check against a mock list of known transaction IDs
-        let knownTransactions : [Types.BitcoinTransaction] = [
-            // Mock transactions
-            { bitcoinTransactionId = "txid1" },
-            { bitcoinTransactionId = "txid2" }
-            // Add more mock transactions as necessary
-        ];
-
-        // Attempt to find the transaction by ID
-        let transaction = Array.find<Types.BitcoinTransaction>(
-            knownTransactions,
-            func(t) : Bool {
-                t.bitcoinTransactionId == idRecord.bitcoinTransactionId;
-            },
-        );
-
-        switch (transaction) {
-            case (null) {
-                // Transaction not found
-                return #Err(#Other("Bitcoin transaction not found."));
-            };
-            case (?t) {
-                // Transaction found
-                return #Ok({ bitcoinTransaction = t });
-            };
-        };
-    };
-
-    // Assume this is a function that can query the Bitcoin canister or an external API to get the transaction value
-    private func getTransactionValueFromCanister(bitcoinTransactionId : Text) : Nat64 {
-        // Mock implementation - replace with actual call to Bitcoin canister
-        // For example: return await BitcoinCanister.getTransactionValue(bitcoinTransactionId);
-        return 10_000; // Mock value in satoshis
-    };
-
-    public query func getBtcTransactionDetails(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
-        // First, determine the total value donated from this transaction
-        let valueDonated = ""; // Calculate this based on your internal records
-
-        // Then, query the Bitcoin canister or external service for the total transaction value
-        let totalValue = getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
+    public func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
+        // Query the Bitcoin canister for the total transaction value
+        let totalValue = await getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
 
         // Check if the transaction exists and has a valid value
         if (totalValue > 0) {
+            var valueDonated : Types.Satoshi = 0; // No need to calculate this here
+
+            return #Ok({
+                bitcoinTransaction = {
+                    bitcoinTransactionId = idRecord.bitcoinTransactionId;
+                    totalValue = totalValue;
+                    valueDonated = valueDonated;
+                };
+            });
+        } else {
+            return #Err(#Other("Bitcoin transaction not found or has no value."));
+        };
+    };
+
+    public func getBtcTransactionDetails(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
+        // Query the Bitcoin canister for the total transaction value
+        let totalValue = await getTransactionValueFromCanister(idRecord.bitcoinTransactionId);
+
+        // Check if the transaction exists and has a valid value
+        if (totalValue > 0) {
+            // Determine the total value already donated from this transaction
+            var valueDonated : Types.Satoshi = 0; // Calculate this based on your internal records
+            let donationsLookup = donationsByTxId.get(idRecord.bitcoinTransactionId);
+            switch (donationsLookup) {
+                case (null) {
+                    // No transactions found
+                    valueDonated := 0;
+                };
+                case (?donations) {
+                    // Donations found for transaction
+                    // Iterate over donations, access field totalAmount on each donation
+                        // add up all donations' totalAmount
+                    for (i : Nat in donations.keys()) {
+                        valueDonated += donations[i].totalAmount;
+                    };
+                };
+            };
+
             return #Ok({
                 bitcoinTransaction = {
                     bitcoinTransactionId = idRecord.bitcoinTransactionId;
@@ -385,6 +402,34 @@ actor class DonationTracker() {
         } catch (error : Error) {
             // Handle errors, such as donation canister not responding
             return #Err(#Other("Failed to retrieve utxos: "));
+        };
+    };
+
+    // Query the Bitcoin canister to get the transaction value
+    private func getTransactionValueFromCanister(bitcoinTransactionId : Text) : async Nat64 {
+        let getUTXOSResponse : Types.GetUtxosResponseResult = await getUTXOS();
+        switch (getUTXOSResponse) {
+            case (#Err(error)) {
+                // No transactions found
+                return 0;
+            };
+            case (#Ok(getUTXOSResponseObject)) {
+                // Transactions found
+                 let utxosResponse : Types.GetUtxosResponse = getUTXOSResponseObject.getUtxosResponse;
+                 let utxos : [Types.Utxo] = utxosResponse.utxos;
+                 // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
+                    // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
+                    // if they match, return field value on utxo
+                 for (i : Nat in utxos.keys()) {
+                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    if (txidText == bitcoinTransactionId) {
+                        // If they match, return the value field on utxo
+                        return utxos[i].value;
+                    };
+                };
+                // If no matching transaction is found, return 0
+                return 0;
+            };
         };
     };
 
