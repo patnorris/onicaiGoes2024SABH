@@ -159,8 +159,8 @@ module Types {
 
     public type BitcoinTransaction = {
         bitcoinTransactionId : PaymentTransactionId;
-        //totalValue: Nat64; // Total value of the BTC transaction
-        //valueDonated: Nat64; // How much of the total value has been donated
+        totalValue : Nat64; // Total value of the BTC transaction
+        valueDonated : Nat64; // How much of the total value has been donated
         // TODO: Add more fields as necessary, e.g., timestamp, confirmations, etc.
     };
 
@@ -210,4 +210,10 @@ module Types {
     };
 
     public type GetUtxosResponseResult = Result<GetUtxosResponseRecord, ApiError>;
+
+    public type TxidstextRecord = {
+        txidstext : [Text];
+    };
+
+    public type TxidstextResult = Result<TxidstextRecord, ApiError>;
 };

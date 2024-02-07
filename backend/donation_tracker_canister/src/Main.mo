@@ -214,7 +214,7 @@ actor class DonationTracker() {
                 // Donations found for user
                 let dtis : [DTI] = Buffer.toArray(dtiBuffer);
                 // Iterate over dtis, get donation for each dti
-                    // push to return array
+                // push to return array
                 let userDonations : Buffer.Buffer<Donation> = Buffer.Buffer<Donation>(dtiBuffer.capacity());
                 for (i : Nat in dtis.keys()) {
                     userDonations.add(donations.get(dtis[i]));
@@ -327,7 +327,7 @@ actor class DonationTracker() {
                 case (?donations) {
                     // Donations found for transaction
                     // Iterate over donations, access field totalAmount on each donation
-                        // add up all donations' totalAmount
+                    // add up all donations' totalAmount
                     for (i : Nat in donations.keys()) {
                         valueDonated += donations[i].totalAmount;
                     };
@@ -405,6 +405,33 @@ actor class DonationTracker() {
         };
     };
 
+    public func getTxidstext() : async Types.TxidstextResult {
+        let getUTXOSResponse : Types.GetUtxosResponseResult = await getUTXOS();
+
+        let txids : Buffer.Buffer<Text> = Buffer.fromArray<Text>([]);
+        switch (getUTXOSResponse) {
+            case (#Err(error)) {
+                return #Err(#Other("No transactions found: "));
+            };
+            case (#Ok(getUTXOSResponseObject)) {
+                // Transactions found
+                let utxosResponse : Types.GetUtxosResponse = getUTXOSResponseObject.getUtxosResponse;
+                let utxos : [Types.Utxo] = utxosResponse.utxos;
+                // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
+                // pass txid to Utils.bytesToText and store it in an array
+                for (i : Nat in utxos.keys()) {
+                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    txids.add(txidText);
+                };
+                // Return the list of txids in text format
+                let txidstextRecord = {
+                    txidstext : [Text] = Buffer.toArray(txids);
+                };
+                return #Ok(txidstextRecord);
+            };
+        };
+    };
+
     // Query the Bitcoin canister to get the transaction value
     private func getTransactionValueFromCanister(bitcoinTransactionId : Text) : async Nat64 {
         let getUTXOSResponse : Types.GetUtxosResponseResult = await getUTXOS();
@@ -415,12 +442,12 @@ actor class DonationTracker() {
             };
             case (#Ok(getUTXOSResponseObject)) {
                 // Transactions found
-                 let utxosResponse : Types.GetUtxosResponse = getUTXOSResponseObject.getUtxosResponse;
-                 let utxos : [Types.Utxo] = utxosResponse.utxos;
-                 // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
-                    // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
-                    // if they match, return field value on utxo
-                 for (i : Nat in utxos.keys()) {
+                let utxosResponse : Types.GetUtxosResponse = getUTXOSResponseObject.getUtxosResponse;
+                let utxos : [Types.Utxo] = utxosResponse.utxos;
+                // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
+                // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
+                // if they match, return field value on utxo
+                for (i : Nat in utxos.keys()) {
                     let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
                     if (txidText == bitcoinTransactionId) {
                         // If they match, return the value field on utxo
