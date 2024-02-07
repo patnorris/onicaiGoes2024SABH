@@ -1,6 +1,41 @@
 module Types {
-    public type DTI = Nat;
+    //-------------------------------------------------------------------------
+    // Copied from donation_canister types
+    /// The type of Bitcoin network the dapp will be interacting with.
+    public type Network = {
+        #mainnet;
+        #testnet;
+        #regtest;
+    };
+
+    public type BitcoinAddress = Text;
+    public type BlockHash = [Nat8];
+    public type Page = [Nat8];
     public type Satoshi = Nat64;
+
+    /// A reference to a transaction output.
+    public type OutPoint = {
+        txid : Blob;
+        vout : Nat32;
+    };
+
+    /// An unspent transaction output.
+    public type Utxo = {
+        outpoint : OutPoint;
+        value : Satoshi;
+        height : Nat32;
+    };
+
+    /// The response returned for a request to get the UTXOs of a given address.
+    public type GetUtxosResponse = {
+        utxos : [Utxo];
+        tip_block_hash : BlockHash;
+        tip_height : Nat32;
+        next_page : ?Page;
+    };
+
+    //-------------------------------------------------------------------------
+    public type DTI = Nat;
 
     public type DonationCategories = {
         curriculumDesign : Satoshi;
@@ -169,4 +204,10 @@ module Types {
     };
 
     public type DonationAmountResult = Result<DonationAmountRecord, ApiError>;
+
+    public type GetUtxosResponseRecord = {
+        getUtxosResponse : GetUtxosResponse;
+    };
+
+    public type GetUtxosResponseResult = Result<GetUtxosResponseRecord, ApiError>;
 };

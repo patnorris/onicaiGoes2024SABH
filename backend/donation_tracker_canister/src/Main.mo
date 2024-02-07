@@ -10,6 +10,23 @@ import Types "Types";
 import Utils "Utils";
 
 actor class DonationTracker() {
+
+    // -------------------------------------------------------------------------------
+    // Define the donation_canister (bitcoin canister) with endpoints to call
+
+    // Select one of these. For local, also update the value to match your local deployment !!
+    // LOCAL NETWORK
+    let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
+    // IC MAINNET
+    // let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+
+    let donationCanister = actor (DONATION_CANISTER_ID) : actor {
+        get_p2pkh_address : () -> async Text;
+        get_balance : (address : Types.BitcoinAddress) -> async Types.Satoshi;
+        get_utxos : (address : Types.BitcoinAddress) -> async Types.GetUtxosResponse;
+    };
+
+    // -------------------------------------------------------------------------------
     type DTI = Types.DTI;
     type Satoshi = Types.Satoshi;
     type DonationCategories = Types.DonationCategories;
@@ -103,7 +120,8 @@ actor class DonationTracker() {
             schoolId = "school2";
         };
 
-        // Initialize recipientsById HashMap
+        // (re)Initialize recipientsById HashMap
+        recipientsById := HashMap.HashMap<Types.RecipientId, Types.Recipient>(0, Text.equal, Text.hash);
         recipientsById.put("school1", school1);
         recipientsById.put("student1School1", student1School1);
         recipientsById.put("student2School1", student2School1);
@@ -111,7 +129,8 @@ actor class DonationTracker() {
         recipientsById.put("student1School2", student1School2);
         recipientsById.put("student2School2", student2School2);
 
-        // Initialize studentsBySchool HashMap
+        // (re)Initialize studentsBySchool HashMap
+        studentsBySchool := HashMap.HashMap<Types.RecipientId, [Types.RecipientId]>(0, Text.equal, Text.hash);
         studentsBySchool.put("school1", ["student1School1", "student2School1"]);
         studentsBySchool.put("school2", ["student1School2", "student2School2"]);
 
@@ -188,73 +207,44 @@ actor class DonationTracker() {
     };
 
     public query func listRecipients(recipientFilter : Types.RecipientFilter) : async Types.RecipientsResult {
-        // TODO: Mock implementation - replace with actual logic to fetch and filter recipients
 
-        let mockRecipientsSchools : [Types.RecipientOverview] = [
-            // Mock data - replace with actual recipient data
-            {
-                id = "school1";
-                name = "School One";
-                thumbnail = "thumbnail1.jpg";
-            },
-            {
-                id = "school2";
-                name = "School Two";
-                thumbnail = "thumbnail1.jpg";
-            },
-            // Add more mock recipients as needed
-        ];
-        let mockRecipientsStudentsForSchool1 : [Types.RecipientOverview] = [
-            // Mock data - replace with actual recipient data
-            {
-                id = "student1";
-                name = "Student One";
-                thumbnail = "thumbnail2.jpg";
-            },
-            {
-                id = "student2";
-                name = "Student Two";
-                thumbnail = "thumbnail2.jpg";
-            },
-            // Add more mock recipients as needed
-        ];
-
-        // Mocked application of the filter
-        let filteredRecipients : [Types.RecipientOverview] = switch (recipientFilter.include) {
-            case ("schools") {
-                // Return only schools
-                mockRecipientsSchools;
-            };
-            case ("students") {
-                mockRecipientsStudentsForSchool1;
-            };
-            case _ {
-                // Invalid filter
-                [];
+        var filteredRecipients : [Types.RecipientOverview] = [];
+        for ((key, value : Types.Recipient) in recipientsById.entries()) {
+            D.print("Key: " # key);
+            D.print(debug_show (value));
+            if (recipientFilter.include == "schools") {
+                switch (value) {
+                    case (#School(schoolInfo)) {
+                        let recipientOverview : Types.RecipientOverview = {
+                            id = schoolInfo.id;
+                            name = schoolInfo.name;
+                            thumbnail = schoolInfo.thumbnail;
+                        };
+                        filteredRecipients := Array.append<Types.RecipientOverview>(filteredRecipients, [recipientOverview]);
+                    };
+                    case (#Student(studentInfo)) {};
+                };
+            } else if (recipientFilter.include == "studentsForSchool") {
+                switch (value) {
+                    case (#School(schoolInfo)) {};
+                    case (#Student(studentInfo)) {
+                        switch (recipientFilter.recipientIdForSchool) {
+                            case (null) {};
+                            case (?RecipientId) {
+                                if (studentInfo.schoolId == RecipientId) {
+                                    let recipientOverview : Types.RecipientOverview = {
+                                        id = studentInfo.id;
+                                        name = studentInfo.name;
+                                        thumbnail = studentInfo.thumbnail;
+                                    };
+                                    filteredRecipients := Array.append<Types.RecipientOverview>(filteredRecipients, [recipientOverview]);
+                                };
+                            };
+                        };
+                    };
+                };
             };
         };
-
-        // Example filter application
-        // let filteredRecipients = mockRecipientsSchools;
-        /* let filteredRecipients = switch (filtersRecord.filters.include) {
-            case ("schools") {
-                // Return only schools
-                mockRecipients.filter(recipient -> recipient.id.startsWith("school"))
-            };
-            case ("studentsForSchool") {
-                // Return students for a specific school if recipientIdForSchool is not null
-                filtersRecord.filters.recipientIdForSchool == null ? [] :
-                mockRecipients.filter(recipient ->
-                    recipient.id.startsWith("student") and
-                    // Assuming a convention to relate students to schools by ID
-                    recipient.id.endsWith(filtersRecord.filters.recipientIdForSchool.unwrap())
-                )
-            };
-            case _ {
-                // Invalid filter
-                []
-            };
-        }; */
 
         if (filteredRecipients.size() > 0) {
             return #Ok({ recipients = filteredRecipients });
@@ -264,41 +254,22 @@ actor class DonationTracker() {
     };
 
     public query func getRecipient(idRecord : Types.RecipientIdRecord) : async Types.RecipientResult {
-        // Mock recipient data for demonstration
-        let mockRecipients : [Types.Recipient] = [
-            // Mock schools
-            #School({
-                id = "school1";
-                name = "Primary School One";
-                address = "123 Main St";
-                thumbnail = "school-thumbnail1.jpg";
-            }),
-            // Mock students
-            #Student({
-                id = "student1";
-                name = "John Doe";
-                grade = 5;
-                schoolId = "school1";
-                thumbnail = "student-thumbnail1.jpg";
-            })
-            // Add more mock recipients as needed
-        ];
-        let recipient = Array.find<Types.Recipient>(
-            mockRecipients,
-            func(r) : Bool {
-                switch (r) {
-                    case (#School(school)) { school.id == idRecord.recipientId };
-                    case (#Student(student)) {
-                        student.id == idRecord.recipientId;
+        for ((key, value : Types.Recipient) in recipientsById.entries()) {
+            switch (value) {
+                case (#School(schoolInfo)) {
+                    if (idRecord.recipientId == schoolInfo.id) {
+                        return #Ok(?{ recipient = value });
                     };
                 };
-            },
-        );
-
-        switch (recipient) {
-            case (null) { return #Err(#Other("Recipient not found.")) };
-            case (?r) { return #Ok(?{ recipient = r }) };
+                case (#Student(studentInfo)) {
+                    if (idRecord.recipientId == studentInfo.id) {
+                        return #Ok(?{ recipient = value });
+                    };
+                };
+            };
         };
+
+        return #Err(#Other("Recipient not found."));
     };
 
     public query func getBtcTransactionStatus(idRecord : Types.BitcoinTransactionIdRecord) : async Types.BitcoinTransactionResult {
@@ -358,12 +329,14 @@ actor class DonationTracker() {
         };
     };
 
-    public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
+    // Cannot use await in a query function...???
+    // public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
+    public func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
         switch (req.paymentType) {
             case (#BTC) {
                 // Make an inter-canister call to get the BTC donation address
                 try {
-                    let btcAddress = ""; //await donationCanister.get_p2pkh_address();
+                    let btcAddress = await donationCanister.get_p2pkh_address();
                     return #Ok({
                         donationAddress = {
                             paymentType = #BTC;
@@ -379,12 +352,13 @@ actor class DonationTracker() {
         };
     };
 
-    public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
+    // public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
+    public func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
         switch (req.paymentType) {
             case (#BTC) {
                 try {
-                    // Assuming get_balance returns the balance as Nat64 for the specified payment type
-                    let balance : Nat64 = 5; //await donationCanister.get_balance(#BTC);
+                    let btcAddress = await donationCanister.get_p2pkh_address();
+                    let balance : Satoshi = await donationCanister.get_balance(btcAddress);
                     return #Ok({
                         donationAmount = {
                             paymentType = #BTC;
@@ -397,6 +371,20 @@ actor class DonationTracker() {
                 };
             };
             // Handle other payment types as they are added
+        };
+    };
+
+    // public query func getUTXOS() : async Types.GetUtxosResponse {
+    public func getUTXOS() : async Types.GetUtxosResponseResult {
+        try {
+            let btcAddress = await donationCanister.get_p2pkh_address();
+            let utxos : Types.GetUtxosResponse = await donationCanister.get_utxos(btcAddress);
+            return #Ok({
+                getUtxosResponse = utxos;
+            });
+        } catch (error : Error) {
+            // Handle errors, such as donation canister not responding
+            return #Err(#Other("Failed to retrieve utxos: "));
         };
     };
 
