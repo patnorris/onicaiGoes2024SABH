@@ -50,13 +50,13 @@ def test__full_flow(identity_anonymous: dict[str, str], network: str) -> None:
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
         canister_name=CANISTER_NAME,
-        canister_method="init_recipients",
+        canister_method="initRecipients",
         canister_argument="()",
         network=network,
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = "(variant { Ok = opt record { num_schools = 2 : nat;} })"
+    expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat } })"
     assert response == expected_response
 
 
