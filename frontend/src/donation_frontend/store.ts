@@ -70,8 +70,9 @@ export let currentDonationCreationObject = writable({
   },
   recipient: {
     recipientId: '',
-    type: '',
-    recipientObject: null,
+    type: '', // "School" or "Student"
+    recipientObject: null, // Type Recipient
+    recipientInfo: null, // Type SchoolInfo | StudentInfo
   },
   donation: {
     totalDonation: 0.0,

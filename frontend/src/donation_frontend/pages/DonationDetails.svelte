@@ -6,6 +6,9 @@
   import NotFound from "./NotFound.svelte";
   import Topnav from "../components/Topnav.svelte";
   import Footer from "../components/Footer.svelte";
+  
+  import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+  import DonationRecord from "../components/DonationRecord.svelte";
 
 // This is needed for URL params
   export let params;
@@ -13,7 +16,7 @@
 // Load donation from data stored in backend canister
   let loadingInProgress = true;
   let donationLoadingError = false;
-  let donation;
+  let donation : Donation;
   let donationLoaded = false;
   
   const loadDonationDetails = async () => {
@@ -68,8 +71,7 @@
       <p>Make sure the Donation Transaction Id is valid (it's a number)</p>
       <NotFound />
     {:else if donationLoaded}
-    TODO      
-    
+      <DonationRecord donation={donation}/>
     {/if}
   </div>
 </section>

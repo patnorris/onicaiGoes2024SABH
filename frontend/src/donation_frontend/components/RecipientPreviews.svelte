@@ -1,7 +1,9 @@
 <script lang="ts">
   import RecipientPreview from "./RecipientPreview.svelte";
-  
-  export let recipientPreviews; // Array of recipient previews
+
+  import type { RecipientOverview } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+    
+  export let recipientPreviews : [RecipientOverview]; // Array of recipient previews
   export let embedded = false;
 </script>
 

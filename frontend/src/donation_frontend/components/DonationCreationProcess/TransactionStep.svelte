@@ -52,7 +52,7 @@
       <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
     {:else if bitcoinTransactionLoaded}
       <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
-      <p id='bitcoinTransactionCheckSubtext'>There is {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.value - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated} transaction value left to donate.</p>
+      <p id='bitcoinTransactionCheckSubtext'>There is {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.value - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated} transaction value left to donate.</p>
       <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
     {/if}
   </div>

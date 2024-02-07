@@ -6,9 +6,11 @@
   import Topnav from "../components/Topnav.svelte";
   import Footer from "../components/Footer.svelte";
   import DonationsList from "../components/DonationsList.svelte";
+    
+  import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
 
   let hasLoadedDonations = false;
-  let loadedDonations = [];
+  let loadedDonations : [Donation] = [] as unknown as [Donation];
   let loadingInProgress = true;
   let donationsLoadingError = false;
 

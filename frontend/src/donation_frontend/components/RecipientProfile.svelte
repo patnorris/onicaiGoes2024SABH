@@ -4,8 +4,12 @@
     import { store, currentDonationCreationObject } from "../store";
   
     import NotFound from "../pages/NotFound.svelte";
+    import RecipientSchoolInfo from "./RecipientSchoolInfo.svelte";
+    import RecipientStudentInfo from "./RecipientStudentInfo.svelte";
 
     import { push } from "svelte-spa-router";
+
+    import type { RecipientResult, Recipient, SchoolInfo, StudentInfo } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
   
   // This is needed for URL params
     export let recipientId;
@@ -14,20 +18,24 @@
     let recipientProfileSelected = false;
 
     const handleClick = async () => {
-        $currentDonationCreationObject.recipient.recipientId = recipientId;
-        $currentDonationCreationObject.recipient.recipientObject = recipient;
+      $currentDonationCreationObject.recipient.recipientId = recipientId;
+      $currentDonationCreationObject.recipient.type = recipientType;
+      $currentDonationCreationObject.recipient.recipientObject = recipient;
+      $currentDonationCreationObject.recipient.recipientInfo = recipientInfo;
 
-        if (embedded) {
-            recipientProfileSelected = true;
-        } else {
-            push(`#/donate`);
-        };
+      if (embedded) {
+        recipientProfileSelected = true;
+      } else {
+        push(`#/donate`);
+      };
     };
   
   // Load recipient from data stored in backend canister
     let loadingInProgress = true;
     let recipientLoadingError = false;
-    let recipient;
+    let recipient : Recipient;
+    let recipientType;
+    let recipientInfo : SchoolInfo | StudentInfo;
     let recipientLoaded = false;
     
     const loadRecipientDetails = async () => {
@@ -46,7 +54,7 @@
         const getRecipientInput = {
           recipientId
         };
-        const recipientResponse = await $store.backendActor.getRecipient(getRecipientInput);
+        const recipientResponse : RecipientResult = await $store.backendActor.getRecipient(getRecipientInput);
         // @ts-ignore
         if (recipientResponse.Err) {
           recipientLoadingError = true;
@@ -55,6 +63,15 @@
           const recipientRecord = recipientResponse.Ok;
           if (recipientRecord.length > 0) {
             recipient = recipientRecord[0].recipient;
+            if (recipient.School) {
+              recipientType = "School";
+              recipientInfo = recipient.School;
+            } else if (recipient.Student) {
+              recipientType = "Student";
+              recipientInfo = recipient.Student;
+            } else {
+              recipientLoadingError = true;
+            };
             recipientLoaded = true;
           } else {
             recipientLoadingError = true;
@@ -77,11 +94,13 @@
     {:else if recipientLoadingError}
       <NotFound />
     {:else if recipientLoaded}
-        <div class="space space-y-1">
-            <div class="recipient-profile-content">
-            <p>{recipient.name}</p>
-            <p>TODO: More info</p>
-            </div>
+        <div>
+          {#if recipientType === "School"}
+            <RecipientSchoolInfo schoolInfo={recipientInfo} />
+          {:else if recipientType === "Student"}
+            <RecipientStudentInfo studentInfo={recipientInfo} />
+          {/if}
+          <div>
             {#if embedded}
                 <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
                 {#if recipientProfileSelected}
@@ -92,6 +111,7 @@
             {:else}
                 <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
             {/if}
+          </div>
         </div>
     {/if}
   </div>  

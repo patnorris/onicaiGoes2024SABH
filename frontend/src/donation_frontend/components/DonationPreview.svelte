@@ -1,12 +1,15 @@
 <script lang="ts">
-  export let donation;
+  import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+
+  export let donation : Donation;
 </script>
 
-<div class="responsive">
-  <div class="space space-y-1">
-    <div class="donation-record-content">
-      <p>{donation.dti}</p>
-      <p>TODO: other fields</p>
+<div>
+  <div>
+    <div>
+      <p>Total Amount: {donation.totalAmount}</p>
+      <p>Payment Type: {donation.paymentType}</p>    
+      <p>Date: {donation.timestamp}</p>
     </div>
   </div>
 </div>

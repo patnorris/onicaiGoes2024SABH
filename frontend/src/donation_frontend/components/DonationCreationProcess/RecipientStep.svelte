@@ -4,8 +4,10 @@
   import RecipientsList from "../RecipientsList.svelte";
   import RecipientPreview from "../RecipientPreview.svelte";
 
-  let recipientObject = $currentDonationCreationObject.recipient.recipientObject;
-  currentDonationCreationObject.subscribe((value) => recipientObject = value.recipient.recipientObject);
+  import type { SchoolInfo, StudentInfo } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+  
+  let recipientInfo : SchoolInfo | StudentInfo = $currentDonationCreationObject.recipient.recipientInfo;
+  currentDonationCreationObject.subscribe((value) => recipientInfo = value.recipient.recipientInfo);
 
 </script>
 
@@ -14,11 +16,11 @@
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 3: Choose Donation Recipient</h1>	
     <p class="mt-4">Please choose the school or student you would like to donate to.</p>
-    {#key recipientObject}
-      {#if recipientObject}
+    {#key recipientInfo}
+      {#if recipientInfo}
         <p id='currentRecipientSubtext'>You have currently selected this recipient:</p>
         <!-- <p id='currentRecipientObjectSubtext'>TODO: {$currentDonationCreationObject.recipient.recipientObject}</p> -->
-        <RecipientPreview recipientPreview={recipientObject} embedded={true}/>
+        <RecipientPreview recipientPreview={recipientInfo} embedded={true}/>
       {:else}
         <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>
       {/if}

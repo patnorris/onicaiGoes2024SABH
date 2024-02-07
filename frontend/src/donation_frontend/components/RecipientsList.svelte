@@ -3,10 +3,12 @@
   import { store } from "../store";
   import RecipientPreviews from "./RecipientPreviews.svelte";
 
+  import type { RecipientOverview } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+  
   export let embedded = false;
 
   let hasLoadedRecipients = false;
-  let loadedRecipients = [];
+  let loadedRecipients : [RecipientOverview] = [] as unknown as [RecipientOverview];
   let loadingRecipientsError = false;
 
   const loadRecipients = async () => {
@@ -28,7 +30,7 @@
       loadingRecipientsError = true;
     } else {
       // @ts-ignore
-      const recipients = listRecipientsResponse.Ok.recipients;
+      const recipients : [RecipientOverview] = listRecipientsResponse.Ok.recipients;
       console.log("DEBUG loadRecipients recipients ", recipients);
       const numberOfAvailableRecipients = recipients.length;
       if (numberOfAvailableRecipients < 1) {

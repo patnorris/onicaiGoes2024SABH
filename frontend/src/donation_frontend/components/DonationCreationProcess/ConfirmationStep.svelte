@@ -1,7 +1,8 @@
 <script lang="ts">
     import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
-  import { store, currentDonationCreationObject } from "../../store";
+    import { store, currentDonationCreationObject } from "../../store";
     import { now } from "svelte/internal";
+    import { push } from "svelte-spa-router";
 
   let validationErrors = [];
 
@@ -73,36 +74,56 @@
     };
   };
 
+  function viewNewDonation() {
+    push(`#/donation/${createdDonationTransactionId}`); // Navigate to the donation details page
+  };
+
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 5: Confirm Donation</h1>
-    <p class="mt-4">Let's double-check that all donation details are looking good.</p>
-    <!-- Display donation details -->
-    <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
-    <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientObject?.name}</p>
-    <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType}</p>
-    <p>Category Split:</p>
-    <ul>
-      {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}
-        <li>{category}: {btc} Satoshi</li>
-      {/each}
-    </ul>
-    <!-- Conditional rendering based on validationErrors -->
-    {#if validationErrors.length}
-      <p class="mt-4">Please correct the following details:</p>
-      <ul class="text-red-500">
-        {#each validationErrors as error}
-          <li>{error}</li>
-        {/each}
-      </ul>
+    {#if submitDonationSuccess}
+      <div>
+        <h3>Donation Created</h3>
+        <h3>Thank you for donating!</h3>
+        <p>Your Donation Transaction Id (DTI) is {createdDonationTransactionId}.</p>
+        <button on:click|preventDefault={viewNewDonation} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Donation</button>        
+      </div>
     {:else}
-      <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
-        Finalize Donation
-      </button>
+      <div>
+        <p class="mt-4">Let's double-check that all donation details are looking good.</p>
+        <!-- Display donation details -->
+        <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
+        <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientInfo?.name}</p>
+        <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType}</p>
+        <p>Category Split:</p>
+        <ul>
+          {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}
+            <li>{category}: {btc} Satoshi</li>
+          {/each}
+        </ul>
+        <!-- Conditional rendering based on validationErrors -->
+        {#if validationErrors.length}
+          <p class="mt-4">Please correct the following details:</p>
+          <ul class="text-red-500">
+            {#each validationErrors as error}
+              <li>{error}</li>
+            {/each}
+          </ul>
+        {:else}
+          <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
+            Finalize Donation
+          </button>
+        {/if}
+        {#if submitDonationError}
+          <div>
+            <p class="mt-4">Unfortunately, there was an error. Please try finalizing the donation again.</p>
+          </div>
+        {/if}
+      </div>      
     {/if}
   </div>
 </section>

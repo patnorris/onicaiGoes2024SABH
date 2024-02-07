@@ -6,8 +6,10 @@
   import Footer from "../components/Footer.svelte";
   import DonationsList from "../components/DonationsList.svelte";
 
+  import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+
   let hasLoadedDonations = false;
-  let loadedUserDonations = [];
+  let loadedUserDonations : [Donation] = [] as unknown as [Donation];
   let donationsLoadingError = false;
 
   const loadUserDonations = async () => {
@@ -27,7 +29,7 @@
         donationsLoadingError = true;
       } else {
         // @ts-ignore
-        const userDonations = userDonationsResponse.Ok;
+        const userDonations = userDonationsResponse.Ok.donations;
         const numberOfUserDonations = userDonations.length;
         if (numberOfUserDonations < 1) {
           document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";
