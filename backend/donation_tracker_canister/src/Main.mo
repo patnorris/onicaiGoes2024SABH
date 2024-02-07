@@ -20,9 +20,9 @@ actor class DonationTracker() {
 
     // Select one of these. For local, also update the value to match your local deployment !!
     // LOCAL NETWORK
-    let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
+    // let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
     // IC MAINNET
-    // let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+    let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
