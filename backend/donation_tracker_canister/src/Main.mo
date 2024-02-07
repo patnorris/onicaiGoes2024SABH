@@ -10,6 +10,7 @@ import Nat64 "mo:base/Nat64";
 import Time "mo:base/Time";
 import Int "mo:base/Int";
 import List "mo:base/List";
+import Bool "mo:base/Bool";
 
 import Types "Types";
 import Utils "Utils";
@@ -68,6 +69,10 @@ actor class DonationTracker() {
 
     public shared (msg) func whoami() : async Principal {
         return msg.caller;
+    };
+
+    public shared (msg) func amiController() : async Bool {
+        return Principal.isController(msg.caller);
     };
 
     // Initialize recipients and their relationships
@@ -186,11 +191,11 @@ actor class DonationTracker() {
             personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
             rewardsHaveBeenClaimed : Bool = false;
         };
-        
+
         let newDonationResult = donations.add(newDonation);
 
         // Update the map for the caller's principal
-        if (Principal.isAnonymous(msg.caller)) { } else {
+        if (Principal.isAnonymous(msg.caller)) {} else {
             let existingDonations = switch (donationsByPrincipal.get(msg.caller)) {
                 case (null) { Buffer.Buffer<DTI>(0) };
                 case (?ds) { ds };
@@ -503,7 +508,7 @@ actor class DonationTracker() {
     var emailSubscribersStorage : HashMap.HashMap<Text, Types.EmailSubscriber> = HashMap.HashMap(0, Text.equal, Text.hash);
 
     stable var custodians = List.make<Principal>(Principal.fromText("cda4n-7jjpo-s4eus-yjvy7-o6qjc-vrueo-xd2hh-lh5v2-k7fpf-hwu5o-yqe"));
-    
+
     // Add a user as new email subscriber
     private func putEmailSubscriber(emailSubscriber : Types.EmailSubscriber) : Text {
         emailSubscribersStorage.put(emailSubscriber.emailAddress, emailSubscriber);
@@ -517,41 +522,41 @@ actor class DonationTracker() {
     };
 
     // User can submit a form to sign up for email updates
-        // For now, we only capture the email address provided by the user and on which page they submitted the form
+    // For now, we only capture the email address provided by the user and on which page they submitted the form
     public func submitSignUpForm(submittedSignUpForm : Types.SignUpFormInput) : async Text {
-        switch(getEmailSubscriber(submittedSignUpForm.emailAddress)) {
-        case null {
-            // New subscriber
-            let emailSubscriber : Types.EmailSubscriber = {
-            emailAddress: Text = submittedSignUpForm.emailAddress;
-            pageSubmittedFrom: Text = submittedSignUpForm.pageSubmittedFrom;
-            subscribedAt: Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+        switch (getEmailSubscriber(submittedSignUpForm.emailAddress)) {
+            case null {
+                // New subscriber
+                let emailSubscriber : Types.EmailSubscriber = {
+                    emailAddress : Text = submittedSignUpForm.emailAddress;
+                    pageSubmittedFrom : Text = submittedSignUpForm.pageSubmittedFrom;
+                    subscribedAt : Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+                };
+                let result = putEmailSubscriber(emailSubscriber);
+                if (result != emailSubscriber.emailAddress) {
+                    return "There was an error signing up. Please try again.";
+                };
+                return "Successfully signed up!";
             };
-            let result = putEmailSubscriber(emailSubscriber);
-            if (result != emailSubscriber.emailAddress) {
-            return "There was an error signing up. Please try again.";
-            };
-            return "Successfully signed up!";
+            case _ { return "Already signed up!" };
         };
-        case _ { return "Already signed up!"; };
-        };  
     };
 
     // Function for custodian to get all email subscribers
-    public shared({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
+    public shared ({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
         // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
-        return Iter.toArray(emailSubscribersStorage.entries());
+        if (List.some(custodians, func(custodian : Principal) : Bool { custodian == caller })) {
+            return Iter.toArray(emailSubscribersStorage.entries());
         };
         return [];
     };
 
     // Function for custodian to delete an email subscriber
-    public shared({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
+    public shared ({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
         // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
-        emailSubscribersStorage.delete(emailAddress);
-        return true;
+        if (List.some(custodians, func(custodian : Principal) : Bool { custodian == caller })) {
+            emailSubscribersStorage.delete(emailAddress);
+            return true;
         };
         return false;
     };
