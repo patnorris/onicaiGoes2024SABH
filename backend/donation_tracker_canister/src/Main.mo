@@ -6,6 +6,10 @@ import Principal "mo:base/Principal";
 import Text "mo:base/Text";
 import Iter "mo:base/Iter";
 import Blob "mo:base/Blob";
+import Nat64 "mo:base/Nat64";
+import Time "mo:base/Time";
+import Int "mo:base/Int";
+import List "mo:base/List";
 
 import Types "Types";
 import Utils "Utils";
@@ -17,9 +21,9 @@ actor class DonationTracker() {
 
     // Select one of these. For local, also update the value to match your local deployment !!
     // LOCAL NETWORK
-    let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
+    // let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
     // IC MAINNET
-    // let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+    let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
@@ -160,20 +164,48 @@ actor class DonationTracker() {
     };
 
     public shared (msg) func makeDonation(donationRecord : Types.DonationRecord) : async Types.DtiResult {
-        let caller = Principal.toText(msg.caller);
-        let dti = donations.size(); // Simply use index into donations Array as the DTI
+        let donationInput = donationRecord.donation;
+        // Potential TODO: checks on inputs
 
-        // TODO
-        // donations := Array.append<Donation>(donations, [donation]);
+        let newDti = donations.size(); // Simply use index into donations Array as the DTI
+        var newDonor : Types.DonorType = #Anonymous;
+        if (Principal.isAnonymous(msg.caller)) {
+            newDonor := #Anonymous;
+        } else {
+            newDonor := #Principal(msg.caller);
+        };
+        var newDonation : Donation = {
+            dti : DTI = newDti;
+            totalAmount : Satoshi = donationInput.totalAmount;
+            allocation : DonationCategories = donationInput.allocation;
+            timestamp : Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+            paymentTransactionId : Types.PaymentTransactionId = donationInput.paymentTransactionId;
+            paymentType : Types.PaymentType = donationInput.paymentType; // Assuming payment types are strings, you might want to define an enum if you have a fixed set of payment types
+            recipientId : Types.RecipientId = donationInput.recipientId;
+            donor : Types.DonorType = newDonor;
+            personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
+            rewardsHaveBeenClaimed : Bool = false;
+        };
+        
+        let newDonationResult = donations.add(newDonation);
 
-        // // Update the map for the caller's principal
-        // let existingDonations = switch (donationsByPrincipal.get(Principal.caller())) {
-        //     case (null) { [] };
-        //     case (?ds) { ds };
-        // };
-        // donationsByPrincipal.put(Principal.caller(), Array.append<DTI>(existingDonations, [dti]));
+        // Update the map for the caller's principal
+        if (Principal.isAnonymous(msg.caller)) { } else {
+            let existingDonations = switch (donationsByPrincipal.get(msg.caller)) {
+                case (null) { Buffer.Buffer<DTI>(0) };
+                case (?ds) { ds };
+            };
+            let addDonationResult = existingDonations.add(newDti);
+            donationsByPrincipal.put(msg.caller, existingDonations);
+        };
 
-        return #Ok({ dti });
+        let associatedDonations = switch (donationsByTxId.get(donationInput.paymentTransactionId)) {
+            case (null) { [] };
+            case (?ds) { ds };
+        };
+        donationsByTxId.put(donationInput.paymentTransactionId, Array.append<Donation>(associatedDonations, [newDonation]));
+
+        return #Ok({ dti = newDti });
     };
 
     public shared (msg) func getDonationDetails(dtiRecord : Types.DtiRecord) : async Types.DonationResult {
@@ -420,7 +452,7 @@ actor class DonationTracker() {
                 // Iterate over utxos, access field outpoint on each utxo and txid on outpoint
                 // pass txid to Utils.bytesToText and store it in an array
                 for (i : Nat in utxos.keys()) {
-                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    let txidText = Utils.btcTxIdToText(utxos[i].outpoint.txid);
                     txids.add(txidText);
                 };
                 // Return the list of txids in text format
@@ -448,7 +480,7 @@ actor class DonationTracker() {
                 // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
                 // if they match, return field value on utxo
                 for (i : Nat in utxos.keys()) {
-                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    let txidText = Utils.btcTxIdToText(utxos[i].outpoint.txid);
                     if (txidText == bitcoinTransactionId) {
                         // If they match, return the value field on utxo
                         return utxos[i].value;
@@ -466,6 +498,64 @@ actor class DonationTracker() {
     //  Utils.bytesToText(await BitcoinWallet.send(NETWORK, DERIVATION_PATH, KEY_NAME, request.destination_address, request.amount_in_satoshi))
     //};
 
+    // Email Signups from Website
+    stable var emailSubscribersStorageStable : [(Text, Types.EmailSubscriber)] = [];
+    var emailSubscribersStorage : HashMap.HashMap<Text, Types.EmailSubscriber> = HashMap.HashMap(0, Text.equal, Text.hash);
+
+    stable var custodians = List.make<Principal>(Principal.fromText("cda4n-7jjpo-s4eus-yjvy7-o6qjc-vrueo-xd2hh-lh5v2-k7fpf-hwu5o-yqe"));
+    
+    // Add a user as new email subscriber
+    private func putEmailSubscriber(emailSubscriber : Types.EmailSubscriber) : Text {
+        emailSubscribersStorage.put(emailSubscriber.emailAddress, emailSubscriber);
+        return emailSubscriber.emailAddress;
+    };
+
+    // Retrieve an email subscriber by email address
+    private func getEmailSubscriber(emailAddress : Text) : ?Types.EmailSubscriber {
+        let result = emailSubscribersStorage.get(emailAddress);
+        return result;
+    };
+
+    // User can submit a form to sign up for email updates
+        // For now, we only capture the email address provided by the user and on which page they submitted the form
+    public func submitSignUpForm(submittedSignUpForm : Types.SignUpFormInput) : async Text {
+        switch(getEmailSubscriber(submittedSignUpForm.emailAddress)) {
+        case null {
+            // New subscriber
+            let emailSubscriber : Types.EmailSubscriber = {
+            emailAddress: Text = submittedSignUpForm.emailAddress;
+            pageSubmittedFrom: Text = submittedSignUpForm.pageSubmittedFrom;
+            subscribedAt: Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+            };
+            let result = putEmailSubscriber(emailSubscriber);
+            if (result != emailSubscriber.emailAddress) {
+            return "There was an error signing up. Please try again.";
+            };
+            return "Successfully signed up!";
+        };
+        case _ { return "Already signed up!"; };
+        };  
+    };
+
+    // Function for custodian to get all email subscribers
+    public shared({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
+        // Only Principals registered as custodians can access this function
+        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
+        return Iter.toArray(emailSubscribersStorage.entries());
+        };
+        return [];
+    };
+
+    // Function for custodian to delete an email subscriber
+    public shared({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
+        // Only Principals registered as custodians can access this function
+        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
+        emailSubscribersStorage.delete(emailAddress);
+        return true;
+        };
+        return false;
+    };
+
     // -------------------------------------------------------------------------------
     // Canister upgrades
 
@@ -477,6 +567,7 @@ actor class DonationTracker() {
         recipientsByIdStable := Iter.toArray(recipientsById.entries());
         studentsBySchoolStable := Iter.toArray(studentsBySchool.entries());
         donationsByTxIdStable := Iter.toArray(donationsByTxId.entries());
+        emailSubscribersStorageStable := Iter.toArray(emailSubscribersStorage.entries());
     };
 
     // System-provided lifecycle method called after an upgrade or on initial deploy.
@@ -492,6 +583,8 @@ actor class DonationTracker() {
         studentsBySchoolStable := [];
         donationsByTxId := HashMap.fromIter(Iter.fromArray(donationsByTxIdStable), donationsByTxIdStable.size(), Text.equal, Text.hash);
         donationsByTxIdStable := [];
+        emailSubscribersStorage := HashMap.fromIter(Iter.fromArray(emailSubscribersStorageStable), emailSubscribersStorageStable.size(), Text.equal, Text.hash);
+        emailSubscribersStorageStable := [];
     };
     // -------------------------------------------------------------------------------
 };
