@@ -480,7 +480,7 @@ actor class DonationTracker() {
                 // pass txid to Utils.bytesToText and compare to bitcoinTransactionId
                 // if they match, return field value on utxo
                 for (i : Nat in utxos.keys()) {
-                    let txidText = Utils.bytesToText(Blob.toArray(utxos[i].outpoint.txid));
+                    let txidText = Utils.btcTxIdToText(utxos[i].outpoint.txid);
                     if (txidText == bitcoinTransactionId) {
                         // If they match, return the value field on utxo
                         return utxos[i].value;
