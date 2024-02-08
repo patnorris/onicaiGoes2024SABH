@@ -42,7 +42,7 @@ dfx generate
 # Deploy
 dfx deploy
 # to IC
-dfx deploy --ic donation_tracker_canister -m reinstall
+dfx deploy --ic donation_tracker_canister
 
 # Initialize the mock schools & students (the recipients)
 dfx canister call donation_tracker_canister initRecipients
