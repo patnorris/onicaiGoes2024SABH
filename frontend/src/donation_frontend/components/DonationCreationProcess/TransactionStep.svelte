@@ -53,13 +53,17 @@
     <p>Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
     <div class="mt-4">
       <input class="border p-2" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkDonationStatus}>
-        Check Now
-      </button>
       {#if isLoading}
+        <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >
+          Check Now
+        </button>
         <div class="items-center">
           <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
         </div>
+      {:else}
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkDonationStatus}>
+          Check Now
+        </button>
       {/if}
     </div>
     {#if bitcoinTransactionCheckError}
