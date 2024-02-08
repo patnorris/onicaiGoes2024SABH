@@ -16,14 +16,18 @@
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 3: Choose Donation Recipient</h1>	
     <p class="mt-4">Please choose the school or student you would like to donate to.</p>
-    {#key recipientInfo}
-      {#if recipientInfo}
-        <p id='currentRecipientSubtext'>You have currently selected this recipient:</p>
-        <RecipientPreview recipientPreview={recipientInfo} embedded={true}/>
-      {:else}
-        <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>
-      {/if}
-    {/key}
+    <div class="p-6 space-y-3">
+      {#key recipientInfo}
+        {#if recipientInfo}
+          <div class="p-6 mt-4 space-y-3 bg-blue-50 shadow-md border border-gray-300 rounded-lg">
+            <p id='currentRecipientSubtext' class="text-black font-semibold">You have currently selected this recipient:</p>
+            <RecipientPreview recipientPreview={recipientInfo} embedded={true}/>
+          </div>
+        {:else}
+          <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>
+        {/if}
+      {/key}
+    </div>
     <div class="mt-4">
       <RecipientsList embedded={true} recipientType={"School"} />
     </div>
