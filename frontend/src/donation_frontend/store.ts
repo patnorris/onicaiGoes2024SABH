@@ -63,6 +63,7 @@ const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicati
 
 // Global variable to keep track of Donation Creation process
 export let currentDonationCreationObject = writable({
+  currentActiveFormStepIndex: 1,
   bitcoinTransaction: {
     bitcoinTransactionId: '',
     bitcoinTransactionObject: null, /* e.g. {

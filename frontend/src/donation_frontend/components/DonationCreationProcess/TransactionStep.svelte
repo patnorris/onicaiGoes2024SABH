@@ -43,6 +43,10 @@
     isLoading = false;
   };
 
+  const handleContinue = () => {
+		$currentDonationCreationObject.currentActiveFormStepIndex++;
+	};
+
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
@@ -73,6 +77,9 @@
       <p id='bitcoinTransactionCheckSubtext'>There is {amountLeft} transaction value left to donate.</p>
       {#if amountLeft > 0}
         <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
+          Continue
+        </button>
       {:else}
         <p id='bitcoinTransactionCheckSubtext'>Please use another transaction which has value left to donate.</p>
       {/if}

@@ -1,11 +1,14 @@
 <script lang="ts">
-	import { store } from "../store";
+	import { store, currentDonationCreationObject } from "../store";
 	import Topnav from "../components/Topnav.svelte";
 	import Footer from "../components/Footer.svelte";
 	import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
 	import ProgressBar from '../components/DonationCreationProcess/ProgressBar.svelte';
 
-	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'], currentActive = 1, progressBar;
+	let progressBar;
+	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'];
+	let currentActive = $currentDonationCreationObject.currentActiveFormStepIndex;
+	currentDonationCreationObject.subscribe((value) => currentActive = value.currentActiveFormStepIndex);
 	
 	const handleProgress = (stepIncrement) => {
 		progressBar.handleProgress(stepIncrement)
@@ -33,7 +36,7 @@
 
   	<div class="center-container">
 		<div>
-			<ProgressBar {steps} bind:currentActive bind:this={progressBar}/>
+			<ProgressBar {steps} bind:currentActive={$currentDonationCreationObject.currentActiveFormStepIndex} bind:this={progressBar}/>
 		</div>
 			
 		<div class="step-button">
@@ -42,6 +45,10 @@
 		</div>
 		<div>
 			<Form active_step={steps[currentActive-1]}/>
+		</div>
+		<div class="step-button">
+			<button id="createDonationProcessPrevButton" class="btn" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+			<button id="createDonationProcessNextButton" class="btn" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
 		</div>
 	</div>
 
