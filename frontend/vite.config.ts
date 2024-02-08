@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import path from "path";
 import dfxJson from "./dfx.json";
 import fs from "fs";
+import { VitePWA } from "vite-plugin-pwa";
 
 const isDev = process.env["DFX_NETWORK"] === "local";
 const networkName = process.env["DFX_NETWORK"] || "local";
@@ -67,10 +68,58 @@ const canisterDefinitions = Object.entries(canisterIds).reduce(
   {},
 );
 
+// Setup for Progressive Web App
+const pwaManifest = {
+  short_name: "Bitcoin Donation App",
+  name: "Bitcoin Donation App",
+  description: "Donate bitcoin to worthwhile causes.",
+  //display: "standalone",
+  //scope: "/",
+  //start_url: "/",
+  background_color: "#3367D6",
+  theme_color: "#3367D6",
+  icons: [
+    {
+      src: './BitcoinDonationApp_img192.png',
+      sizes: '192x192',
+      type: 'image/png',
+    },
+    {
+      src: './BitcoinDonationApp_img512.png',
+      sizes: '512x512',
+      type: 'image/png',
+    },
+    {
+      src: './BitcoinDonationApp_img512.png',
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'any'
+    },
+    {
+      src: './BitcoinDonationApp_img512.png',
+      sizes: '512x512',
+      type: 'image/png',
+      purpose: 'maskable'
+    },
+    {
+      src: "./BitcoinDonationApp_img721.png",
+      type: "image/png",
+      sizes: "721x721"
+    },
+  ],
+};
+
+const pwaOptions = {
+  manifest: pwaManifest,
+};
+
 // See guide on how to configure Vite at:
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [
+    svelte(),
+    VitePWA(pwaOptions)
+  ],
   build: {
     target: "es2020",
   },
