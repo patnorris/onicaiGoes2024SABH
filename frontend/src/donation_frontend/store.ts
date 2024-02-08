@@ -96,7 +96,7 @@ const hours = BigInt(24);
 const nanosecondsPerHour = BigInt(3600000000000);
 
 type State = {
-  isAuthed: "plug" | "stoic" | "nfid" | "bitfinity" | null;
+  isAuthed: "plug" | "stoic" | "nfid" | "bitfinity" | "internetidentity" |null;
   backendActor: typeof donation_tracker_canister;
   principal: Principal;
   accountId: string;
@@ -172,6 +172,54 @@ export const createStore = ({
       //accountId: accounts[0].address, // we take the default account associated with the identity
       accountId: null,
       isAuthed: "nfid",
+    }));
+  };
+
+  const internetIdentityConnect = async () => {
+    authClient = await AuthClient.create();
+    await authClient.login({
+      onSuccess: async () => {
+        const identity = await authClient.getIdentity();
+        initInternetIdentity(identity);
+      },
+      identityProvider:
+        process.env.DFX_NETWORK === "ic"
+          ? "https://identity.ic0.app/#authorize"
+          : `http://${process.env.INTERNET_IDENTITY_CANISTER_ID}.localhost:4943/#authorize`,
+      // Maximum authorization expiration is 30 days
+      maxTimeToLive: days * hours * nanosecondsPerHour,
+      windowOpenerFeatures: 
+        `left=${window.screen.width / 2 - 525 / 2}, `+
+        `top=${window.screen.height / 2 - 705 / 2},` +
+        `toolbar=0,location=0,menubar=0,width=525,height=705`,
+      // See https://docs.nfid.one/multiple-domains
+      // for instructions on how to use derivationOrigin
+      // derivationOrigin: "https://<canister_id>.ic0.app"
+    });
+  };
+
+  const initInternetIdentity = async (identity: Identity) => {
+    const backendActor = createBackendCanisterActor(backendCanisterId, {
+      agentOptions: {
+        identity,
+        host: HOST,
+      },
+    });
+
+    if (!backendActor) {
+      console.warn("couldn't create backend actor");
+      return;
+    };
+
+    //let accounts = JSON.parse(await identity.accounts());
+
+    update((state) => ({
+      ...state,
+      backendActor,
+      principal: identity.getPrincipal(),
+      //accountId: accounts[0].address, // we take the default account associated with the identity
+      accountId: null,
+      isAuthed: "internetidentity",
     }));
   };
 
@@ -402,6 +450,12 @@ export const createStore = ({
       } catch (error) {
         console.error("NFid disconnect error: ", error);       
       };
+    } else if (globalState.isAuthed === "internetidentity") {
+      try {
+        await authClient.logout();      
+      } catch (error) {
+        console.error("Internet Identity disconnect error: ", error);       
+      };
     } else if (globalState.isAuthed === "bitfinity") {
       /* try {
         await window.ic?.infinityWallet?.disconnect();
@@ -431,6 +485,7 @@ export const createStore = ({
     stoicConnect,
     nfidConnect,
     bitfinityConnect,
+    internetIdentityConnect,
     disconnect,
   };
 };
