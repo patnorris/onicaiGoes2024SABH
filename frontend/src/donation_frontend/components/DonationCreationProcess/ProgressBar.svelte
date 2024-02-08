@@ -14,7 +14,7 @@
 
 			if(currentActive > circles.length) {
 				currentActive = circles.length;
-			}
+			};
 		} else {
 			currentActive--;
 
@@ -27,17 +27,21 @@
 	};
 	
 	function update() {
-		circles.forEach((circle, idx) => {
-			if(idx < currentActive) {
-				circle.classList.add('active');
-			} else {
-				circle.classList.remove('active');
-			}
-		});
+		circles = document.querySelectorAll('.circle');
+		if (circles) {
+			circles.forEach((circle, idx) => {
+				if(idx < currentActive) {
+					circle.classList.add('active');
+				} else {
+					circle.classList.remove('active');
+				};
+			});
+		};
 
 		const actives = document.querySelectorAll('.active');
-
-		progress.style.width = (actives.length - 1) / (circles.length - 1) * 100 + '%';
+		if (actives && progress) {
+			progress.style.width = (actives.length - 1) / (circles.length - 1) * 100 + '%';
+		};
 	};
 
 	const initSubscription = async () => {

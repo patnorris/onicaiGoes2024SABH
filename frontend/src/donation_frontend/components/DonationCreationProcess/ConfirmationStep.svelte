@@ -128,6 +128,9 @@
               <li>{error}</li>
             {/each}
           </ul>
+          <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Finalize Donation
+          </button>
         {:else}
           <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
           {#if submittingDonationInProgress}

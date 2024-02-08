@@ -4,6 +4,7 @@
 	import Footer from "../components/Footer.svelte";
 	import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
 	import ProgressBar from '../components/DonationCreationProcess/ProgressBar.svelte';
+    import { onMount } from "svelte";
 
 	let progressBar;
 	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'];
@@ -11,8 +12,16 @@
 	currentDonationCreationObject.subscribe((value) => currentActive = value.currentActiveFormStepIndex);
 	
 	const handleProgress = (stepIncrement) => {
-		progressBar.handleProgress(stepIncrement)
+		progressBar.handleProgress(stepIncrement);
 	};
+
+	const resetActiveStepIndex = () => {
+		if ($currentDonationCreationObject.currentActiveFormStepIndex !== 1) {
+			$currentDonationCreationObject.currentActiveFormStepIndex = 1;
+		};		
+	};
+
+	onMount(resetActiveStepIndex);
 
 </script>
 
