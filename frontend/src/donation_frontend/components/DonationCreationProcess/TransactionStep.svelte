@@ -13,9 +13,32 @@
 
   let amountLeft = $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate || 0;
 
-  // Function to check the donation status
-  const checkDonationStatus = async () => {
+// Before submitting the transaction id to check to the backend, confirm its general validity
+  let errorMessage = "";
+  function validateBitcoinTransactionId(bitcoinTransactionId) {
+    errorMessage = ""; // reset error message
+    // Trim the input to remove any leading/trailing whitespace
+    bitcoinTransactionId = bitcoinTransactionId.trim();
+    // Check if the input is empty
+    if (bitcoinTransactionId === "") {
+      errorMessage = "Please enter a Bitcoin Transaction Id.";
+      return false;
+    }
+    // Validate Bitcoin Transaction ID format
+    else if (!/^[0-9a-fA-F]{64}$/.test(bitcoinTransactionId)) {
+      errorMessage = "Bitcoin Transaction Id must be a 64-character hexadecimal string.";
+      return false;
+    };
+
+    return true;
+  };
+
+  // Function to check the transaction status
+  const checkTransactionStatus = async () => {
     console.log("Checking status for: ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId);
+    if (!validateBitcoinTransactionId($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId)) {
+      return;
+    };
     isLoading = true;
     bitcoinTransactionCheckError = false;
     bitcoinTransactionLoaded = false;
@@ -32,9 +55,9 @@
     const transactionCheckInput = {
       bitcoinTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
     };
-    console.log("DEBUG checkDonationStatus transactionCheckInput ", transactionCheckInput);
+    console.log("DEBUG checkTransactionStatus transactionCheckInput ", transactionCheckInput);
     const transactionCheckResponse = await $store.backendActor.getBtcTransactionDetails(transactionCheckInput);
-    console.log("DEBUG checkDonationStatus transactionCheckResponse ", transactionCheckResponse);
+    console.log("DEBUG checkTransactionStatus transactionCheckResponse ", transactionCheckResponse);
     // @ts-ignore
     if (transactionCheckResponse.Err) {
       bitcoinTransactionCheckError = true;
@@ -98,9 +121,12 @@
           <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
         </div>
       {:else}
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkDonationStatus}>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkTransactionStatus}>
           Check Now
         </button>
+      {/if}
+      {#if errorMessage}
+        <p class="text-red-500">{errorMessage}</p>
       {/if}
     </div>
     <div class="p-4 space-y-2">
