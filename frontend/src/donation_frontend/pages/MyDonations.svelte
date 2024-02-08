@@ -37,17 +37,8 @@
         // @ts-ignore
         const userDonations = userDonationsResponse.Ok.donations;
       console.log("DEBUG loadUserDonations userDonations ", userDonations);
-        const numberOfUserDonations = userDonations.length;
-        if (numberOfUserDonations < 1) {
-          document.getElementById("donationsSubtext").innerText = "You haven't made any donations yet. Get started now if you like!";
-        } else {
-          document.getElementById("donationsSubtext").innerText = numberOfUserDonations === 1 
-            ? `Big success, you have made ${numberOfUserDonations} donation! Let's take a look:`
-            : `Big success, you have made ${numberOfUserDonations} donations! Let's take a look:`;
-
-          loadedUserDonations = userDonations;
-          hasLoadedDonations = true;
-        };
+        loadedUserDonations = userDonations;
+        hasLoadedDonations = true;
       };
     };
     isLoading = false;
@@ -63,11 +54,16 @@
   {#if !$store.isAuthed}
     <p id='donationsSubtext'>Log in to see which Donations you have made.</p>
   {:else}
-    <p id='donationsSubtext'>Let's see which Donations you have made...</p>
-    {#if hasLoadedDonations}
-      <DonationsList donations={loadedUserDonations} newestToOldest={true} />
-    {:else if isLoading}
+    {#if isLoading}
+      <p id='donationsSubtext'>Let's see which Donations you have made...</p>
       <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
+    {:else if hasLoadedDonations}
+      {#if loadedUserDonations.length > 0}
+        <p id='donationsSubtext'>Big success, you have made {loadedUserDonations.length} {loadedUserDonations.length === 1 ? "donation" : "donations"}! Let's take a look:</p>
+        <DonationsList donations={loadedUserDonations} newestToOldest={true} />        
+      {:else}
+        <p id='donationsSubtext'>You haven't made any donations yet. Get started now if you like!</p>
+      {/if}
     {:else}
       <p hidden>{loadUserDonations()}</p>
     {/if}
