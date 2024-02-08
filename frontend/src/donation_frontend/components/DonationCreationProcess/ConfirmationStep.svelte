@@ -1,7 +1,9 @@
 <script lang="ts">
-    import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
-    import { store, currentDonationCreationObject } from "../../store";
-    import { push } from "svelte-spa-router";
+  import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+  import { store, currentDonationCreationObject } from "../../store";
+  import { push } from "svelte-spa-router";
+
+  import spinner from "../../assets/loading.gif";
 
   let validationErrors = [];
   let confirmNewTotal = false;
@@ -32,6 +34,7 @@
   // Call validation on component mount
   validateDonationDetails();
 
+  let submittingDonationInProgress = false;
   let submitDonationError = false;
   let submitDonationSuccess = false;
   let createdDonationTransactionId;
@@ -39,6 +42,7 @@
   async function finalizeDonation() {
     // Implement your logic to submit the donation details
     console.log('Finalizing donation with details: ', $currentDonationCreationObject);
+    submittingDonationInProgress = true;
     // Backend Canister Integration
       // Parameters: record with Donation ({donation : {totalAmount: …, allocation: …, …}})
       // Returns: 
@@ -79,6 +83,7 @@
       createdDonationTransactionId = submitDonationResponse.Ok.dti;
       submitDonationSuccess = true;
     };
+    submittingDonationInProgress = false;
   };
 
   function viewNewDonation() {
@@ -125,9 +130,16 @@
           </ul>
         {:else}
           <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
-            Finalize Donation
-          </button>
+          {#if submittingDonationInProgress}
+            <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Finalize Donation
+            </button>
+            <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
+          {:else}
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
+              Finalize Donation
+            </button>
+          {/if}
         {/if}
         {#if submitDonationError}
           <div>
