@@ -84,7 +84,7 @@ actor class DonationTracker() {
         #School {
             id = "school1";
             name = "Green Valley High";
-            thumbnail = "url_to_thumbnail_1";
+            thumbnail = "./images/school1_thumbnail.png";
             address = "123 Green Valley Rd";
         };
 
@@ -92,7 +92,7 @@ actor class DonationTracker() {
         #Student {
             id = "student1School1";
             name = "Alex Johnson";
-            thumbnail = "url_to_thumbnail_2";
+            thumbnail = "./images/student1School1_thumbnail.png";
             grade = 10;
             schoolId = "school1";
         };
@@ -101,7 +101,7 @@ actor class DonationTracker() {
         #Student {
             id = "student2School1";
             name = "Jamie Smith";
-            thumbnail = "url_to_thumbnail_3";
+            thumbnail = "./images/student2School1_thumbnail.png";
             grade = 11;
             schoolId = "school1";
         };
@@ -110,7 +110,7 @@ actor class DonationTracker() {
         #School {
             id = "school2";
             name = "Sunnydale Elementary";
-            thumbnail = "url_to_thumbnail_4";
+            thumbnail = "./images/school2_thumbnail.png";
             address = "456 Sunnydale St";
         };
 
@@ -118,7 +118,7 @@ actor class DonationTracker() {
         #Student {
             id = "student1School2";
             name = "Robin Doe";
-            thumbnail = "url_to_thumbnail_5";
+            thumbnail = "./images/student1School2_thumbnail.png";
             grade = 8;
             schoolId = "school2";
         };
@@ -127,7 +127,7 @@ actor class DonationTracker() {
         #Student {
             id = "student2School2";
             name = "Taylor Ray";
-            thumbnail = "url_to_thumbnail_6";
+            thumbnail = "./images/student2School2_thumbnail.png";
             grade = 9;
             schoolId = "school2";
         };
