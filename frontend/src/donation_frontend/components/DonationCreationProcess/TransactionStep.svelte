@@ -64,26 +64,29 @@
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 2: Check Bitcoin Transaction</h1>	
-
-    {#if transactionInfo}
-      <p id='currentTransactionSubtext' class="mt-4">Great, you have currently selected this transaction:</p>
-      <p>Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
-      <p>Total Value: {transactionInfo.totalValue}</p>
-      <p>Value Left to Donate {amountLeft}</p>
-      {#if amountLeft > 0}
-        <p id='bitcoinTransactionCheckSubtext'>You can continue with the next step.</p>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
-          Continue
-        </button>
-        <p>If you prefer, you can also enter another transaction below.</p>
+    <div class="p-6 space-y-3">
+      {#if transactionInfo}
+        <div class="p-6 mt-4 space-y-3 bg-blue-50 shadow-md border border-gray-300 rounded-lg">
+          <p id='currentTransactionSubtext' class="text-black font-semibold">Great, you have currently selected this transaction:</p>
+          <p class="text-gray-700">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+          <p class="text-gray-700">Total Value: {transactionInfo.totalValue}</p>
+          <p class="text-gray-700">Value Left to Donate: {amountLeft}</p>
+        </div>
+        {#if amountLeft > 0}
+          <p id='bitcoinTransactionCheckSubtext'>You can continue with the next step.</p>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
+            Continue
+          </button>
+          <p>If you prefer, you can also enter another transaction below instead.</p>
+        {:else}
+          <p>Please use another transaction which has value left to donate.</p>
+          <p>You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
+        {/if}
       {:else}
-        <p>Please use another transaction which has value left to donate.</p>
-        <p>You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
+        <p id='currentTransactionSubtext' class="mt-4">Let's check that your Bitcoin transaction was confirmed on the Bitcoin network before we can proceed.</p>
+        <p>Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
       {/if}
-    {:else}
-      <p id='currentTransactionSubtext' class="mt-4">Let's check that your Bitcoin transaction was confirmed on the Bitcoin network before we can proceed.</p>
-      <p>Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
-    {/if}
+    </div>
 
     <div class="mt-4">
       <input class="border p-2" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
@@ -100,19 +103,21 @@
         </button>
       {/if}
     </div>
-    {#if bitcoinTransactionCheckError}
-      <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
-    {:else if bitcoinTransactionLoaded}
-      <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
-      <p id='bitcoinTransactionCheckSubtext'>There is {amountLeft} transaction value left to donate.</p>
-      {#if amountLeft > 0}
-        <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
-          Continue
-        </button>
-      {:else}
-        <p id='bitcoinTransactionCheckSubtext'>Please use another transaction which has value left to donate.</p>
+    <div class="p-4 space-y-2">
+      {#if bitcoinTransactionCheckError}
+        <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
+      {:else if bitcoinTransactionLoaded}
+        <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
+        <p id='bitcoinTransactionCheckSubtext'>There is {amountLeft} transaction value left to donate.</p>
+        {#if amountLeft > 0}
+          <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
+            Continue
+          </button>
+        {:else}
+          <p id='bitcoinTransactionCheckSubtext'>Please use another transaction which has value left to donate.</p>
+        {/if}
       {/if}
-    {/if}
+    </div>
   </div>
 </section>
