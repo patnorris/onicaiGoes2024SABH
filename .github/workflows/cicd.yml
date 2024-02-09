@@ -43,35 +43,31 @@ jobs:
           pwd
           sudo apt-get update
           sudo apt-get install build-essential
+          sudo apt-get install -y wget tar
           make install-dfx
           make install-python
-          make install-clang-ubuntu
           make install-jp
+
+      - name: Download and Install Bitcoin Core
+        run: |
+          make install-bitcoin-core
 
       - name: versions
         shell: bash -l {0}
         run: |
           echo "icpp --version: $(icpp --version)"
-          echo "clang++ --version: $(clang++ --version)"
-          echo "g++ --version: $(g++ --version)"
-          #echo "wasm2wat version: $(wasm2wat --version)"
           echo "pip version     : $(pip --version)"
           echo "python version  : $(python --version)"
           echo "jp version      : $(jp --version)"
-          #echo "rustc version   : $(rustc --version)"
           echo "dfx version    : $(dfx --version)"
+          BITCOIN_DIR=$(find . -name "bitcoin-*" -type d | head -n 1)
+          $BITCOIN_DIR/bin/bitcoind -version
           echo "Ensure conda works properly"
           conda info
           which pip
           which python
           which icpp
-
-      - name: install-wasi-sdk
-        shell: bash -l {0}
-        run: |
-          echo "Installing wasi-sdk"
-          icpp install-wasi-sdk
-
+      
       - name: all-tests
         shell: bash -l {0}
         run: |

@@ -34,6 +34,8 @@ endif
 # latest release of didc
 VERSION_DIDC := $(shell curl --silent "https://api.github.com/repos/dfinity/candid/releases/latest" | grep -e '"tag_name"' | cut -c 16-25)
 
+VERSION_BITCOIN := 25.0
+
 .PHONY: summary
 summary:
 	@echo "-------------------------------------------------------------"
@@ -45,13 +47,56 @@ summary:
 # CI/CD - Phony Makefile targets
 #
 .PHONY: all-tests
-all-tests: all-static all-canister-deploy-local-pytest 
+all-tests: all-static all-deploy-and-pytest 
 	
-.PHONY: all-canister-deploy-local-pytest
-all-canister-deploy-local-pytest:
-	dfx identity use default
-	@python -m scripts.all_canister_deploy_local_pytest
+.PHONY: all-deploy-and-pytest
+all-deploy-and-pytest:
+	bitcoin-$(VERSION_BITCOIN)/bin/bitcoind \
+		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
+		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
+		--port=18444 &
+		# --port=18444 > /dev/null 2>&1 &
 
+	@echo "Waiting for bitcoind to start..."
+	@MAX_ATTEMPTS=30; \
+	ATTEMPT=0; \
+	while ! bitcoin-$(VERSION_BITCOIN)/bin/bitcoin-cli -conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf -datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data getblockchaininfo > /dev/null 2>&1; do \
+		ATTEMPT=$$(($$ATTEMPT + 1)); \
+		if [ $$ATTEMPT -ge $$MAX_ATTEMPTS ]; then \
+			echo "bitcoind did not start within the expected time frame."; \
+			exit 1; \
+		fi; \
+		echo "Waiting for bitcoind to be ready..."; \
+		sleep 1; \
+	done; \
+	echo "bitcoind is up and running."
+	
+	dfx identity use default
+	dfx stop
+	dfx start --clean --background
+
+	cd backend/donation_canister && \
+		dfx deploy donation_canister --argument '(variant { regtest })'
+
+	cd backend/donation_tracker_canister && \
+		dfx deploy && \
+		dfx canister call donation_tracker_canister initRecipients
+
+	pytest
+
+	dfx stop
+
+	bitcoin-$(VERSION_BITCOIN)/bin/bitcoin-cli \
+		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
+		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
+		stop
+
+.PHONY: bitcoin-core-stop
+bitcoin-core-stop: 
+	bitcoin-$(VERSION_BITCOIN)/bin/bitcoin-cli \
+		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
+		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
+		stop
 
 .PHONY: all-static
 all-static: \
@@ -81,23 +126,17 @@ python-type:
 ###########################################################################
 # Toolchain installation for .github/workflows
 
-# Note for clang++
-# This command does not contain latest LLVM version that ships with wasi-sdk
-# sudo apt-get update && sudo apt-get install clang-$(VERSION_CLANG)
-
-.PHONY: install-clang-ubuntu
-install-clang-ubuntu:
-	@echo "Installing clang-$(VERSION_CLANG) compiler"
-	sudo apt-get remove python3-lldb-14
-	wget https://apt.llvm.org/llvm.sh
-	chmod +x llvm.sh
-	echo | sudo ./llvm.sh $(VERSION_CLANG)
-	rm llvm.sh
-
-	@echo "Creating soft links for compiler executables"
-	sudo ln --force -s /usr/bin/clang-$(VERSION_CLANG) /usr/bin/clang
-	sudo ln --force -s /usr/bin/clang++-$(VERSION_CLANG) /usr/bin/clang++
-
+# https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#setting-up-a-local-bitcoin-network
+.PHONY: install-bitcoin-core
+install-bitcoin-core:
+	wget https://bitcoin.org/bin/bitcoin-core-$(VERSION_BITCOIN)/bitcoin-$(VERSION_BITCOIN)-x86_64-linux-gnu.tar.gz -O bitcoin.tar.gz
+	rm -rf bitcoin-$(VERSION_BITCOIN)
+	tar -xzf bitcoin.tar.gz
+	cd bitcoin-$(VERSION_BITCOIN) && \
+		mkdir data && \
+		cp bitcoin.conf x && \
+		cp ../bitcoin.conf . && \
+		cat x >> bitcoin.conf
 
 # This installs ~/bin/dfx
 # Make sure to source ~/.profile afterwards -> it adds ~/bin to the path if it exists
@@ -123,57 +162,4 @@ install-jp:
 .PHONY: install-python
 install-python:
 	pip install --upgrade pip
-	cd icpp-candid && rm -rf src/*.egg-info && pip install -e ".[dev]"
-	rm -rf src/*.egg-info
-	pip install -e ".[dev]"
-
-.PHONY: install-python-w-demos
-install-python-w-demos:
-	pip install --upgrade pip
-	cd icpp-candid && rm -rf src/*.egg-info && pip install -e ".[dev]"
-	rm -rf src/*.egg-info
-	pip install -e ".[dev]"
-	cd ../icpp-demos && pip install -r requirements.txt
-
-
-.PHONY: install-python-w-icpp-llm
-install-python-w-icpp-llm:
-	pip install --upgrade pip
-	cd icpp-candid && rm -rf src/*.egg-info && pip install -e ".[dev]"
-	rm -rf src/*.egg-info
-	pip install -e ".[dev]"
-	cd ../icpp-llm && pip install -r requirements.txt
-
-.PHONY:install-rust
-install-rust:
-	@echo "Installing rust"
-	curl https://sh.rustup.rs -sSf | sh -s -- -y
-	@echo "Installing ic-cdk-optimizer"
-	cargo install ic-cdk-optimizer
-
-.PHONY: install-wabt
-install-wabt:
-	sudo apt-get update && sudo apt-get install wabt
-
-###########################################################################
-# Building and publishing the pypi package
-.PHONY: pypi-build
-pypi-build:
-	rm -rf dist
-	python -m build
-
-.PHONY: testpypi-upload
-testpypi-upload:
-	twine upload --config-file .pypirc -r testpypi dist/*
-
-.PHONY: testpypi-install
-testpypi-install:
-	pip install -i https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ icpp
-
-.PHONY: pypi-upload
-pypi-upload:
-	twine upload --config-file .pypirc dist/*
-
-.PHONY: pypi-install
-pypi-install:
-	pip install icpp
+	pip install -r requirements.txt
