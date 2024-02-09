@@ -64,37 +64,17 @@ pip install -r requirements.txt
 
 **Run tests of test/ folder**
 
+Run the tests with the same identity that you used to deploy the canister.
+Your identity must be a controller for some of the tests:
+
 ```bash
+# Local
 pytest
+
+# Against IC
+pytest --network ic
 ```
 
-# Candid Interface
-
-The backend canister has following interfaces that the frontend can call:
-
-```candid
-type DTI = nat;
-type Satoshi = float64;
-
-type DonationCategories = record {
-    curriculumDesign: Satoshi;
-    teacherSupport: Satoshi;
-    schoolSupplies: Satoshi;
-    lunchAndSnacks: Satoshi;
-};
-
-type Donation = record {
-    totalAmount: Satoshi;
-    allocation: DonationCategories;
-};
-
-service : {
-    makeDonation: (Donation) -> (DTI) async; // Returns DTI as a natural number (index)
-    getDonationDetails: (DTI) -> (opt Donation) async; // Retrieve donation details by DTI
-    getAllDonations: () -> (vec Donation) async; // Retrieve all donation records
-    getMyDonations: () -> (vec DTI) async; // New service: Retrieve DTIs of my donations
-};
-```
 
 ### Notes
 

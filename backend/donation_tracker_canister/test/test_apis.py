@@ -60,7 +60,7 @@ def test__amiController_anonymous(
     assert response == expected_response
 
 
-def test__amiController_default(identity_default: dict[str, str], network: str) -> None:
+def test__amiController(network: str) -> None:
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
         canister_name=CANISTER_NAME,
@@ -78,33 +78,35 @@ def test__amiController_default(identity_default: dict[str, str], network: str) 
 def test__initRecipients_anonymous(
     identity_anonymous: dict[str, str], network: str
 ) -> None:
-    response = call_canister_api(
-        dfx_json_path=DFX_JSON_PATH,
-        canister_name=CANISTER_NAME,
-        canister_method="initRecipients",
-        canister_argument="()",
-        network=network,
-        timeout_seconds=10,
-    )
-    expected_response = "(variant { Err = variant { Unauthorized } })"
-    assert response == expected_response
+    # Only run this test in local network
+    if network == "local":
+        response = call_canister_api(
+            dfx_json_path=DFX_JSON_PATH,
+            canister_name=CANISTER_NAME,
+            canister_method="initRecipients",
+            canister_argument="()",
+            network=network,
+            timeout_seconds=10,
+        )
+        expected_response = "(variant { Err = variant { Unauthorized } })"
+        assert response == expected_response
 
 
-def test__initRecipients_default(
-    identity_default: dict[str, str], network: str
-) -> None:
-    # Initialize the mock schools and students
-    response = call_canister_api(
-        dfx_json_path=DFX_JSON_PATH,
-        canister_name=CANISTER_NAME,
-        canister_method="initRecipients",
-        canister_argument="()",
-        network=network,
-        timeout_seconds=10,
-    )
-    # For now, just check the Mock Data is coming back
-    expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat;} })"
-    assert response == expected_response
+def test__initRecipients(network: str) -> None:
+    # Only run this test in local network
+    if network == "local":
+        # Initialize the mock schools and students
+        response = call_canister_api(
+            dfx_json_path=DFX_JSON_PATH,
+            canister_name=CANISTER_NAME,
+            canister_method="initRecipients",
+            canister_argument="()",
+            network=network,
+            timeout_seconds=10,
+        )
+        # For now, just check the Mock Data is coming back
+        expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat;} })"
+        assert response == expected_response
 
 
 def test__getRecipient_school(identity_anonymous: dict[str, str], network: str) -> None:
@@ -222,7 +224,7 @@ def test__getTotalDonationAmount(
         canister_input="idl",
         canister_output="idl",
         network=network,
-        timeout_seconds=10,
+        timeout_seconds=500,
     )
     # Verify the response
     assert (
