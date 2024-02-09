@@ -6,7 +6,7 @@
 
 """
 
-# pylint: disable=unused-argument, missing-function-docstring, unused-import, wildcard-import, unused-wildcard-import, line-too-long
+# pylint: disable=unused-argument, missing-function-docstring, unused-import, wildcard-import, unused-wildcard-import, line-too-long, invalid-name
 
 from pathlib import Path
 import pytest
