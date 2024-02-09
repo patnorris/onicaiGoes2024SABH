@@ -45,7 +45,9 @@ def test__whoami_default(identity_default: dict[str, str], network: str) -> None
     assert response == expected_response
 
 
-def test__amiController_anonymous(identity_anonymous: dict[str, str], network: str) -> None:
+def test__amiController_anonymous(
+    identity_anonymous: dict[str, str], network: str
+) -> None:
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
         canister_name=CANISTER_NAME,
@@ -54,8 +56,9 @@ def test__amiController_anonymous(identity_anonymous: dict[str, str], network: s
         network=network,
         timeout_seconds=10,
     )
-    expected_response = '(variant { Err = variant { Unauthorized } })'
+    expected_response = "(variant { Err = variant { Unauthorized } })"
     assert response == expected_response
+
 
 def test__amiController_default(identity_default: dict[str, str], network: str) -> None:
     response = call_canister_api(
@@ -66,10 +69,15 @@ def test__amiController_default(identity_default: dict[str, str], network: str) 
         network=network,
         timeout_seconds=10,
     )
-    expected_response = '(variant { Ok = record { auth = "You are a controller of this canister.";} })'
+    expected_response = (
+        '(variant { Ok = record { auth = "You are a controller of this canister.";} })'
+    )
     assert response == expected_response
 
-def test__initRecipients_anonymous(identity_anonymous: dict[str, str], network: str) -> None:
+
+def test__initRecipients_anonymous(
+    identity_anonymous: dict[str, str], network: str
+) -> None:
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
         canister_name=CANISTER_NAME,
@@ -78,10 +86,13 @@ def test__initRecipients_anonymous(identity_anonymous: dict[str, str], network: 
         network=network,
         timeout_seconds=10,
     )
-    expected_response = '(variant { Err = variant { Unauthorized } })'
+    expected_response = "(variant { Err = variant { Unauthorized } })"
     assert response == expected_response
 
-def test__initRecipients_default(identity_default: dict[str, str], network: str) -> None:
+
+def test__initRecipients_default(
+    identity_default: dict[str, str], network: str
+) -> None:
     # Initialize the mock schools and students
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
@@ -95,6 +106,7 @@ def test__initRecipients_default(identity_default: dict[str, str], network: str)
     expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat;} })"
     assert response == expected_response
 
+
 def test__getRecipient_school(identity_anonymous: dict[str, str], network: str) -> None:
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
@@ -107,7 +119,7 @@ def test__getRecipient_school(identity_anonymous: dict[str, str], network: str) 
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = opt record { recipient = variant { School = record { id = "school1"; thumbnail = "url_to_thumbnail_1"; name = "Green Valley High"; address = "123 Green Valley Rd";} };} })'
+    expected_response = '(variant { Ok = opt record { recipient = variant { School = record { id = "school1"; thumbnail = "./images/school1_thumbnail.png"; name = "Green Valley High"; address = "123 Green Valley Rd";} };} })'
     assert response == expected_response
 
 
@@ -125,7 +137,7 @@ def test__getRecipient_student(
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = opt record { recipient = variant { Student = record { id = "student2School1"; thumbnail = "url_to_thumbnail_3"; name = "Jamie Smith"; schoolId = "school1"; grade = 11 : nat;} };} })'
+    expected_response = '(variant { Ok = opt record { recipient = variant { Student = record { id = "student2School1"; thumbnail = "./images/student2School1_thumbnail.png"; name = "Jamie Smith"; schoolId = "school1"; grade = 11 : nat;} };} })'
     assert response == expected_response
 
 
@@ -159,7 +171,7 @@ def test__listRecipients_schools_all(
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "url_to_thumbnail_1"; name = "Green Valley High";}; record { id = "school2"; thumbnail = "url_to_thumbnail_4"; name = "Sunnydale Elementary";};};} })'
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "school1"; thumbnail = "./images/school1_thumbnail.png"; name = "Green Valley High";}; record { id = "school2"; thumbnail = "./images/school2_thumbnail.png"; name = "Sunnydale Elementary";};};} })'
     assert response == expected_response
 
 
@@ -177,7 +189,7 @@ def test__listRecipients_schools_filter(
         timeout_seconds=10,
     )
     # For now, just check the Mock Data is coming back
-    expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1School1"; thumbnail = "url_to_thumbnail_2"; name = "Alex Johnson";}; record { id = "student2School1"; thumbnail = "url_to_thumbnail_3"; name = "Jamie Smith";};};} })'
+    expected_response = '(variant { Ok = record { recipients = vec { record { id = "student1School1"; thumbnail = "./images/student1School1_thumbnail.png"; name = "Alex Johnson";}; record { id = "student2School1"; thumbnail = "./images/student2School1_thumbnail.png"; name = "Jamie Smith";};};} })'
     assert response == expected_response
 
 

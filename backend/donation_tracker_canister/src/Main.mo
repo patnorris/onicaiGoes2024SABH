@@ -409,7 +409,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve BTC donation address: "));
+                    return #Err(#Other("Failed to retrieve BTC donation address:  Did you update DONATION_CANISTER_ID in Main.mo?"));
                 };
             };
             // Handle other payment types as they are added
@@ -431,7 +431,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve total donation amount for BTC: "));
+                    return #Err(#Other("Failed to retrieve total donation amount for BTC. Did you update DONATION_CANISTER_ID in Main.mo? "));
                 };
             };
             // Handle other payment types as they are added
@@ -448,7 +448,7 @@ actor class DonationTracker() {
             });
         } catch (error : Error) {
             // Handle errors, such as donation canister not responding
-            return #Err(#Other("Failed to retrieve utxos: "));
+            return #Err(#Other("Failed to retrieve utxos:  Did you update DONATION_CANISTER_ID in Main.mo? "));
         };
     };
 
