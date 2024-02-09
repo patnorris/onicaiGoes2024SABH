@@ -37,8 +37,12 @@ actor class BasicBitcoin(_network : Types.Network) {
     return msg.caller;
   };
 
-  public shared (msg) func amiController() : async Bool {
-    return Principal.isController(msg.caller);
+  public shared (msg) func amiController() : async Types.AuthRecordResult {
+    if (not Principal.isController(msg.caller)) {
+      return #Err(#Unauthorized);
+    };
+    let authRecord = { auth = "You are a controller of this canister." };
+    return #Ok(authRecord);
   };
 
   /// Returns the balance of the given Bitcoin address.

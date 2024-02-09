@@ -88,6 +88,13 @@ File: ~/.config/dfx/networks.json
 [Reference](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#deploying-the-example-canister)
 
 ```bash
+# From the bitcoin-core/bitcoin-25.0 folder, start the local bitcoin instance
+./bin/bitcoind -conf=$(pwd)/bitcoin.conf -datadir=$(pwd)/data --port=18444
+
+# Start the local dfx network
+dfx start --clean
+
+# From the backend/donation_canister folder:
 dfx deploy donation_canister --argument '(variant { regtest })'
 ```
 
