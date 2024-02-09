@@ -517,8 +517,6 @@ actor class DonationTracker() {
     stable var emailSubscribersStorageStable : [(Text, Types.EmailSubscriber)] = [];
     var emailSubscribersStorage : HashMap.HashMap<Text, Types.EmailSubscriber> = HashMap.HashMap(0, Text.equal, Text.hash);
 
-    stable var custodians = List.make<Principal>(Principal.fromText("cda4n-7jjpo-s4eus-yjvy7-o6qjc-vrueo-xd2hh-lh5v2-k7fpf-hwu5o-yqe"));
-
     // Add a user as new email subscriber
     private func putEmailSubscriber(emailSubscriber : Types.EmailSubscriber) : Text {
         emailSubscribersStorage.put(emailSubscriber.emailAddress, emailSubscriber);
@@ -552,19 +550,17 @@ actor class DonationTracker() {
         };
     };
 
-    // Function for custodian to get all email subscribers
+    // Function for controllers to get all email subscribers
     public shared ({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
-        // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func(custodian : Principal) : Bool { custodian == caller })) {
+        if (Principal.isController(caller)) {
             return Iter.toArray(emailSubscribersStorage.entries());
         };
         return [];
     };
 
-    // Function for custodian to delete an email subscriber
+    // Function for controllers to delete an email subscriber
     public shared ({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
-        // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func(custodian : Principal) : Bool { custodian == caller })) {
+        if (Principal.isController(caller)) {
             emailSubscribersStorage.delete(emailAddress);
             return true;
         };
