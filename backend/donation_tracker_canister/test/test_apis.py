@@ -45,7 +45,43 @@ def test__whoami_default(identity_default: dict[str, str], network: str) -> None
     assert response == expected_response
 
 
-def test__initRecipients(identity_anonymous: dict[str, str], network: str) -> None:
+def test__amiController_anonymous(identity_anonymous: dict[str, str], network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="amiController",
+        canister_argument="()",
+        network=network,
+        timeout_seconds=10,
+    )
+    expected_response = '(variant { Err = variant { Unauthorized } })'
+    assert response == expected_response
+
+def test__amiController_default(identity_default: dict[str, str], network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="amiController",
+        canister_argument="()",
+        network=network,
+        timeout_seconds=10,
+    )
+    expected_response = '(variant { Ok = record { auth = "You are a controller of this canister.";} })'
+    assert response == expected_response
+
+def test__initRecipients_anonymous(identity_anonymous: dict[str, str], network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="initRecipients",
+        canister_argument="()",
+        network=network,
+        timeout_seconds=10,
+    )
+    expected_response = '(variant { Err = variant { Unauthorized } })'
+    assert response == expected_response
+
+def test__initRecipients_default(identity_default: dict[str, str], network: str) -> None:
     # Initialize the mock schools and students
     response = call_canister_api(
         dfx_json_path=DFX_JSON_PATH,
@@ -58,7 +94,6 @@ def test__initRecipients(identity_anonymous: dict[str, str], network: str) -> No
     # For now, just check the Mock Data is coming back
     expected_response = "(variant { Ok = opt record { num_students = 4 : nat; num_schools = 2 : nat;} })"
     assert response == expected_response
-
 
 def test__getRecipient_school(identity_anonymous: dict[str, str], network: str) -> None:
     response = call_canister_api(

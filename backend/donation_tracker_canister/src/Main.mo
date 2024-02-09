@@ -71,13 +71,19 @@ actor class DonationTracker() {
         return msg.caller;
     };
 
-    public shared (msg) func amiController() : async Bool {
-        return Principal.isController(msg.caller);
+    public shared (msg) func amiController() : async Types.AuthRecordResult {
+        if (not Principal.isController(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
+        let authRecord = { auth = "You are a controller of this canister." };
+        return #Ok(authRecord);
     };
 
     // Initialize recipients and their relationships
-    public shared func initRecipients() : async Types.initRecipientsResult {
-        // TODO: secure endpoint
+    public shared (msg) func initRecipients() : async Types.InitRecipientsResult {
+        if (not Principal.isController(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
 
         // Define school and student recipients
         let school1 : Types.Recipient =
@@ -164,7 +170,11 @@ actor class DonationTracker() {
         D.print("Number of students: " # debug_show (num_students));
 
         // Return the result with the dynamic counts of schools and students
-        return #Ok(?{ num_schools = num_schools; num_students = num_students });
+        let initRecipientsRecord = {
+            num_schools = num_schools;
+            num_students = num_students;
+        };
+        return #Ok(?initRecipientsRecord);
 
     };
 
