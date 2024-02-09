@@ -551,7 +551,7 @@ actor class DonationTracker() {
     };
 
     // Function for controllers to get all email subscribers
-    public shared ({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
+    public query({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
         if (Principal.isController(caller)) {
             return Iter.toArray(emailSubscribersStorage.entries());
         };
