@@ -134,13 +134,16 @@ python-type:
 # https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#setting-up-a-local-bitcoin-network
 .PHONY: install-bitcoin-core
 install-bitcoin-core:
+	mkdir -p ~/.config/dfx
+	cp cicd-helpers/networks.json ~/.config/dfx/
+	cat ~/.config/dfx/networks.json
 	wget https://bitcoin.org/bin/bitcoin-core-$(VERSION_BITCOIN)/bitcoin-$(VERSION_BITCOIN)-x86_64-linux-gnu.tar.gz -O bitcoin.tar.gz
 	rm -rf bitcoin-$(VERSION_BITCOIN)
 	tar -xzf bitcoin.tar.gz
 	cd bitcoin-$(VERSION_BITCOIN) && \
 		mkdir data && \
 		cp bitcoin.conf x && \
-		cp ../bitcoin.conf . && \
+		cp ../cicd-helpers/bitcoin.conf . && \
 		cat x >> bitcoin.conf
 
 # This installs ~/bin/dfx

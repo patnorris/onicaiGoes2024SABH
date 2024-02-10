@@ -1,0 +1,11 @@
+{
+    "local": {
+        "bitcoin": {
+            "enabled": true,
+            "log_level": "info",
+            "nodes": [
+                "127.0.0.1:18444"
+            ]
+        }
+    }
+}
