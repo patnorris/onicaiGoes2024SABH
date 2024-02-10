@@ -78,11 +78,14 @@ all-deploy-and-pytest:
 	dfx start --clean --background
 
 	cd backend/donation_canister && \
-		dfx deploy donation_canister --argument '(variant { regtest })'
-
-	cd backend/donation_tracker_canister && \
-		dfx deploy && \
-		dfx canister call donation_tracker_canister initRecipients
+		dfx deploy donation_canister --argument '(variant { regtest })' && \
+		donation_canister_id=$$(dfx canister id donation_canister) && \
+		echo "donation_canister_id: $${donation_canister_id}" && \
+		argument_string=$$'("'$${donation_canister_id}'")' && \
+		echo "argument_string: $${argument_string}" && \
+		cd ../donation_tracker_canister && \
+			dfx deploy donation_tracker_canister --argument $${argument_string} && \
+			dfx canister call donation_tracker_canister initRecipients
 
 	pytest
 

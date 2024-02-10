@@ -15,16 +15,14 @@ import Bool "mo:base/Bool";
 import Types "Types";
 import Utils "Utils";
 
-actor class DonationTracker() {
+actor class DonationTracker(_donation_canister_id : Text) {
 
     // -------------------------------------------------------------------------------
     // Define the donation_canister (bitcoin canister) with endpoints to call
+    // Note: the donationCanister will NOT change during an upgrade.
+    //       to change to a new DONATION_CANISTER_ID requires re-deploying the canister
 
-    // Select one of these. For local, also update the value to match your local deployment !!
-    // LOCAL NETWORK
-    // let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
-    // IC MAINNET
-    let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+    let DONATION_CANISTER_ID : Text = _donation_canister_id;
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
@@ -409,7 +407,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve BTC donation address:  Did you update DONATION_CANISTER_ID in Main.mo?"));
+                    return #Err(#Other("Failed to retrieve BTC donation address for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
             };
             // Handle other payment types as they are added
@@ -431,7 +429,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve total donation amount for BTC. Did you update DONATION_CANISTER_ID in Main.mo? "));
+                    return #Err(#Other("Failed to retrieve total donation amount for BTC for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
             };
             // Handle other payment types as they are added
@@ -551,7 +549,7 @@ actor class DonationTracker() {
     };
 
     // Function for controllers to get all email subscribers
-    public query({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
+    public query ({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
         if (Principal.isController(caller)) {
             return Iter.toArray(emailSubscribersStorage.entries());
         };
