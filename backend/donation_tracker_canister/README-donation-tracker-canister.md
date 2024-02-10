@@ -2,15 +2,53 @@
 
 ### Local Network
 
+#### Setup
+
+Install mops (https://mops.one/docs/install)
+Install motoko dependencies:
+
+```bash
+mops install
+```
+
 #### Deploy
 
 First to into donation_canister folder, where you start the local network & deploy the donation_canister.
 
-Then go into donation_tracker_canister folder, and deploy the donation_tracker_canister with:
+Then go into donation_tracker_canister folder.
+
+**Set DONATION_CANISTER_ID**
+
+This is hacky, but you have to edit the file `backend/donation_tracker_canister/src/Main.mo`, and set this:
+
+```motoko
+    // -------------------------------------------------------------------------------
+    // Define the donation_canister (bitcoin canister) with endpoints to call
+
+    // Select one of these. For local, also update the value to match your local deployment !! 
+    // LOCAL NETWORK
+    let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
+    // IC MAINNET
+    // let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+```
+
+**Deploy**
+Then deploy the donation_tracker_canister with:
 
 ```bash
+# Generate the bindings
 dfx generate
+
+# Deploy
 dfx deploy
+# to IC
+dfx deploy --ic donation_tracker_canister
+
+# Initialize the mock schools & students (the recipients)
+dfx canister call donation_tracker_canister initRecipients
+# to IC
+dfx canister --ic call donation_tracker_canister initRecipients
+
 ```
 
 #### Test with pytest
@@ -25,37 +63,18 @@ pip install -r requirements.txt
 ```
 
 **Run tests of test/ folder**
+
+Run the tests with the same identity that you used to deploy the canister.
+Your identity must be a controller for some of the tests:
+
 ```bash
+# Local
 pytest
+
+# Against IC
+pytest --network ic
 ```
 
-# Candid Interface
-
-The backend canister has following interfaces that the frontend can call:
-
-```candid
-type DTI = nat;
-type Satoshi = float64;
-
-type DonationCategories = record {
-    curriculumDesign: Satoshi;
-    teacherSupport: Satoshi;
-    schoolSupplies: Satoshi;
-    lunchAndSnacks: Satoshi;
-};
-
-type Donation = record {
-    totalAmount: Satoshi;
-    allocation: DonationCategories;
-};
-
-service : {
-    makeDonation: (Donation) -> (DTI) async; // Returns DTI as a natural number (index)
-    getDonationDetails: (DTI) -> (opt Donation) async; // Retrieve donation details by DTI
-    getAllDonations: () -> (vec Donation) async; // Retrieve all donation records
-    getMyDonations: () -> (vec DTI) async; // New service: Retrieve DTIs of my donations
-};
-```
 
 ### Notes
 
@@ -77,7 +96,6 @@ This streamlined approach, using the index as a DTI, offers a straightforward wa
 By following this approach, the canister's `donations` data benefits from orthogonal persistence, and we ensure data longevity and integrity across canister upgrades on the Internet Computer.
 
 This solution sets up a basic framework for a Donation Transaction Explorer on the Internet Computer, allowing for both specific queries by DTI and public exploration of all donation records.
-
 
 # Bitcoin Donation & Tracking System
 
@@ -135,14 +153,14 @@ public func makeDonation(donation: Donation): async DTI {
     let caller = Principal.toText(Principal.caller());
     let dti = donations.size(); // Simply use index into donations Array as the DTI
     donations := Array.append<Donation>(donations, [donation]);
-    
+
     // Update the map for the caller's principal
     let existingDonations = switch (donationsByPrincipal.get(Principal.caller())) {
         case (null) { [] };
         case (?ds) { ds };
     };
     donationsByPrincipal.put(Principal.caller(), Array.append<DTI>(existingDonations, [dti]));
-    
+
     return dti;
 }
 
