@@ -140,3 +140,4 @@ __pycache__/
 .vscode/launch.json
 bitcoin.tar.gz
 bitcoin-*/
+.DS_STORE
