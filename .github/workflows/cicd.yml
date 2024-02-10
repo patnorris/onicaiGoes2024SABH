@@ -34,8 +34,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      # -------------------------------------------------------------------
+      - name: Initialize submodules
+        run: |
+          git submodule update --init --recursive
 
+      # -------------------------------------------------------------------
       - name: install
         shell: bash -l {0} # activates the default conda environment ('test')
         run: |
