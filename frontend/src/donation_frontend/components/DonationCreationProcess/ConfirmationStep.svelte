@@ -97,16 +97,15 @@
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 5: Confirm Donation</h1>
     {#if submitDonationSuccess}
-      <div>
+      <div class="text-gray-800 dark:text-gray-200">
         <h3>Donation Created</h3>
         <h3>Thank you for donating!</h3>
         <p>Your Donation Transaction Id (DTI) is {createdDonationTransactionId}.</p>
-        <button on:click|preventDefault={viewNewDonation} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">View Donation</button>        
+        <button on:click|preventDefault={viewNewDonation} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Donation</button>
       </div>
     {:else}
-      <div>
+      <div class="text-gray-800 dark:text-gray-200">
         <p class="mt-4">Let's double-check that all donation details are looking good.</p>
-        <!-- Display donation details -->
         <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
         <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientInfo?.name}</p>
         <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType === "BTC" ? "Satoshi" : ""}</p>
@@ -117,35 +116,34 @@
             <li>{category}: {btc} Satoshi</li>
           {/each}
         </ul>
-        <!-- Conditional rendering based on validationErrors -->
         {#if confirmNewTotal}
           <p class="mt-4">The category split did not sum up to your total donation. We thus corrected the total. Please adjust if needed.</p>
         {/if}
         {#if validationErrors.length}
           <p class="mt-4">Please correct the following details:</p>
-          <ul class="text-red-500">
+          <ul class="text-red-500 dark:text-red-400">
             {#each validationErrors as error}
               <li>{error}</li>
             {/each}
           </ul>
-          <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">
             Finalize Donation
           </button>
         {:else}
           <p class="mt-4">Great, everything is in place! If you're ready, you can finalize the donation now.</p>
           {#if submittingDonationInProgress}
-            <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">
               Finalize Donation
             </button>
             <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
           {:else}
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={finalizeDonation}>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" on:click|preventDefault={finalizeDonation}>
               Finalize Donation
             </button>
           {/if}
         {/if}
         {#if submitDonationError}
-          <div>
+          <div class="text-red-500 dark:text-red-400">
             <p class="mt-4">Unfortunately, there was an error. Please try finalizing the donation again.</p>
           </div>
         {/if}

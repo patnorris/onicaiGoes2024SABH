@@ -54,24 +54,24 @@
   onMount(loadRecipients);
 </script>
 
-<section id="spaces" class="py-7 space-y-6 items-center text-center bg-slate-100">
+<section id="spaces" class="py-7 space-y-6 items-center text-center bg-slate-100 dark:bg-gray-800">
   {#if recipientType === "School"}
-    <h3 class="text-xl font-bold">Schools</h3>
-    <p>Click on any school to find out more and donate.</p>
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Schools</h3>
+    <p class="text-gray-600 dark:text-gray-300">Click on any school to find out more and donate.</p>
   {:else if recipientType === "StudentsForSchool"}
-    <h3 class="text-xl font-bold">Students</h3>
-    <p>Click on any student to find out more and donate.</p>
+    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Students</h3>
+    <p class="text-gray-600 dark:text-gray-300">Click on any student to find out more and donate.</p>
   {/if}
   {#if isLoading}
-    <p id='recipientsSubtext'>Finding recipients for you...</p>
+    <p id='recipientsSubtext' class="text-gray-600 dark:text-gray-300">Finding recipients for you...</p>
     <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
   {/if}
   {#if hasLoadedRecipients}
     {#if loadedRecipients.length > 0}
-      <p id='recipientsSubtext'>Great, there {loadedRecipients.length === 1 ? `is ${loadedRecipients.length} recipient` : `are ${loadedRecipients.length} recipients`} for you to consider! Let's take a look:</p>
+      <p id='recipientsSubtext' class="text-gray-600 dark:text-gray-300">Great, there {loadedRecipients.length === 1 ? `is ${loadedRecipients.length} recipient` : `are ${loadedRecipients.length} recipients`} for you to consider! Let's take a look:</p>
       <RecipientPreviews recipientPreviews={loadedRecipients} embedded={embedded} callbackFunction={callbackFunction} />     
     {:else}
-      <p id='recipientsSubtext'>There are no recipients available yet. Do you know anyone who would be interested?</p>
+      <p id='recipientsSubtext' class="text-gray-600 dark:text-gray-300">There are no recipients available yet. Do you know anyone who would be interested?</p>
     {/if}
   {/if}
 </section>

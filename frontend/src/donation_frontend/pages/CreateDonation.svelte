@@ -27,41 +27,42 @@
 
 <Topnav />
 
-<section id="createdonation" class="py-7 space-y-6 items-center text-center bg-slate-100">
+<section id="createdonation" class="py-7 space-y-6 items-center text-center bg-slate-100 dark:bg-slate-800">
 
-  <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
-    <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">	
-      <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-        Donate Bitcoin</h1>
-      <p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-200">
-        {#if !$store.isAuthed}
-          <p id='createSubtext'>Log in to be rewarded for your donation! You can also donate without logging in.</p>
-        {:else}
-          <p id='createSubtext'>You're logged in! Your donations will be associated with your account and you can get extra rewards for them.</p>
-        {/if}
-      </p>
-    </div>
-  </section>
-
-  	<div class="center-container">
+	<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
+	  <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">  
+		<h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+		  Donate Bitcoin</h1>
+		<p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-200">
+		  {#if !$store.isAuthed}
+			<p id='createSubtext' class="dark:text-gray-400">Log in to be rewarded for your donation! You can also donate without logging in.</p>
+		  {:else}
+			<p id='createSubtext' class="dark:text-gray-400">You're logged in! Your donations will be associated with your account and you can get extra rewards for them.</p>
+		  {/if}
+		</p>
+	  </div>
+	</section>
+  
+	<div class="center-container">
 		<div>
 			<ProgressBar {steps} bind:currentActive={$currentDonationCreationObject.currentActiveFormStepIndex} bind:this={progressBar}/>
 		</div>
 			
 		<div class="step-button">
-			<button id="createDonationProcessPrevButton" class="btn" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
-			<button id="createDonationProcessNextButton" class="btn" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+			<button id="createDonationProcessPrevButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+			<button id="createDonationProcessNextButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
 		</div>
 		<div>
 			<Form active_step={steps[currentActive-1]}/>
 		</div>
 		<div class="step-button">
-			<button id="createDonationProcessPrevButton" class="btn" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
-			<button id="createDonationProcessNextButton" class="btn" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+			<button id="createDonationProcessPrevButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
+			<button id="createDonationProcessNextButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
 		</div>
 	</div>
 
 </section>
+  
 
 <div class='clearfix'></div>
 

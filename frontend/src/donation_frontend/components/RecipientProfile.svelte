@@ -95,12 +95,11 @@
     onMount(loadRecipientDetails);
   </script>
 
-<section id="recipient-profile" class="py-7 space-y-3 items-center text-center bg-slate-200">
-  <h3 class="text-xl font-bold">Recipient Profile</h3>
-
+<section id="recipient-profile" class="py-7 space-y-3 items-center text-center bg-slate-200 dark:bg-gray-700">
+  <h3 class="text-xl font-bold text-gray-900 dark:text-white">Recipient Profile</h3>
   <div>
     {#if loadingInProgress}
-      <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
+      <h1 class="items-center text-center font-bold text-xl bg-slate-300 dark:bg-slate-600 dark:text-white">Loading Details For You!</h1>
       <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {:else if recipientLoadingError}
       <NotFound />
@@ -113,14 +112,14 @@
           {/if}
           <div class="py-3 space-y-3 items-center text-center">
             {#if embedded}
-              <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Set as Donation Recipient</button>
+              <button on:click|preventDefault={handleClick} class="bg-slate-500 hover:bg-slate-700 text-white py-2 px-4 rounded font-semibold dark:bg-slate-600 dark:hover:bg-slate-800">Set as Donation Recipient</button>
               {#if recipientProfileSelected}
-                  <p>You have currently selected this recipient for your donation. Please continue on the Donate tab.</p>
+                  <p class="dark:text-gray-300">You have currently selected this recipient for your donation. Please continue on the Donate tab.</p>
               {:else}
-                  <p>This recipient is not selected for your donation currently.</p>
+                  <p class="dark:text-gray-300">This recipient is not selected for your donation currently.</p>
               {/if}
             {:else}
-              <button on:click|preventDefault={handleClick} class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Donate</button>
+              <button on:click|preventDefault={handleClick} class="bg-slate-500 hover:bg-slate-700 text-white py-2 px-4 rounded font-semibold dark:bg-slate-600 dark:hover:bg-slate-800">Donate</button>
             {/if}
           </div>
           {#if recipientType === "School"}
@@ -129,6 +128,5 @@
         </div>
     {/if}
   </div>  
-  
 </section>
   

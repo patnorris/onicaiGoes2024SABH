@@ -9,9 +9,9 @@
   $: orderedDonations = newestToOldest ? [...donations].reverse() : donations;
 </script>
 
-<div id='donationPreviews' class="space-y-4">
+<div id='donationPreviews' class="space-y-4 text-gray-900 dark:text-gray-200">
   {#if !donations || donations.length < 1}
-    <p id='noDonationsSubtext'>There are no donations yet. You can be the first one to donate!</p>
+    <p id='noDonationsSubtext' class="text-gray-600 dark:text-gray-400">There are no donations yet. You can be the first one to donate!</p>
   {:else}
     {#each orderedDonations as donation}
       <DonationPreview donation={donation} />

@@ -63,15 +63,15 @@
 
 <Topnav />
 
-<section id="donations-explorer" class="py-7 space-y-3 items-center text-center bg-slate-100">
-  <h3 class="text-xl font-bold">Donation Record</h3>
+<section id="donation-record" class="py-7 space-y-3 items-center text-center bg-slate-100 dark:bg-gray-800">
+  <h3 class="text-xl font-bold text-gray-900 dark:text-white">Donation Record</h3>
   
   <div>
     {#if loadingInProgress}
-      <h1 class="items-center text-center font-bold text-xl bg-slate-300">Loading Details For You!</h1>
+      <h1 class="items-center text-center font-bold text-xl bg-slate-300 dark:bg-slate-600 dark:text-white">Loading Details For You!</h1>
       <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
     {:else if donationLoadingError}
-      <p>Make sure the Donation Transaction Id is valid (it's a number)</p>
+      <p class="text-gray-900 dark:text-gray-200">Make sure the Donation Transaction Id is valid (it's a number)</p>
       <NotFound />
     {:else if donationLoaded}
       <DonationRecord donation={donation}/>

@@ -86,62 +86,62 @@
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 2: Check Bitcoin Transaction</h1>	
+      Step 2: Check Bitcoin Transaction</h1>
     <div class="p-6 space-y-3">
       {#if transactionInfo}
-        <div class="p-6 mt-4 space-y-3 bg-blue-50 shadow-md border border-gray-300 rounded-lg">
-          <p id='currentTransactionSubtext' class="text-black font-semibold">Great, you have currently selected this transaction:</p>
-          <p class="text-gray-700">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
-          <p class="text-gray-700">Total Value: {transactionInfo.totalValue}</p>
-          <p class="text-gray-700">Value Left to Donate: {amountLeft}</p>
+        <div class="p-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
+          <p id='currentTransactionSubtext' class="text-black dark:text-white font-semibold">Great, you have currently selected this transaction:</p>
+          <p class="text-gray-700 dark:text-gray-300">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+          <p class="text-gray-700 dark:text-gray-300">Total Value: {transactionInfo.totalValue}</p>
+          <p class="text-gray-700 dark:text-gray-300">Value Left to Donate: {amountLeft}</p>
         </div>
         {#if amountLeft > 0}
-          <p id='bitcoinTransactionCheckSubtext'>You can continue with the next step.</p>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
+          <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">You can continue with the next step.</p>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Continue
           </button>
-          <p>If you prefer, you can also enter another transaction below instead.</p>
+          <p class="dark:text-gray-300">If you prefer, you can also enter another transaction below instead.</p>
         {:else}
-          <p>Please use another transaction which has value left to donate.</p>
-          <p>You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
+          <p class="dark:text-gray-300">Please use another transaction which has value left to donate.</p>
+          <p class="dark:text-gray-300">You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
         {/if}
       {:else}
-        <p id='currentTransactionSubtext' class="mt-4">Let's check that your Bitcoin transaction was confirmed on the Bitcoin network before we can proceed.</p>
-        <p>Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
+        <p id='currentTransactionSubtext' class="mt-4 dark:text-gray-300">Let's check that your Bitcoin transaction was confirmed on the Bitcoin network before we can proceed.</p>
+        <p class="dark:text-gray-300">Once the transaction is confirmed on the Bitcoin network (this can take a few minutes), you can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
       {/if}
     </div>
 
     <div class="mt-4">
-      <input class="border p-2" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
+      <input class="border p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
       {#if isLoading}
-        <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" >
+        <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">
           Check Now
         </button>
         <div class="items-center">
           <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
         </div>
       {:else}
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={checkTransactionStatus}>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Check Now
         </button>
       {/if}
       {#if errorMessage}
-        <p class="text-red-500">{errorMessage}</p>
+        <p class="text-red-500 dark:text-red-400">{errorMessage}</p>
       {/if}
     </div>
     <div class="p-4 space-y-2">
       {#if bitcoinTransactionCheckError}
-        <p id='bitcoinTransactionCheckSubtext'>Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
+        <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">Couldn't find the Bitcoin Transaction. Please double-check the entered Bitcoin Transaction Id and try again in a few minutes, as the transaction might not have been confirmed on the Bitcoin network yet.</p>
       {:else if bitcoinTransactionLoaded}
-        <p id='bitcoinTransactionCheckSubtext'>Great success, we found the Bitcoin Transaction!</p>
-        <p id='bitcoinTransactionCheckSubtext'>There is {amountLeft} transaction value left to donate.</p>
+        <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">Great success, we found the Bitcoin Transaction!</p>
+        <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">There is {amountLeft} transaction value left to donate.</p>
         {#if amountLeft > 0}
-          <p id='bitcoinTransactionCheckSubtext'>Please continue with the next step.</p>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={handleContinue}>
+          <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">Please continue with the next step.</p>
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Continue
           </button>
         {:else}
-          <p id='bitcoinTransactionCheckSubtext'>Please use another transaction which has value left to donate.</p>
+          <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">Please use another transaction which has value left to donate.</p>
         {/if}
       {/if}
     </div>
