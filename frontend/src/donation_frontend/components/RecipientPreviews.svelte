@@ -5,10 +5,11 @@
     
   export let recipientPreviews : [RecipientOverview]; // Array of recipient previews
   export let embedded = false;
+  export let callbackFunction = null;
 </script>
 
 <div id='recipientPreviews' class="space-y-4">
   {#each recipientPreviews as recipientPreview}
-    <RecipientPreview recipientPreview={recipientPreview} embedded={embedded} />
+    <RecipientPreview recipientPreview={recipientPreview} embedded={embedded} callbackFunction={callbackFunction} />
   {/each}
 </div>

@@ -9,6 +9,10 @@
   let recipientInfo : SchoolInfo | StudentInfo = $currentDonationCreationObject.recipient.recipientInfo;
   currentDonationCreationObject.subscribe((value) => recipientInfo = value.recipient.recipientInfo);
 
+  const handleContinue = () => {
+		$currentDonationCreationObject.currentActiveFormStepIndex++;
+	};
+
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
@@ -21,7 +25,7 @@
         {#if recipientInfo}
           <div class="p-6 mt-4 space-y-3 bg-blue-50 shadow-md border border-gray-300 rounded-lg">
             <p id='currentRecipientSubtext' class="text-black font-semibold">You have currently selected this recipient:</p>
-            <RecipientPreview recipientPreview={recipientInfo} embedded={true}/>
+            <RecipientPreview recipientPreview={recipientInfo} embedded={true} callbackFunction={handleContinue} />
           </div>
         {:else}
           <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>
@@ -29,7 +33,7 @@
       {/key}
     </div>
     <div class="mt-4">
-      <RecipientsList embedded={true} recipientType={"School"} />
+      <RecipientsList embedded={true} recipientType={"School"} callbackFunction={handleContinue} />
     </div>
   </div>
 </section>

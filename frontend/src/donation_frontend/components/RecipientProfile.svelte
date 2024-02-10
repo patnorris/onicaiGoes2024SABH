@@ -14,11 +14,11 @@
 
     import spinner from "../assets/loading.gif";
   
-  // This is needed for URL params
     export let recipientId;
     export let embedded = false;
+    export let callbackFunction = null;
 
-    let recipientProfileSelected = false;
+    let recipientProfileSelected = $currentDonationCreationObject.recipient.recipientId === recipientId;
 
     const handleClick = async () => {
       $currentDonationCreationObject.recipient.recipientId = recipientId;
@@ -28,6 +28,9 @@
 
       if (embedded) {
         recipientProfileSelected = true;
+        if (callbackFunction) {
+          callbackFunction();
+        };
       } else {
         push(`#/donate`);
       };
@@ -66,11 +69,15 @@
           const recipientRecord = recipientResponse.Ok;
           if (recipientRecord.length > 0) {
             recipient = recipientRecord[0].recipient;
+            // @ts-ignore
             if (recipient.School) {
               recipientType = "School";
+              // @ts-ignore
               recipientInfo = recipient.School;
+              // @ts-ignore
             } else if (recipient.Student) {
               recipientType = "Student";
+              // @ts-ignore
               recipientInfo = recipient.Student;
             } else {
               recipientLoadingError = true;
@@ -117,7 +124,7 @@
             {/if}
           </div>
           {#if recipientType === "School"}
-            <RecipientsList embedded={true} recipientType={"StudentsForSchool"} schoolRecipientId={recipientId} />
+            <RecipientsList embedded={true} recipientType={"StudentsForSchool"} schoolRecipientId={recipientId} callbackFunction={callbackFunction} />
           {/if}
         </div>
     {/if}
