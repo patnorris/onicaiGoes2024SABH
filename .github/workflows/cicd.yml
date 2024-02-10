@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - "backend/*/src/**"
-      - "backend/*/test/**"
-      - "Makefile"
-      - ".github/trigger.txt"
-      - ".github/workflows/cicd.yml"
+      - 'backend/*/src/**'
+      - 'backend/*/test/**'
+      - 'Makefile'
+      - '.github/trigger.txt'
+      - '.github/workflows/cicd.yml'
 
 jobs:
   all:
@@ -21,7 +21,7 @@ jobs:
         # os: [ubuntu-latest, macos-latest] # first need to update toolchain installation
 
     runs-on: ${{ matrix.os }}
-    
+
     steps:
       # https://github.com/marketplace/actions/setup-miniconda
       - uses: conda-incubator/setup-miniconda@v2
@@ -42,11 +42,14 @@ jobs:
           echo "Installing tool chains & dependencies"
           pwd
           sudo apt-get update
-          sudo apt-get install build-essential
+          sudo apt-get install build-essential libssl-dev
           sudo apt-get install -y wget tar
           make install-dfx
           make install-python
           make install-jp
+          make install-nvm
+          make install-nodejs
+          make install-mops
 
       - name: Download and Install Bitcoin Core
         run: |
@@ -67,7 +70,7 @@ jobs:
           which pip
           which python
           which icpp
-      
+
       - name: all-tests
         shell: bash -l {0}
         run: |

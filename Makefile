@@ -35,6 +35,8 @@ endif
 VERSION_DIDC := $(shell curl --silent "https://api.github.com/repos/dfinity/candid/releases/latest" | grep -e '"tag_name"' | cut -c 16-25)
 
 VERSION_BITCOIN := 25.0
+VERSION_NVM := 0.39.7
+VERSION_NODEJS := 20
 
 .PHONY: summary
 summary:
@@ -163,3 +165,17 @@ install-jp:
 install-python:
 	pip install --upgrade pip
 	pip install -r requirements.txt
+
+.PHONY: install-nvm
+install-nvm:
+	curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$(VERSION_NVM)/install.sh | bash
+
+.PHONY: install-nodejs
+install-nodejs:
+	nvm use $(VERSION_NODEJS)
+
+.PHONY: install-mops
+install-mops:
+	npm i -g ic-mops
+	cd backend/donation_tracker_canister && \
+		mops install
