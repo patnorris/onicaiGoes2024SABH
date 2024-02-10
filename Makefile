@@ -56,8 +56,7 @@ all-deploy-and-pytest:
 	bitcoin-$(VERSION_BITCOIN)/bin/bitcoind \
 		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
 		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
-		--port=18444 &
-		# --port=18444 > /dev/null 2>&1 &
+		--port=18444 > /dev/null 2>&1 &
 
 	@echo "Waiting for bitcoind to start..."
 	@MAX_ATTEMPTS=30; \

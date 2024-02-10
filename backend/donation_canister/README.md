@@ -61,12 +61,13 @@ pip install -r requirements.txt
 We use multiple canisters that we deploy separately on a shared local network. Create a file `~/.config/dfx/networks.json` to enable sharing of the local bitcoin canister:
 
 File: ~/.config/dfx/networks.json
+Note: log_level options are: "critical", "error", "warning", "info", "debug", "trace"
 ```json
 {
   "local": {
     "bitcoin": {
       "enabled": true,
-      "log_level": "info",
+      "log_level": "error",
       "nodes": [
         "127.0.0.1:18444"
       ]
