@@ -1,6 +1,6 @@
 [![onicaiGoes2024SABH](https://github.com/patnorris/onicaiGoes2024SABH/actions/workflows/cicd.yml/badge.svg)](https://github.com/patnorris/onicaiGoes2024SABH/actions/workflows/cicd.yml)
 
-# Bitcoin Donation App
+![Alt text](frontend/src/donation_frontend/assets/BitcoinDonationApp_banner.png)
 
 # The frontend & backend canisters
 
