@@ -56,8 +56,7 @@ all-deploy-and-pytest:
 	bitcoin-$(VERSION_BITCOIN)/bin/bitcoind \
 		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
 		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
-		--port=18444 &
-		# --port=18444 > /dev/null 2>&1 &
+		--port=18444 > /dev/null 2>&1 &
 
 	@echo "Waiting for bitcoind to start..."
 	@MAX_ATTEMPTS=30; \
@@ -78,11 +77,14 @@ all-deploy-and-pytest:
 	dfx start --clean --background
 
 	cd backend/donation_canister && \
-		dfx deploy donation_canister --argument '(variant { regtest })'
-
-	cd backend/donation_tracker_canister && \
-		dfx deploy && \
-		dfx canister call donation_tracker_canister initRecipients
+		dfx deploy donation_canister --argument '(variant { regtest })' && \
+		donation_canister_id=$$(dfx canister id donation_canister) && \
+		echo "donation_canister_id: $${donation_canister_id}" && \
+		argument_string=$$'("'$${donation_canister_id}'")' && \
+		echo "argument_string: $${argument_string}" && \
+		cd ../donation_tracker_canister && \
+			dfx deploy donation_tracker_canister --argument $${argument_string} && \
+			dfx canister call donation_tracker_canister initRecipients
 
 	pytest
 
@@ -131,13 +133,16 @@ python-type:
 # https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#setting-up-a-local-bitcoin-network
 .PHONY: install-bitcoin-core
 install-bitcoin-core:
+	mkdir -p ~/.config/dfx
+	cp cicd-helpers/networks.json ~/.config/dfx/
+	cat ~/.config/dfx/networks.json
 	wget https://bitcoin.org/bin/bitcoin-core-$(VERSION_BITCOIN)/bitcoin-$(VERSION_BITCOIN)-x86_64-linux-gnu.tar.gz -O bitcoin.tar.gz
 	rm -rf bitcoin-$(VERSION_BITCOIN)
 	tar -xzf bitcoin.tar.gz
 	cd bitcoin-$(VERSION_BITCOIN) && \
 		mkdir data && \
 		cp bitcoin.conf x && \
-		cp ../bitcoin.conf . && \
+		cp ../cicd-helpers/bitcoin.conf . && \
 		cat x >> bitcoin.conf
 
 # This installs ~/bin/dfx
