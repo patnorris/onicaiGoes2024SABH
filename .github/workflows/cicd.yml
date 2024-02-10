@@ -46,9 +46,9 @@ jobs:
           sudo apt-get install -y wget tar
           make install-dfx
           make install-python
-          make install-jp
-          make install-nvm
-          make install-nodejs
+          # make install-jp
+          # make install-nvm
+          # make install-nodejs
           make install-mops
 
       - name: Download and Install Bitcoin Core
