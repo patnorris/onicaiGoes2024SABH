@@ -13,7 +13,7 @@
 <footer class='py-6 text-center bg-orange-100 dark:bg-gray-800' id='about'>
   <div>
     <p class="text-gray-500 dark:text-gray-400 mb-2 mt-12"><sup>*</sup>developed for 
-      <a href='https://knowledgefound.org/token.html' target='_blank' rel="noreferrer" class='underline'>Knowledge Token</a>
+      <a href='https://knowledgefound.org/token.html' target='_blank' rel="noreferrer" class='underline'>Knowledge Foundation</a>
       at <a href='https://summit.immersiveeducation.org/SouthAfrica/2024/hackathon.html' target='_blank' rel="noreferrer" class='underline'>2024 SOUTH AFRICAN BLOCKCHAIN Hackathon</a>
       by <a href='https://github.com/patnorris/onicaiGoes2024SABH' target='_blank' rel="noreferrer" class='underline'>Arjaan Buijk & Patrick Friedrich</a>
       and hosted on <a href='https://internetcomputer.org/' target='_blank' rel="noreferrer" class='underline dark:hover:text-blue-300'>Internet Computer</a></p>
@@ -29,7 +29,7 @@
   </div>
 </footer>
 
-<footer class="bg-white dark:bg-gray-700 rounded-lg shadow m-4">
+<footer class="bg-white dark:bg-gray-700 rounded-lg shadow">
   <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
     <div class="sm:flex sm:items-center sm:justify-between">
       <a href="#top" class="flex items-center mb-4 sm:mb-0">
