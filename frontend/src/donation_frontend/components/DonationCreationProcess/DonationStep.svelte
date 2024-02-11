@@ -130,7 +130,8 @@
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
       Step 4: Specify Donation Details</h1>  
     <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
-    <p class="mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step): {availableBTC} Satoshi</p>
+    <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step):</p>
+    <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableBTC} Satoshi (equals {(availableBTC / 100000000.0).toFixed(8)} BTC)</p>
     <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
       Set Total Donation to Available BTC
     </button>
