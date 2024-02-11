@@ -122,7 +122,23 @@
 		bottom: 35px;
 		color: #999;
 		transition: 0.4s ease;
+		font-size: 0.7rem; /* Start with a smaller font size */
+        white-space: nowrap; /* Prevents the title from wrapping */
 	}
+
+	/* Medium devices (tablets, 768px and up) */
+    @media (min-width: 768px) {
+        .circle::after {
+            font-size: 0.875rem; /* Slightly larger font size */
+        }
+    }
+
+    /* Large devices (desktops, 1024px and up) */
+    @media (min-width: 1024px) {
+        .circle::after {
+            font-size: 1rem; /* Larger font size for larger screens */
+        }
+    }
 	
 	.circle.active::after {
 		color: #3498db;
