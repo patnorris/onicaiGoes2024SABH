@@ -111,7 +111,7 @@
       {/if}
     </div>
 
-    <div class="mt-4">
+    <div class="mt-2">
       <input class="border p-2 dark:bg-gray-800 dark:border-gray-600 dark:text-white" type="text" bind:value={$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId} placeholder="Enter Bitcoin Transaction Id" />
       {#if isLoading}
         <button disabled class="opacity-50 cursor-not-allowed bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700">
