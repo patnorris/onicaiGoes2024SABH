@@ -137,7 +137,7 @@
             </button>
             <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
           {:else}
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" on:click|preventDefault={finalizeDonation}>
+            <button on:click|preventDefault={finalizeDonation} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
               Finalize Donation
             </button>
           {/if}

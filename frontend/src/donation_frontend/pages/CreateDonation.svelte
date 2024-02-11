@@ -49,15 +49,15 @@
 		</div>
 			
 		<div class="step-button">
-			<button id="createDonationProcessPrevButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
-			<button id="createDonationProcessNextButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+			<button id="createDonationProcessPrevButton" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1} class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" >Prev</button>
+			<button id="createDonationProcessNextButton" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length} class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" >Next</button>
 		</div>
 		<div>
 			<Form active_step={steps[currentActive-1]}/>
 		</div>
 		<div class="step-button">
-			<button id="createDonationProcessPrevButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1}>Prev</button>
-			<button id="createDonationProcessNextButton" class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length}>Next</button>
+			<button id="createDonationProcessPrevButton" on:click|preventDefault={() => handleProgress(-1)} disabled={currentActive == 1} class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" >Prev</button>
+			<button id="createDonationProcessNextButton" on:click|preventDefault={() => handleProgress(+1)} disabled={currentActive == steps.length} class="btn dark:bg-slate-700 dark:text-gray-200 dark:border-gray-600" >Next</button>
 		</div>
 	</div>
 

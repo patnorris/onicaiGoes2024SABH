@@ -97,7 +97,7 @@
         </div>
         {#if amountLeft > 0}
           <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">You can continue with the next step.</p>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button on:click|preventDefault={handleContinue} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Continue
           </button>
           <p class="dark:text-gray-300">If you prefer, you can also enter another transaction below instead.</p>
@@ -121,7 +121,7 @@
           <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
         </div>
       {:else}
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+        <button on:click|preventDefault={checkTransactionStatus} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Check Now
         </button>
       {/if}
@@ -137,7 +137,7 @@
         <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">There is {amountLeft} transaction value left to donate.</p>
         {#if amountLeft > 0}
           <p id='bitcoinTransactionCheckSubtext' class="dark:text-gray-300">Please continue with the next step.</p>
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          <button on:click|preventDefault={handleContinue} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Continue
           </button>
         {:else}

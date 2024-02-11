@@ -131,7 +131,7 @@
       Step 4: Specify Donation Details</h1>  
     <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
     <p class="mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step): {availableBTC} Satoshi</p>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
       Set Total Donation to Available BTC
     </button>
     {#if totalDonationIsBiggerThanAvailableBTC}
