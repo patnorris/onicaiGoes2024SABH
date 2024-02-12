@@ -6,6 +6,8 @@ export type ApiError = { 'InvalidId' : null } |
   { 'Unauthorized' : null } |
   { 'Other' : string };
 export interface BitcoinTransaction {
+  'totalValue' : bigint,
+  'valueDonated' : bigint,
   'bitcoinTransactionId' : PaymentTransactionId,
 }
 export interface BitcoinTransactionIdRecord {
@@ -16,6 +18,7 @@ export interface BitcoinTransactionRecord {
 }
 export type BitcoinTransactionResult = { 'Ok' : BitcoinTransactionRecord } |
   { 'Err' : ApiError };
+export type BlockHash = Uint8Array | number[];
 export type DTI = bigint;
 export interface Donation {
   'dti' : DTI,
@@ -74,8 +77,12 @@ export interface DonationTracker {
     [PaymentTypeRecord],
     DonationAmountResult
   >,
-  'listRecipients' : ActorMethod<[RecipientFiltersRecord], RecipientsResult>,
+  'getTxidstext' : ActorMethod<[], TxidstextResult>,
+  'getUTXOS' : ActorMethod<[], GetUtxosResponseResult>,
+  'initRecipients' : ActorMethod<[], initRecipientsResult>,
+  'listRecipients' : ActorMethod<[RecipientFilter], RecipientsResult>,
   'makeDonation' : ActorMethod<[DonationRecord], DtiResult>,
+  'whoami' : ActorMethod<[], Principal>,
 }
 export interface DonationsRecord { 'donations' : Array<Donation> }
 export type DonationsResult = { 'Ok' : DonationsRecord } |
@@ -91,6 +98,19 @@ export interface Filter {
   'minAmount' : [] | [bigint],
   'startDate' : [] | [bigint],
 }
+export interface GetUtxosResponse {
+  'next_page' : [] | [Page],
+  'tip_height' : number,
+  'tip_block_hash' : BlockHash,
+  'utxos' : Array<Utxo>,
+}
+export interface GetUtxosResponseRecord {
+  'getUtxosResponse' : GetUtxosResponse,
+}
+export type GetUtxosResponseResult = { 'Ok' : GetUtxosResponseRecord } |
+  { 'Err' : ApiError };
+export interface OutPoint { 'txid' : Uint8Array | number[], 'vout' : number }
+export type Page = Uint8Array | number[];
 export type PaymentTransactionId = string;
 export type PaymentType = { 'BTC' : null };
 export interface PaymentTypeRecord { 'paymentType' : PaymentType }
@@ -100,7 +120,6 @@ export interface RecipientFilter {
   'include' : string,
   'recipientIdForSchool' : [] | [RecipientId],
 }
-export interface RecipientFiltersRecord { 'filters' : Array<RecipientFilter> }
 export type RecipientId = string;
 export interface RecipientIdRecord { 'recipientId' : RecipientId }
 export interface RecipientOverview {
@@ -130,4 +149,18 @@ export interface StudentInfo {
   'schoolId' : string,
   'grade' : bigint,
 }
+export interface TxidstextRecord { 'txidstext' : Array<string> }
+export type TxidstextResult = { 'Ok' : TxidstextRecord } |
+  { 'Err' : ApiError };
+export interface Utxo {
+  'height' : number,
+  'value' : Satoshi,
+  'outpoint' : OutPoint,
+}
+export interface initRecipientsRecord {
+  'num_students' : bigint,
+  'num_schools' : bigint,
+}
+export type initRecipientsResult = { 'Ok' : [] | [initRecipientsRecord] } |
+  { 'Err' : ApiError };
 export interface _SERVICE extends DonationTracker {}

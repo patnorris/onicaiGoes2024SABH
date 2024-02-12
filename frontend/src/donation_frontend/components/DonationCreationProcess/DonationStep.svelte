@@ -33,12 +33,15 @@
   let isValidSplit = true;
 
   const calculateAvailableBTC = async () => {
-    if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.value && $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated) {
-      availableBTC = $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.value - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated;
+    console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
+    console.log("DEBUG calculateAvailableBTC totalValue ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue);
+    console.log("DEBUG calculateAvailableBTC valueDonated ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated);
+    if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
+      availableBTC = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
+      console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
     };
+    $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableBTC;
   };
-
-  onMount(calculateAvailableBTC);
 
   // Donation details
   let totalDonationBTC = 0.0;
@@ -68,6 +71,7 @@
 
   function setTotalDonationToAvailable() {
     totalDonationBTC = availableBTC;
+    handleTotalDonationUpdate();
   };
 
   function validateSplits() {
@@ -84,7 +88,8 @@
   function updateCategoryBTC() {
     const totalPercent = 100; // Assuming the total percent should always equal 100
     Object.entries(donationSplits).forEach(([category, { percent }]) => {
-      donationSplits[category].btc = (totalDonationBTC * percent) / totalPercent;
+      //donationSplits[category].btc = (totalDonationBTC * percent) / totalPercent;
+      donationSplits[category].btc = parseFloat((totalDonationBTC * percent / totalPercent).toFixed(0));
     });
   };
 
@@ -116,22 +121,25 @@
     validateSplits();
   };
 
+  onMount(calculateAvailableBTC);
+
 </script>
 
-<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
+<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 4: Specify Donation Details</h1>	
-    <p class="mt-4">Please fill out the following details about your donation.</p>
-    <p class="mt-4">Available BTC to Distribute (from the transaction step): {availableBTC}</p>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" on:click|preventDefault={setTotalDonationToAvailable}>
+      Step 4: Specify Donation Details</h1>  
+    <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
+    <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step):</p>
+    <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableBTC} Satoshi (equals {(availableBTC / 100000000.0).toFixed(8)} BTC)</p>
+    <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
       Set Total Donation to Available BTC
     </button>
     {#if totalDonationIsBiggerThanAvailableBTC}
-      <p id='totalDonationTooBigSubtext'>Your Total Donation cannot be bigger than your available BTC!</p>
+      <p id='totalDonationTooBigSubtext' class="text-red-500 dark:text-red-400">Your Total Donation cannot be bigger than your available BTC!</p>
     {/if}
     <div class="mt-4">
-      <label for="totalDonation" class="block mb-2">Total Donation (in BTC):</label>
+      <label for="totalDonation" class="block mb-2 text-gray-600 dark:text-gray-300">Total Donation:</label>
       <input
         type="number"
         id="totalDonation"
@@ -139,51 +147,51 @@
         step="1"
         bind:value={totalDonationBTC}
         on:input={handleTotalDonationUpdate}
-        class="border p-2 w-full"
+        class="border p-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         placeholder="Enter amount in Satoshi"
       />
-      <p>Satoshi (equals {(totalDonationBTC / 100000000.0).toFixed(8)} BTC)</p>
+      <p class="text-gray-600 dark:text-gray-300">Satoshi (equals {(totalDonationBTC / 100000000.0).toFixed(8)} BTC)</p>
     </div>
     {#if !isValidSplit}
-      <p id='categorySplitNotValidSubtext'>Your Category split needs to sum up to 100% and the allocated BTC to your Total Donation!</p>
+      <p id='categorySplitNotValidSubtext' class="text-red-500 dark:text-red-400">Your Category split needs to sum up to 100% and the allocated BTC to your Total Donation!</p>
     {/if}
     <div class="mt-4">
       {#each Object.entries(donationSplits) as [category, categoryValues], index}
         <div class="mt-4">
-          <label class="block mb-2">{category}:</label>
+          <label class="block mb-2 text-gray-600 dark:text-gray-300">{category}:</label>
           <div>
             <input
               type="number"
               min="0"
               max="100"
-              class="border p-2 w-1/2"
+              class="border p-2 w-1/2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="Percentage"
               bind:value={donationSplits[category].percent}
               on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0.0)}
             />
-            <p>% of Total Donation</p>
+            <p class="text-gray-600 dark:text-gray-300">% of Total Donation</p>
           </div>
           <div>
             <input
               type="number"
               min="0"
               step="1"
-              class="border p-2 w-1/2"
+              class="border p-2 w-1/2 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
               placeholder="BTC amount"
               bind:value={donationSplits[category].btc}
               on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0.0, true)}
             />
-            <p>Satoshi (equals {(donationSplits[category].btc / 100000000.0).toFixed(8)} BTC)</p>
+            <p class="text-gray-600 dark:text-gray-300">Satoshi (equals {(donationSplits[category].btc / 100000000.0).toFixed(8)} BTC)</p>
           </div>
         </div>
       {/each}
     </div>
     <div class="mt-4">
-      <label for="personalNote" class="block mb-2">Personal Note (Optional):</label>
+      <label for="personalNote" class="block mb-2 text-gray-600 dark:text-gray-300">Personal Note (Optional):</label>
       <textarea
         id="personalNote"
         bind:value={personalNote}
-        class="border p-2 w-full"
+        class="border p-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         rows="4"
         placeholder="Add a personal note..."
       ></textarea>

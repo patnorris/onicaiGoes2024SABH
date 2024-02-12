@@ -1,3 +1,25 @@
+type initRecipientsResult = 
+ variant {
+   Err: ApiError;
+   Ok: opt initRecipientsRecord;
+ };
+type initRecipientsRecord = 
+ record {
+   num_schools: nat;
+   num_students: nat;
+ };
+type Utxo = 
+ record {
+   height: nat32;
+   outpoint: OutPoint;
+   value: Satoshi;
+ };
+type TxidstextResult = 
+ variant {
+   Err: ApiError;
+   Ok: TxidstextRecord;
+ };
+type TxidstextRecord = record {txidstext: vec text;};
 type StudentInfo = 
  record {
    grade: nat;
@@ -5,6 +27,11 @@ type StudentInfo =
    name: text;
    schoolId: text;
    thumbnail: text;
+ };
+type SignUpFormInput = 
+ record {
+   emailAddress: text;
+   pageSubmittedFrom: text;
  };
 type SchoolInfo = 
  record {
@@ -34,7 +61,6 @@ type RecipientOverview =
  };
 type RecipientIdRecord = record {recipientId: RecipientId;};
 type RecipientId = text;
-type RecipientFiltersRecord = record {filters: vec RecipientFilter;};
 type RecipientFilter = 
  record {
    include: text;
@@ -48,12 +74,37 @@ type Recipient =
 type PaymentTypeRecord = record {paymentType: PaymentType;};
 type PaymentType = variant {BTC;};
 type PaymentTransactionId = text;
+type Page = vec nat8;
+type OutPoint = 
+ record {
+   txid: blob;
+   vout: nat32;
+ };
+type GetUtxosResponseResult = 
+ variant {
+   Err: ApiError;
+   Ok: GetUtxosResponseRecord;
+ };
+type GetUtxosResponseRecord = record {getUtxosResponse: GetUtxosResponse;};
+type GetUtxosResponse = 
+ record {
+   next_page: opt Page;
+   tip_block_hash: BlockHash;
+   tip_height: nat32;
+   utxos: vec Utxo;
+ };
 type Filter = 
  record {
    endDate: opt nat64;
    maxAmount: opt nat;
    minAmount: opt nat;
    startDate: opt nat64;
+ };
+type EmailSubscriber = 
+ record {
+   emailAddress: text;
+   pageSubmittedFrom: text;
+   subscribedAt: nat64;
  };
 type DtiResult = 
  variant {
@@ -74,20 +125,28 @@ type DonationsResult =
 type DonationsRecord = record {donations: vec Donation;};
 type DonationTracker = 
  service {
+   deleteEmailSubscriber: (text) -> (bool);
    getBtcTransactionDetails: (BitcoinTransactionIdRecord) ->
-    (BitcoinTransactionResult) query;
+    (BitcoinTransactionResult);
    getBtcTransactionStatus: (BitcoinTransactionIdRecord) ->
-    (BitcoinTransactionResult) query;
+    (BitcoinTransactionResult);
    getDonationDetails: (DtiRecord) -> (DonationResult);
-   getDonationWalletAddress: (PaymentTypeRecord) ->
-    (DonationAddressResult) query;
+   getDonationWalletAddress: (PaymentTypeRecord) -> (DonationAddressResult);
    getDonations: (DonationFiltersRecord) -> (DonationsResult) query;
+   getEmailSubscribers: () -> (vec record {
+                                     text;
+                                     EmailSubscriber;
+                                   });
    getMyDonations: (DonationFiltersRecord) -> (DonationsResult);
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
-   getTotalDonationAmount: (PaymentTypeRecord) ->
-    (DonationAmountResult) query;
-   listRecipients: (RecipientFiltersRecord) -> (RecipientsResult) query;
+   getTotalDonationAmount: (PaymentTypeRecord) -> (DonationAmountResult);
+   getTxidstext: () -> (TxidstextResult);
+   getUTXOS: () -> (GetUtxosResponseResult);
+   initRecipients: () -> (initRecipientsResult);
+   listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
+   submitSignUpForm: (SignUpFormInput) -> (text);
+   whoami: () -> (principal);
  };
 type DonationResult = 
  variant {
@@ -139,6 +198,7 @@ type Donation =
    totalAmount: Satoshi;
  };
 type DTI = nat;
+type BlockHash = vec nat8;
 type BitcoinTransactionResult = 
  variant {
    Err: ApiError;
@@ -149,8 +209,12 @@ type BitcoinTransactionRecord = record {
 type BitcoinTransactionIdRecord = record {
                                     bitcoinTransactionId:
                                      PaymentTransactionId;};
-type BitcoinTransaction = record {bitcoinTransactionId: PaymentTransactionId;
-                          };
+type BitcoinTransaction = 
+ record {
+   bitcoinTransactionId: PaymentTransactionId;
+   totalValue: nat64;
+   valueDonated: nat64;
+ };
 type ApiError = 
  variant {
    InvalidId;

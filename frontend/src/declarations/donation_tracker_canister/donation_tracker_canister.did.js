@@ -4,6 +4,8 @@ export const idlFactory = ({ IDL }) => {
     'bitcoinTransactionId' : PaymentTransactionId,
   });
   const BitcoinTransaction = IDL.Record({
+    'totalValue' : IDL.Nat64,
+    'valueDonated' : IDL.Nat64,
     'bitcoinTransactionId' : PaymentTransactionId,
   });
   const BitcoinTransactionRecord = IDL.Record({
@@ -75,6 +77,11 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationsRecord,
     'Err' : ApiError,
   });
+  const EmailSubscriber = IDL.Record({
+    'subscribedAt' : IDL.Nat64,
+    'emailAddress' : IDL.Text,
+    'pageSubmittedFrom' : IDL.Text,
+  });
   const RecipientIdRecord = IDL.Record({ 'recipientId' : RecipientId });
   const SchoolInfo = IDL.Record({
     'id' : IDL.Text,
@@ -109,12 +116,46 @@ export const idlFactory = ({ IDL }) => {
     'Ok' : DonationAmountRecord,
     'Err' : ApiError,
   });
+  const TxidstextRecord = IDL.Record({ 'txidstext' : IDL.Vec(IDL.Text) });
+  const TxidstextResult = IDL.Variant({
+    'Ok' : TxidstextRecord,
+    'Err' : ApiError,
+  });
+  const Page = IDL.Vec(IDL.Nat8);
+  const BlockHash = IDL.Vec(IDL.Nat8);
+  const OutPoint = IDL.Record({
+    'txid' : IDL.Vec(IDL.Nat8),
+    'vout' : IDL.Nat32,
+  });
+  const Utxo = IDL.Record({
+    'height' : IDL.Nat32,
+    'value' : Satoshi,
+    'outpoint' : OutPoint,
+  });
+  const GetUtxosResponse = IDL.Record({
+    'next_page' : IDL.Opt(Page),
+    'tip_height' : IDL.Nat32,
+    'tip_block_hash' : BlockHash,
+    'utxos' : IDL.Vec(Utxo),
+  });
+  const GetUtxosResponseRecord = IDL.Record({
+    'getUtxosResponse' : GetUtxosResponse,
+  });
+  const GetUtxosResponseResult = IDL.Variant({
+    'Ok' : GetUtxosResponseRecord,
+    'Err' : ApiError,
+  });
+  const initRecipientsRecord = IDL.Record({
+    'num_students' : IDL.Nat,
+    'num_schools' : IDL.Nat,
+  });
+  const initRecipientsResult = IDL.Variant({
+    'Ok' : IDL.Opt(initRecipientsRecord),
+    'Err' : ApiError,
+  });
   const RecipientFilter = IDL.Record({
     'include' : IDL.Text,
     'recipientIdForSchool' : IDL.Opt(RecipientId),
-  });
-  const RecipientFiltersRecord = IDL.Record({
-    'filters' : IDL.Vec(RecipientFilter),
   });
   const RecipientOverview = IDL.Record({
     'id' : IDL.Text,
@@ -129,27 +170,37 @@ export const idlFactory = ({ IDL }) => {
     'Err' : ApiError,
   });
   const DtiResult = IDL.Variant({ 'Ok' : DtiRecord, 'Err' : ApiError });
+  const SignUpFormInput = IDL.Record({
+    'emailAddress' : IDL.Text,
+    'pageSubmittedFrom' : IDL.Text,
+  });
   const DonationTracker = IDL.Service({
+    'deleteEmailSubscriber' : IDL.Func([IDL.Text], [IDL.Bool], []),
     'getBtcTransactionDetails' : IDL.Func(
         [BitcoinTransactionIdRecord],
         [BitcoinTransactionResult],
-        ['query'],
+        [],
       ),
     'getBtcTransactionStatus' : IDL.Func(
         [BitcoinTransactionIdRecord],
         [BitcoinTransactionResult],
-        ['query'],
+        [],
       ),
     'getDonationDetails' : IDL.Func([DtiRecord], [DonationResult], []),
     'getDonationWalletAddress' : IDL.Func(
         [PaymentTypeRecord],
         [DonationAddressResult],
-        ['query'],
+        [],
       ),
     'getDonations' : IDL.Func(
         [DonationFiltersRecord],
         [DonationsResult],
         ['query'],
+      ),
+    'getEmailSubscribers' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, EmailSubscriber))],
+        [],
       ),
     'getMyDonations' : IDL.Func([DonationFiltersRecord], [DonationsResult], []),
     'getRecipient' : IDL.Func(
@@ -160,14 +211,19 @@ export const idlFactory = ({ IDL }) => {
     'getTotalDonationAmount' : IDL.Func(
         [PaymentTypeRecord],
         [DonationAmountResult],
-        ['query'],
+        [],
       ),
+    'getTxidstext' : IDL.Func([], [TxidstextResult], []),
+    'getUTXOS' : IDL.Func([], [GetUtxosResponseResult], []),
+    'initRecipients' : IDL.Func([], [initRecipientsResult], []),
     'listRecipients' : IDL.Func(
-        [RecipientFiltersRecord],
+        [RecipientFilter],
         [RecipientsResult],
         ['query'],
       ),
     'makeDonation' : IDL.Func([DonationRecord], [DtiResult], []),
+    'submitSignUpForm' : IDL.Func([SignUpFormInput], [IDL.Text], []),
+    'whoami' : IDL.Func([], [IDL.Principal], []),
   });
   return DonationTracker;
 };

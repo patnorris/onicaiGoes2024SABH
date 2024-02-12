@@ -51,7 +51,7 @@ Ensure that all changes needed for Mainnet deployment have been made (e.g. defin
 
 Production Canisters:
 ```bash
-dfx deploy --network ic
+dfx deploy --network ic donation_frontend
 ```
 
 In case there are authentication issues, you could try this command
@@ -70,4 +70,14 @@ dfx identity --network=ic get-wallet
 dfx wallet --network ic balance
 dfx canister --network ic status donation_frontend
 dfx canister --network ic --wallet 3v5vy-2aaaa-aaaai-aapla-cai deposit-cycles 300000000000 donation_frontend
+```
+
+## Get and delete Email Subscribers
+The project has email subscription functionality included. The following commands are helpful for managing subscriptions (note that only controllers of donation_tracker_canister may run these).
+```bash
+dfx canister call donation_tracker_canister getEmailSubscribers
+dfx canister call donation_tracker_canister deleteEmailSubscriber 'example@example.com'
+
+dfx canister call donation_tracker_canister getEmailSubscribers --network ic
+dfx canister call donation_tracker_canister deleteEmailSubscriber 'example@example.com' --network ic
 ```

@@ -7,46 +7,43 @@
 <Topnav />
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
-  <div style="background-color: #007bc2">
-    <img class="w-full p-32" src="/images/create-donation.svg" alt="Protocol intro graphic" />
+  <div class="bg-blue-600 dark:bg-blue-800">
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_donate.png" alt="Create Donation graphic" />
   </div>
-  <!-- ... -->
-  <div class="p-12 flex flex-col justify-center">
-    <h3 class="text-4xl text-gray-600 mb-8">Your Bitcoin Donations</h3>
-    <p class="intro-section-text">
+  <div class="p-12 flex flex-col justify-center bg-gray-100 dark:bg-gray-700">
+    <h3 class="text-4xl text-gray-600 dark:text-gray-300 mb-8">Your Bitcoin Donations</h3>
+    <p class="mb-8 text-lg text-gray-500 dark:text-gray-400">
       Donate bitcoin to schools and students here.
     </p>
-    <button type="button" id='donateButton' on:click|preventDefault={() => push("#/donate")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Create Space</button>
+    <button type="button" id='donateButton' on:click|preventDefault={() => push("#/donate")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Donate Here</button>
   </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
-  <div class="p-12 flex flex-col justify-center">
-    <h3 class="text-4xl text-gray-600 mb-8">Explore Donations</h3>
-    <p class="intro-section-text">
+  <div class="p-12 flex flex-col justify-center bg-gray-100 dark:bg-gray-700">
+    <h3 class="text-4xl text-gray-600 dark:text-gray-300 mb-8">Explore Donations</h3>
+    <p class="mb-8 text-lg text-gray-500 dark:text-gray-400">
       View your donations, all donations or find a specific donation.
     </p>
-    <button type='button' id='exploreDonationsButton' on:click|preventDefault={() => push("#/explore")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">My Spaces</button>
+    <button type='button' id='exploreDonationsButton' on:click|preventDefault={() => push("#/explore")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Explore Donations</button>
   </div>
-
-  <div style="background-color: #fff3e9">
-    <img class="w-full p-32" src="/images/intro.svg" alt="Protocol intro graphic" />
+  <div class="bg-amber-200 dark:bg-amber-600">
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_explore.png" alt="Explore Donations graphic" />
   </div>
 </div>
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
-  <div style="background-color: #ffce47">
-    <img class="w-full p-32" src="/images/my-donation.svg" alt="Protocol intro graphic" />
+  <div class="bg-yellow-400 dark:bg-yellow-600">
+    <img class="w-full" src="/images/bitcoinDonationApp_intro_recipients.png" alt="Discover Recipients graphic" />
   </div>
-  <!-- ... -->
-  <div class="p-12 flex flex-col justify-center">
-    <h3 class="text-4xl text-gray-600 mb-8">
+  <div class="p-12 flex flex-col justify-center bg-gray-100 dark:bg-gray-700">
+    <h3 class="text-4xl text-gray-600 dark:text-gray-300 mb-8">
       Discover Causes Worth Donating For
     </h3>
-    <p class="intro-section-text">
+    <p class="mb-8 text-lg text-gray-500 dark:text-gray-400">
       Find out who the schools and students you can donate to are.
     </p>
-    <button type="button" id='recipientsButton' on:click|preventDefault={() => push("#/recipients")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Experience OIM Now</button>
+    <button type="button" id='recipientsButton' on:click|preventDefault={() => push("#/recipients")} class="w-48 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 rounded-full text-sm px-5 py-2.5 text-center mr-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Recipients</button>
   </div>
 </div>
 
@@ -92,25 +89,7 @@
     background: #979799;
   }
 
-  .space-details-collapsible {
-    padding: 7px;
-    text-align: center;
-    border: none;
-    outline: none;
-    cursor: pointer;
-  }
-
-  .active-app-button:hover, .space-details-collapsible:hover {
+  .active-app-button:hover {
     background-color: #555;
-  }
-
-  .space-details-content {
-    display: none;
-    overflow: hidden;
-  }
-
-  .intro-section-text {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
   }
 </style>

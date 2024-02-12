@@ -6,6 +6,8 @@ import Prelude "mo:base/Prelude";
 import UUID "mo:uuid/UUID";
 import Source "mo:uuid/async/SourceV4";
 import Text "mo:base/Text";
+import Blob "mo:base/Blob";
+import Array "mo:base/Array";
 
 module {
     type Result<Ok, Err> = Result.Result<Ok, Err>;
@@ -76,6 +78,14 @@ module {
     public func bytesToText(bytes : [Nat8]) : Text {
         Text.join("", Iter.map<Nat8, Text>(Iter.fromArray(bytes), func (n) { nat8ToText(n) }))
     };
+
+    public func btcTxIdToText(txid : Blob) : Text {
+        let reversedArray = Array.reverse<Nat8>(Blob.toArray(txid));
+        let txidText = bytesToText(reversedArray);
+        return txidText;
+    };
+
+    
 
     public func newRandomUniqueId() : async Text {
         let g = Source.Source();

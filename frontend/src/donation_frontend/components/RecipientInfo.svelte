@@ -91,7 +91,7 @@
 
         {#if spaceInfoUpdateInProgress}
           <button disabled class="bg-slate-500 text-white font-bold py-2 px-4 rounded opacity-50 cursor-not-allowed">Update!</button>
-          <img class="h-12 mx-auto" src={spinner} alt="loading animation" />
+          <img class="h-12 mx-auto p-2" src={spinner} alt="loading animation" />
         {:else}
           <button type="submit" class="active-app-button bg-slate-500 text-white py-2 px-4 rounded font-semibold">Update!</button>
         {/if}
