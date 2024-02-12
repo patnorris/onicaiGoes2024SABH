@@ -1,7 +1,5 @@
 # Donation Canister
 
-## Deploy
-
 ## References
 - Initial version based on: https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin 
 - Hackathon PDF refers to:
@@ -19,7 +17,7 @@ and [Bitcoin API](https://internetcomputer.org/docs/current/references/ic-interf
 
 For deeper understanding of the ICP < > BTC integration, see the IC wiki article on [Bitcoin integration](https://wiki.internetcomputer.org/wiki/Bitcoin_Integration).
 
-## Prerequisites
+## Step 0: Set up a local Bitcoin network
 
 - Install the [IC SDK](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx).
 - [Set up a local Bitcoin network](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#setting-up-a-local-bitcoin-network):
@@ -58,24 +56,18 @@ conda activate 2024SABH
 pip install -r requirements.txt
 ```
 
-### Explore Makefile
-
-A small Makefile to the folder with some common operations...
-This only works on Linux & Mac.
-
 ### Local Network
-
-#### Shared Local Network
 
 We use multiple canisters that we deploy separately on a shared local network. Create a file `~/.config/dfx/networks.json` to enable sharing of the local bitcoin canister:
 
 File: ~/.config/dfx/networks.json
+Note: log_level options are: "critical", "error", "warning", "info", "debug", "trace"
 ```json
 {
   "local": {
     "bitcoin": {
       "enabled": true,
-      "log_level": "info",
+      "log_level": "error",
       "nodes": [
         "127.0.0.1:18444"
       ]
@@ -83,15 +75,22 @@ File: ~/.config/dfx/networks.json
   }
 }
 ```
-#### Deploy
+### Deploy local
 
 [Reference](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#deploying-the-example-canister)
 
 ```bash
+# From the bitcoin-core/bitcoin-25.0 folder, start the local bitcoin instance
+./bin/bitcoind -conf=$(pwd)/bitcoin.conf -datadir=$(pwd)/data --port=18444
+
+# Start the local dfx network
+dfx start --clean
+
+# From the backend/donation_canister folder:
 dfx deploy donation_canister --argument '(variant { regtest })'
 ```
 
-#### Exercise it with dfx
+### Exercise it with dfx
 
 ```bash
 # generate a P2PKH address

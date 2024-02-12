@@ -1,6 +1,27 @@
 import Curves "../../../motoko-bitcoin/src/ec/Curves";
 
 module Types {
+    //-------------------------------------------------------------------------
+    public type ApiError = {
+        #Unauthorized;
+        #InvalidId;
+        #ZeroAddress;
+        #Other : Text;
+    };
+
+    public type Result<S, E> = {
+        #Ok : S;
+        #Err : E;
+    };
+
+    //-------------------------------------------------------------------------
+    public type AuthRecord = {
+        auth : Text;
+    };
+
+    public type AuthRecordResult = Result<AuthRecord, ApiError>;
+
+    //-------------------------------------------------------------------------
     public type SendRequest = {
         destination_address : Text;
         amount_in_satoshi : Satoshi;
@@ -44,7 +65,7 @@ module Types {
     public type Page = [Nat8];
 
     public let CURVE = Curves.secp256k1;
-    
+
     /// The type of Bitcoin network the dapp will be interacting with.
     public type Network = {
         #mainnet;
@@ -60,18 +81,18 @@ module Types {
         #Regtest;
     };
 
-    public func network_to_network_camel_case(network: Network) : NetworkCamelCase {
+    public func network_to_network_camel_case(network : Network) : NetworkCamelCase {
         switch (network) {
             case (#regtest) {
-                #Regtest
+                #Regtest;
             };
             case (#testnet) {
-                #Testnet
+                #Testnet;
             };
             case (#mainnet) {
-                #Mainnet
+                #Mainnet;
             };
-        }
+        };
     };
 
     /// A reference to a transaction output.
@@ -124,4 +145,4 @@ module Types {
         transaction : [Nat8];
         network : Network;
     };
-}
+};

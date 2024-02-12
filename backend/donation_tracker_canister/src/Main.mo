@@ -10,20 +10,19 @@ import Nat64 "mo:base/Nat64";
 import Time "mo:base/Time";
 import Int "mo:base/Int";
 import List "mo:base/List";
+import Bool "mo:base/Bool";
 
 import Types "Types";
 import Utils "Utils";
 
-actor class DonationTracker() {
+actor class DonationTracker(_donation_canister_id : Text) {
 
     // -------------------------------------------------------------------------------
     // Define the donation_canister (bitcoin canister) with endpoints to call
+    // Note: the donationCanister will NOT change during an upgrade.
+    //       to change to a new DONATION_CANISTER_ID requires re-deploying the canister
 
-    // Select one of these. For local, also update the value to match your local deployment !!
-    // LOCAL NETWORK
-    // let DONATION_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
-    // IC MAINNET
-    let DONATION_CANISTER_ID = "ekral-oiaaa-aaaag-acmda-cai";
+    let DONATION_CANISTER_ID : Text = _donation_canister_id;
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
         get_p2pkh_address : () -> async Text;
@@ -70,16 +69,26 @@ actor class DonationTracker() {
         return msg.caller;
     };
 
+    public shared (msg) func amiController() : async Types.AuthRecordResult {
+        if (not Principal.isController(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
+        let authRecord = { auth = "You are a controller of this canister." };
+        return #Ok(authRecord);
+    };
+
     // Initialize recipients and their relationships
-    public shared func initRecipients() : async Types.initRecipientsResult {
-        // TODO: secure endpoint
+    public shared (msg) func initRecipients() : async Types.InitRecipientsResult {
+        if (not Principal.isController(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
 
         // Define school and student recipients
         let school1 : Types.Recipient =
         #School {
             id = "school1";
             name = "Green Valley High";
-            thumbnail = "url_to_thumbnail_1";
+            thumbnail = "./images/school1_thumbnail.png";
             address = "123 Green Valley Rd";
         };
 
@@ -87,7 +96,7 @@ actor class DonationTracker() {
         #Student {
             id = "student1School1";
             name = "Alex Johnson";
-            thumbnail = "url_to_thumbnail_2";
+            thumbnail = "./images/student1School1_thumbnail.png";
             grade = 10;
             schoolId = "school1";
         };
@@ -96,7 +105,7 @@ actor class DonationTracker() {
         #Student {
             id = "student2School1";
             name = "Jamie Smith";
-            thumbnail = "url_to_thumbnail_3";
+            thumbnail = "./images/student2School1_thumbnail.png";
             grade = 11;
             schoolId = "school1";
         };
@@ -105,7 +114,7 @@ actor class DonationTracker() {
         #School {
             id = "school2";
             name = "Sunnydale Elementary";
-            thumbnail = "url_to_thumbnail_4";
+            thumbnail = "./images/school2_thumbnail.png";
             address = "456 Sunnydale St";
         };
 
@@ -113,7 +122,7 @@ actor class DonationTracker() {
         #Student {
             id = "student1School2";
             name = "Robin Doe";
-            thumbnail = "url_to_thumbnail_5";
+            thumbnail = "./images/student1School2_thumbnail.png";
             grade = 8;
             schoolId = "school2";
         };
@@ -122,7 +131,7 @@ actor class DonationTracker() {
         #Student {
             id = "student2School2";
             name = "Taylor Ray";
-            thumbnail = "url_to_thumbnail_6";
+            thumbnail = "./images/student2School2_thumbnail.png";
             grade = 9;
             schoolId = "school2";
         };
@@ -159,7 +168,11 @@ actor class DonationTracker() {
         D.print("Number of students: " # debug_show (num_students));
 
         // Return the result with the dynamic counts of schools and students
-        return #Ok(?{ num_schools = num_schools; num_students = num_students });
+        let initRecipientsRecord = {
+            num_schools = num_schools;
+            num_students = num_students;
+        };
+        return #Ok(?initRecipientsRecord);
 
     };
 
@@ -186,11 +199,11 @@ actor class DonationTracker() {
             personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
             rewardsHaveBeenClaimed : Bool = false;
         };
-        
+
         let newDonationResult = donations.add(newDonation);
 
         // Update the map for the caller's principal
-        if (Principal.isAnonymous(msg.caller)) { } else {
+        if (Principal.isAnonymous(msg.caller)) {} else {
             let existingDonations = switch (donationsByPrincipal.get(msg.caller)) {
                 case (null) { Buffer.Buffer<DTI>(0) };
                 case (?ds) { ds };
@@ -394,7 +407,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve BTC donation address: "));
+                    return #Err(#Other("Failed to retrieve BTC donation address for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
             };
             // Handle other payment types as they are added
@@ -416,7 +429,7 @@ actor class DonationTracker() {
                     });
                 } catch (error : Error) {
                     // Handle errors, such as donation canister not responding
-                    return #Err(#Other("Failed to retrieve total donation amount for BTC: "));
+                    return #Err(#Other("Failed to retrieve total donation amount for BTC for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
             };
             // Handle other payment types as they are added
@@ -433,7 +446,7 @@ actor class DonationTracker() {
             });
         } catch (error : Error) {
             // Handle errors, such as donation canister not responding
-            return #Err(#Other("Failed to retrieve utxos: "));
+            return #Err(#Other("Failed to retrieve utxos:  Did you update DONATION_CANISTER_ID in Main.mo? "));
         };
     };
 
@@ -502,8 +515,6 @@ actor class DonationTracker() {
     stable var emailSubscribersStorageStable : [(Text, Types.EmailSubscriber)] = [];
     var emailSubscribersStorage : HashMap.HashMap<Text, Types.EmailSubscriber> = HashMap.HashMap(0, Text.equal, Text.hash);
 
-    stable var custodians = List.make<Principal>(Principal.fromText("cda4n-7jjpo-s4eus-yjvy7-o6qjc-vrueo-xd2hh-lh5v2-k7fpf-hwu5o-yqe"));
-    
     // Add a user as new email subscriber
     private func putEmailSubscriber(emailSubscriber : Types.EmailSubscriber) : Text {
         emailSubscribersStorage.put(emailSubscriber.emailAddress, emailSubscriber);
@@ -517,41 +528,39 @@ actor class DonationTracker() {
     };
 
     // User can submit a form to sign up for email updates
-        // For now, we only capture the email address provided by the user and on which page they submitted the form
+    // For now, we only capture the email address provided by the user and on which page they submitted the form
     public func submitSignUpForm(submittedSignUpForm : Types.SignUpFormInput) : async Text {
-        switch(getEmailSubscriber(submittedSignUpForm.emailAddress)) {
-        case null {
-            // New subscriber
-            let emailSubscriber : Types.EmailSubscriber = {
-            emailAddress: Text = submittedSignUpForm.emailAddress;
-            pageSubmittedFrom: Text = submittedSignUpForm.pageSubmittedFrom;
-            subscribedAt: Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+        switch (getEmailSubscriber(submittedSignUpForm.emailAddress)) {
+            case null {
+                // New subscriber
+                let emailSubscriber : Types.EmailSubscriber = {
+                    emailAddress : Text = submittedSignUpForm.emailAddress;
+                    pageSubmittedFrom : Text = submittedSignUpForm.pageSubmittedFrom;
+                    subscribedAt : Nat64 = Nat64.fromNat(Int.abs(Time.now()));
+                };
+                let result = putEmailSubscriber(emailSubscriber);
+                if (result != emailSubscriber.emailAddress) {
+                    return "There was an error signing up. Please try again.";
+                };
+                return "Successfully signed up!";
             };
-            let result = putEmailSubscriber(emailSubscriber);
-            if (result != emailSubscriber.emailAddress) {
-            return "There was an error signing up. Please try again.";
-            };
-            return "Successfully signed up!";
+            case _ { return "Already signed up!" };
         };
-        case _ { return "Already signed up!"; };
-        };  
     };
 
-    // Function for custodian to get all email subscribers
-    public shared({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
-        // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
-        return Iter.toArray(emailSubscribersStorage.entries());
+    // Function for controllers to get all email subscribers
+    public query ({ caller }) func getEmailSubscribers() : async [(Text, Types.EmailSubscriber)] {
+        if (Principal.isController(caller)) {
+            return Iter.toArray(emailSubscribersStorage.entries());
         };
         return [];
     };
 
-    // Function for custodian to delete an email subscriber
-    public shared({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
-        // Only Principals registered as custodians can access this function
-        if (List.some(custodians, func (custodian : Principal) : Bool { custodian == caller })) {
-        emailSubscribersStorage.delete(emailAddress);
-        return true;
+    // Function for controllers to delete an email subscriber
+    public shared ({ caller }) func deleteEmailSubscriber(emailAddress : Text) : async Bool {
+        if (Principal.isController(caller)) {
+            emailSubscribersStorage.delete(emailAddress);
+            return true;
         };
         return false;
     };

@@ -138,3 +138,6 @@ __pycache__/
 
 # misc
 .vscode/launch.json
+bitcoin.tar.gz
+bitcoin-*/
+.DS_STORE

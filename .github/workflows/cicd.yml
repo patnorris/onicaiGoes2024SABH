@@ -1,0 +1,80 @@
+name: cicd
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'backend/*/src/**'
+      - 'backend/*/test/**'
+      - 'Makefile'
+      - '.github/trigger.txt'
+      - '.github/workflows/cicd.yml'
+
+jobs:
+  all:
+    name: all
+    strategy:
+      matrix:
+        python-version: [3.11]
+        # python-version: [3.8, 3.11]
+        os: [ubuntu-latest]
+        # os: [ubuntu-latest, macos-latest] # first need to update toolchain installation
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # https://github.com/marketplace/actions/setup-miniconda
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # -------------------------------------------------------------------
+      - name: checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Initialize submodules
+        run: |
+          git submodule update --init --recursive
+
+      # -------------------------------------------------------------------
+      - name: install
+        shell: bash -l {0} # activates the default conda environment ('test')
+        run: |
+          echo "Installing tool chains & dependencies"
+          pwd
+          sudo apt-get update
+          sudo apt-get install build-essential libssl-dev
+          sudo apt-get install -y wget tar
+          make install-dfx
+          make install-python
+          # make install-jp
+          # make install-nvm
+          # make install-nodejs
+          make install-mops
+
+      - name: Download and Install Bitcoin Core
+        run: |
+          make install-bitcoin-core
+
+      - name: versions
+        shell: bash -l {0}
+        run: |
+          echo "icpp --version: $(icpp --version)"
+          echo "pip version     : $(pip --version)"
+          echo "python version  : $(python --version)"
+          echo "jp version      : $(jp --version)"
+          echo "dfx version    : $(dfx --version)"
+          BITCOIN_DIR=$(find . -name "bitcoin-*" -type d | head -n 1)
+          $BITCOIN_DIR/bin/bitcoind -version
+          echo "Ensure conda works properly"
+          conda info
+          which pip
+          which python
+          which icpp
+
+      - name: all-tests
+        shell: bash -l {0}
+        run: |
+          make all-tests
