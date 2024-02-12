@@ -13,7 +13,7 @@
 
   const setCurrentDonationCreationObject = () => {
     $currentDonationCreationObject.donation.totalDonation = totalDonationBTC;
-    // only percentage split is needed
+    // only exact split is needed (not percentage)
     let categorySplit = {
       curriculumDesign: BigInt(0.0),
       teacherSupport: BigInt(0.0),
@@ -49,7 +49,7 @@
   };
   let personalNote = '';
 
-  // Function to update the split equally when the total donation amount is changed
+  // Function to update the split to be equal
   function updateToEqualDonationSplits() {
     const equalSplit = 100 / Object.keys(donationSplits).length;
     for (let category in donationSplits) {
@@ -84,7 +84,6 @@
   function updateCategoryBTC() {
     const totalPercent = 100; // Assuming the total percent should always equal 100
     Object.entries(donationSplits).forEach(([category, { percent }]) => {
-      //donationSplits[category].btc = (totalDonationBTC * percent) / totalPercent;
       donationSplits[category].btc = parseFloat((totalDonationBTC * percent / totalPercent).toFixed(0));
     });
   };

@@ -39,7 +39,7 @@
   let createdDonationTransactionId;
 
   async function finalizeDonation() {
-    // Implement your logic to submit the donation details
+    // Submit the donation details to the backend
     submittingDonationInProgress = true;
     // Backend Canister Integration
       // Parameters: record with Donation ({donation : {totalAmount: …, allocation: …, …}})
