@@ -24,7 +24,6 @@
 
     // Validate categorySplit sums up to total donation
     const totalSum = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
-    console.log("DEBUG validateDonationDetails totalSum ", totalSum);
     if (totalSum !== $currentDonationCreationObject.donation.totalDonation) {
       $currentDonationCreationObject.donation.totalDonation = totalSum;
       confirmNewTotal = true;
@@ -41,7 +40,6 @@
 
   async function finalizeDonation() {
     // Implement your logic to submit the donation details
-    console.log('Finalizing donation with details: ', $currentDonationCreationObject);
     submittingDonationInProgress = true;
     // Backend Canister Integration
       // Parameters: record with Donation ({donation : {totalAmount: …, allocation: …, …}})
@@ -51,7 +49,6 @@
         // Result<{dti : DTI}, ApiError>;
 
     const totalAmountConverted = BigInt($currentDonationCreationObject.donation.totalDonation);
-    console.log('DEBUG totalAmountConverted ', totalAmountConverted);
 
     const finalDonation : Donation = {
       totalAmount: totalAmountConverted,
@@ -70,7 +67,6 @@
         Anonymous: null
       },
     };
-    console.log('DEBUG finalDonation ', finalDonation);
     const makeDonationInput = {
       donation: finalDonation
     };

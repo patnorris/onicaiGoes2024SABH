@@ -10,11 +10,6 @@ import {
   idlFactory as backendIdlFactory,
 } from "../declarations/donation_tracker_canister";
 
-console.log("DEBUG store donation_tracker_canister ", donation_tracker_canister);
-console.log("DEBUG store createBackendCanisterActor ", createBackendCanisterActor);
-console.log("DEBUG store backendCanisterId ", backendCanisterId);
-console.log("DEBUG store backendIdlFactory ", backendIdlFactory);
-
 export let donationTrackerCanisterDefintion = {
   donation_tracker_canister,
   createBackendCanisterActor,

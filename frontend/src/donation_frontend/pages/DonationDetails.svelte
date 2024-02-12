@@ -32,20 +32,16 @@
           // Success: Ok wraps record with Donation
           // Error: Err wraps more info (including if not found)
           // Result<?{donation : Donation}, ApiError>;
-      console.log("DEBUG loadDonationDetails params.donationId ", params.donationId);
       const getDonationDetailsInput = {
         dti: BigInt(params.donationId)
       };
-      console.log("DEBUG loadDonationDetails getDonationDetailsInput ", getDonationDetailsInput);
       const donationResponse = await $store.backendActor.getDonationDetails(getDonationDetailsInput);
-      console.log("DEBUG loadDonationDetails donationResponse ", donationResponse);
       // @ts-ignore
       if (donationResponse.Err) {
         donationLoadingError = true;
       } else {
         // @ts-ignore
         const donationRecord = donationResponse.Ok;
-        console.log("DEBUG loadDonationDetails donationRecord ", donationRecord);
         if (donationRecord.length > 0) {
           donation = donationRecord[0].donation;
           donationLoaded = true;

@@ -35,16 +35,13 @@
       include,
       recipientIdForSchool
     };
-    console.log("DEBUG loadRecipients listRecipientsInput ", listRecipientsInput);
     const listRecipientsResponse = await $store.backendActor.listRecipients(listRecipientsInput);
-    console.log("DEBUG loadRecipients listRecipientsResponse ", listRecipientsResponse);
     // @ts-ignore
     if (listRecipientsResponse.Err) {
       loadingRecipientsError = true;
     } else {
       // @ts-ignore
       const recipients : [RecipientOverview] = listRecipientsResponse.Ok.recipients;
-      console.log("DEBUG loadRecipients recipients ", recipients);
       loadedRecipients = recipients;
       hasLoadedRecipients = true;
     };

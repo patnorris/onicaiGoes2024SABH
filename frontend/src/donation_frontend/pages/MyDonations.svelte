@@ -27,16 +27,13 @@
       const getMyDonationsInput = {
         filters: []
       };
-      console.log("DEBUG loadUserDonations getMyDonationsInput ", getMyDonationsInput);
       const userDonationsResponse = await $store.backendActor.getMyDonations(getMyDonationsInput);
-      console.log("DEBUG loadUserDonations userDonationsResponse ", userDonationsResponse);
       // @ts-ignore
       if (userDonationsResponse.Err) {
         donationsLoadingError = true;
       } else {
         // @ts-ignore
         const userDonations = userDonationsResponse.Ok.donations;
-      console.log("DEBUG loadUserDonations userDonations ", userDonations);
         loadedUserDonations = userDonations;
         hasLoadedDonations = true;
       };

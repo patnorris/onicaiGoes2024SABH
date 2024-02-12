@@ -33,12 +33,8 @@
   let isValidSplit = true;
 
   const calculateAvailableBTC = async () => {
-    console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
-    console.log("DEBUG calculateAvailableBTC totalValue ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.totalValue);
-    console.log("DEBUG calculateAvailableBTC valueDonated ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject?.valueDonated);
     if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
       availableBTC = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
-      console.log("DEBUG calculateAvailableBTC availableBTC ", availableBTC);
     };
     $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableBTC;
   };

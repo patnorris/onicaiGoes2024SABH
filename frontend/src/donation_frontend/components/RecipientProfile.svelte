@@ -45,7 +45,6 @@
     let recipientLoaded = false;
     
     const loadRecipientDetails = async () => {
-      console.log("DEBUG loadRecipientDetails recipientId ", recipientId);
       if (!recipientId) {
         recipientLoadingError = true;
       } else {

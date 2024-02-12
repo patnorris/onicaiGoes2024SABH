@@ -35,7 +35,6 @@
 
   // Function to check the transaction status
   const checkTransactionStatus = async () => {
-    console.log("Checking status for: ", $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId);
     if (!validateBitcoinTransactionId($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId)) {
       return;
     };
@@ -55,9 +54,7 @@
     const transactionCheckInput = {
       bitcoinTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
     };
-    console.log("DEBUG checkTransactionStatus transactionCheckInput ", transactionCheckInput);
     const transactionCheckResponse = await $store.backendActor.getBtcTransactionDetails(transactionCheckInput);
-    console.log("DEBUG checkTransactionStatus transactionCheckResponse ", transactionCheckResponse);
     // @ts-ignore
     if (transactionCheckResponse.Err) {
       bitcoinTransactionCheckError = true;

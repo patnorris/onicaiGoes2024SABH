@@ -26,16 +26,13 @@
     const getDonationsInput = {
       filters: []
     };
-    console.log("DEBUG getDonations getDonationsInput ", getDonationsInput);
     const donationsResponse = await $store.backendActor.getDonations(getDonationsInput);
-    console.log("DEBUG getDonations donationsResponse ", donationsResponse);
     // @ts-ignore
     if (donationsResponse.Err) {
       donationsLoadingError = true;
     } else {
       // @ts-ignore
       loadedDonations = donationsResponse.Ok.donations;
-      console.log("DEBUG getDonations loadedDonations ", loadedDonations);
       hasLoadedDonations = true;
     };
 
