@@ -1,13 +1,13 @@
-# 
+[![onicaiGoes2024SABH](https://github.com/patnorris/onicaiGoes2024SABH/actions/workflows/cicd.yml/badge.svg)](https://github.com/patnorris/onicaiGoes2024SABH/actions/workflows/cicd.yml)
 
+![Alt text](frontend/src/donation_frontend/assets/BitcoinDonationApp_banner.png)
 
-# The backend canisters
+# The frontend & backend canisters
 
-- Each canister is it's own project, with it's own README
-- To deploy, follow instructions in those README files, in this order:
-  - backend/donation_canister
-  - backend/donation_tracker_canister
+The dApp consists out of 3 canister, and each canister is treated as a standalone project.
 
-# The frontend canister
-- To deploy, follow instructions in the Readme under frontend
-- Make sure to deploy backend canisters first
+To deploy the complete dApp, follow instructions in the README files, in this order:
+
+- backend/donation_canister/
+- backend/donation_tracker_canister
+- frontend

@@ -64,6 +64,7 @@ module Types {
         rewardsHaveBeenClaimed : Bool;
     };
 
+    //-------------------------------------------------------------------------
     public type ApiError = {
         #Unauthorized;
         #InvalidId;
@@ -76,30 +77,42 @@ module Types {
         #Err : E;
     };
 
-    public type initRecipientsRecord = {
+    //-------------------------------------------------------------------------
+    public type AuthRecord = {
+        auth : Text;
+    };
+
+    public type AuthRecordResult = Result<AuthRecord, ApiError>;
+
+    //-------------------------------------------------------------------------
+    public type InitRecipientsRecord = {
         num_schools : Nat;
         num_students : Nat;
     };
-    public type initRecipientsResult = Result<?initRecipientsRecord, ApiError>;
+    public type InitRecipientsResult = Result<?InitRecipientsRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type DtiRecord = {
         dti : DTI;
     };
 
     public type DtiResult = Result<DtiRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type DonationRecord = {
         donation : Donation;
     };
 
     public type DonationResult = Result<?DonationRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type DonationsRecord = {
         donations : [Donation];
     };
 
     public type DonationsResult = Result<DonationsRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     type Filter = {
         // TODO: Define the exact filters
         minAmount : ?Nat;
@@ -112,6 +125,7 @@ module Types {
         filters : [Filter];
     };
 
+    //-------------------------------------------------------------------------
     public type RecipientOverview = {
         id : Text;
         name : Text;
@@ -157,6 +171,7 @@ module Types {
 
     public type RecipientResult = Result<?RecipientRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type BitcoinTransaction = {
         bitcoinTransactionId : PaymentTransactionId;
         totalValue : Nat64; // Total value of the BTC transaction
@@ -174,6 +189,7 @@ module Types {
 
     public type BitcoinTransactionResult = Result<BitcoinTransactionRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type PaymentType = {
         #BTC;
         // Future payment types can be added here as new variants.
@@ -205,6 +221,7 @@ module Types {
 
     public type DonationAmountResult = Result<DonationAmountRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type GetUtxosResponseRecord = {
         getUtxosResponse : GetUtxosResponse;
     };
@@ -217,14 +234,15 @@ module Types {
 
     public type TxidstextResult = Result<TxidstextRecord, ApiError>;
 
+    //-------------------------------------------------------------------------
     public type SignUpFormInput = {
-        emailAddress: Text; // provided by user on signup
-        pageSubmittedFrom: Text; // capture for analytics
+        emailAddress : Text; // provided by user on signup
+        pageSubmittedFrom : Text; // capture for analytics
     };
 
     public type EmailSubscriber = {
-        emailAddress: Text;
-        pageSubmittedFrom: Text;
-        subscribedAt: Nat64;
+        emailAddress : Text;
+        pageSubmittedFrom : Text;
+        subscribedAt : Nat64;
     };
 };
