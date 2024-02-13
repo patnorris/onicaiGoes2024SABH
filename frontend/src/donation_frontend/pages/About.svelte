@@ -6,69 +6,34 @@
 <Topnav />
 
 <!-- Main Hero Section -->
-<div class="intro-hero-section">
-  <img src="./BitcoinDonationApp_banner.png" alt="Open Internet Metaverse banner" class="intro-hero-background-image">
-  <div class="intro-hero-overlay">
-    <h1>Thank you for Donating</h1>
-    <p class="intro-lead-text">Donate bitcoin to Schools and Students you care about.</p>
+<div class="relative flex flex-col items-center justify-center h-screen w-full text-center py-20 bg-cover bg-center" style="background-image: url('./BitcoinDonationApp_banner.png');">
+  <div class="relative z-10">
+    <h1 class="text-4xl font-bold text-white dark:text-gray-200">Thank you for Donating</h1>
+    <p class="mt-4 text-xl text-gray-200 dark:text-gray-400">Donate bitcoin to Schools and Students you care about.</p>
   </div>
+  <div class="absolute top-0 left-0 w-full h-full bg-black bg-opacity-30 dark:bg-opacity-60"></div>
 </div>
 
 <!-- Detailed Information -->
-<section id="oim-detail" class="intro-section-container intro-bg-alternate">
-  <h3 class="intro-section-header">The Bitcoin Donation App</h3>
-  <img src="./BitcoinDonationApp_img.png" alt="The Bitcoin Donation App" class="intro-detail-image">
-  
-  <p class="intro-section-text">
-    Bitcoin Donations
-  </p>
-
-  <p class="intro-section-text">
-    For Schools and Students
-  </p>
-
-  <p class="intro-section-text">
-    With an App running on the decentralized cloud Internet Computer
-  </p>
+<section id="about-detail" class="py-16 text-center bg-gray-100 dark:bg-gray-900">
+  <h3 class="text-3xl mb-4 text-gray-800 dark:text-gray-200">The Bitcoin Donation App</h3>
+  <img src="./BitcoinDonationApp_img.png" alt="The Bitcoin Donation App" class="mx-auto mb-4 max-w-md h-auto">
+  <p class="text-lg mb-4 text-gray-600 dark:text-gray-400">Bitcoin Donations</p>
+  <p class="text-lg mb-4 text-gray-600 dark:text-gray-400">For Schools and Students</p>
+  <p class="text-lg mb-4 text-gray-600 dark:text-gray-400">With an App running on the decentralized cloud Internet Computer</p>
 </section>
 
 <Footer />
 
 <style>
-/* NOTE: these styles are global and affect any element in the app. Thus, ensure that there aren't any conflicts with the class names chosen (i.e. avoid generic names as they might conflict with an A-Frame class, e.g. content which is used in the Inspector)  */
+  /* Custom Text Shadows */
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  }
 
-  .intro-hero-section {
-    position: relative; /* Added to make it a parent for absolute positioning */
-    height: 100vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 5rem 0;
-    text-align: center;
-  }
-  .intro-hero-section h1 {
-    font-size: 3.5rem;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    font-weight: bold;
-  }
-  .intro-lead-text {
-    font-size: 1.7rem;
-    color: #ddd;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    font-weight: bold;
-  }
-  .intro-hero-background-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Set z-index to -1 to make it below the text content */
-    object-fit: cover; /* Cover the entire div without distortion */
-  }
+  /* Since Tailwind doesn't support text shadows directly, we define it here. */
+  /* For any specific gradients or effects not covered by Tailwind. */
+
   .intro-hero-section::before {
     content: "";
     position: absolute;
@@ -80,37 +45,7 @@
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
-    z-index: 0; /* Layer it above the image but below the text */
-  }
-  .intro-hero-overlay {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-  }
-  .intro-section-container {
-    padding: 4rem 0;
-    text-align: center;
-  }
-  .intro-section-header {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-  }
-  .intro-section-text {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-  }
-  .intro-bg-alternate {
-    background-color: #eaf1f7;
-  }
-  .intro-detail-image {
-    display: block;
-    max-width: 400px;
-    height: auto;
-    margin: auto;
-    margin-bottom: 1rem;
+    z-index: 0; /* Ensure it's above the background image but below text */
   }
 </style>
+

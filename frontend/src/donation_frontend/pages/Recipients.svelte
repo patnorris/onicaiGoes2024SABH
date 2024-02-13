@@ -6,6 +6,6 @@
 
 <Topnav />
 
-<RecipientsList />
+<RecipientsList recipientType={"School"} />
 
 <Footer />

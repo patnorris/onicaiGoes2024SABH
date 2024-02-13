@@ -4,27 +4,36 @@
   import RecipientsList from "../RecipientsList.svelte";
   import RecipientPreview from "../RecipientPreview.svelte";
 
-  let recipientObject = $currentDonationCreationObject.recipient.recipientObject;
-  currentDonationCreationObject.subscribe((value) => recipientObject = value.recipient.recipientObject);
+  import type { SchoolInfo, StudentInfo } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
+  
+  let recipientInfo : SchoolInfo | StudentInfo = $currentDonationCreationObject.recipient.recipientInfo;
+  currentDonationCreationObject.subscribe((value) => recipientInfo = value.recipient.recipientInfo);
+
+  const handleContinue = () => {
+		$currentDonationCreationObject.currentActiveFormStepIndex++;
+	};
 
 </script>
 
-<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern-dark.svg')]">
-  <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
-    <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 3: Choose Donation Recipient</h1>	
-    <p class="mt-4">Please choose the school or student you would like to donate to.</p>
-    {#key recipientObject}
-      {#if recipientObject}
-        <p id='currentRecipientSubtext'>You have currently selected this recipient:</p>
-        <!-- <p id='currentRecipientObjectSubtext'>TODO: {$currentDonationCreationObject.recipient.recipientObject}</p> -->
-        <RecipientPreview recipientPreview={recipientObject} embedded={true}/>
-      {:else}
-        <p id='currentRecipientSubtext'>You have not made your selection yet. Please do so before continuing.</p>
-      {/if}
-    {/key}
+<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
+  <div class="py-8 px-1 sm:px-3 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
+    <h1 class="mb-4 text-3xl sm:text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
+      Step 3: Choose Donation Recipient</h1>
+    <p class="mt-4 text-gray-600 dark:text-gray-300">Please choose the school or student you would like to donate to.</p>
+    <div class="py-3 space-y-3">
+      {#key recipientInfo}
+        {#if recipientInfo}
+          <div class="py-4 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
+            <p id='currentRecipientSubtext' class="text-black dark:text-white font-semibold">You have currently selected this recipient:</p>
+            <RecipientPreview recipientPreview={recipientInfo} embedded={true} callbackFunction={handleContinue} />
+          </div>
+        {:else}
+          <p id='currentRecipientSubtext' class="text-gray-600 dark:text-gray-300">You have not made your selection yet. Please do so before continuing.</p>
+        {/if}
+      {/key}
+    </div>
     <div class="mt-4">
-      <RecipientsList embedded={true}/>
+      <RecipientsList embedded={true} recipientType={"School"} callbackFunction={handleContinue} />
     </div>
   </div>
 </section>

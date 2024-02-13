@@ -23,7 +23,7 @@
     style={"lg:h-16 2xl:h-20 lg:rounded-[55px]"}
 >
     {#if loading === "stoic"}
-        <img class="h-6 block h-" src={spinner} alt="loading animation" />
+        <img class="h-6 block" src={spinner} alt="loading animation" />
     {:else}
         Stoic
     {/if}

@@ -120,7 +120,7 @@ $ dfx canister call donation_canister get_balance '("mkkzk2xTQcrrRYv8FPnj22ujHhk
 This is done only once.
 
 ```bash
-dfx deploy --network=ic donation_canister --argument '(variant { testnet })'
+dfx deploy --network=ic -m reinstall donation_canister --argument '(variant { testnet })'
 ```
 
 #### What this does
