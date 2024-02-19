@@ -123,7 +123,7 @@
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 4: Specify Donation Details</h1>  
+      Specify Donation Details</h1>  
     <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
     <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step):</p>
     <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableBTC} Satoshi (equals {(availableBTC / 100000000.0).toFixed(8)} BTC)</p>
