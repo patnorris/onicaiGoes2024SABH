@@ -75,6 +75,21 @@ def test__amiController(network: str) -> None:
     assert response == expected_response
 
 
+def test__isControllerLogicOk(network: str) -> None:
+    response = call_canister_api(
+        dfx_json_path=DFX_JSON_PATH,
+        canister_name=CANISTER_NAME,
+        canister_method="isControllerLogicOk",
+        canister_argument="()",
+        network=network,
+        timeout_seconds=10,
+    )
+    expected_response = (
+        '(variant { Ok = record { auth = "You are a controller of this canister.";} })'
+    )
+    assert response == expected_response
+
+
 def test__initRecipients_anonymous(
     identity_anonymous: dict[str, str], network: str
 ) -> None:

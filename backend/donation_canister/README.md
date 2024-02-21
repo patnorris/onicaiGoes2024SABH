@@ -87,12 +87,12 @@ Note: log_level options are: "critical", "error", "warning", "info", "debug", "t
 }
 ```
 
-### Deploy local
+### Deploy donation_canister locally
 
 [Reference](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#deploying-the-example-canister)
 
 ```bash
-# From the bitcoin-core/bitcoin-25.0 folder, start the local bitcoin instance
+# From the bitcoin-25.0 folder, start the local bitcoin instance
 ./bin/bitcoind -conf=$(pwd)/bitcoin.conf -datadir=$(pwd)/data --port=18444
 
 # Start the local dfx network
@@ -100,6 +100,12 @@ dfx start --clean
 
 # From the backend/donation_canister folder:
 dfx deploy donation_canister --argument '(variant { regtest })'
+
+# Add the donation_tracker_canister as a controller, for access to the `send` method
+dfx canister update-settings --add-controller be2us-64aaa-aaaaa-qaabq-cai donation_canister
+
+# Generate the bindings used by the frontend
+dfx generate
 ```
 
 ### Exercise it with dfx
@@ -110,7 +116,7 @@ $ dfx canister call donation_canister get_p2pkh_address
 ("mkkzk2xTQcrrRYv8FPnj22ujHhkZwsETtX")
 
 # receiving BTC
-# From your local bitcoin-core folder, issue this command, replacing BTC_ADDRESS with yours
+# From bitcoin-25.0 issue this command, replacing BTC_ADDRESS with yours
 ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress 1 BTC_ADDRESS
 # eg.
 $ ./bin/bitcoin-cli -conf=$(pwd)/bitcoin.conf generatetoaddress 1 mkkzk2xTQcrrRYv8FPnj22ujHhkZwsETtX
@@ -127,12 +133,13 @@ $ dfx canister call donation_canister get_balance '("mkkzk2xTQcrrRYv8FPnj22ujHhk
 
 ---
 
-### Deploy the smart contract to the Internet Computer
-
-This is done only once.
+### Deploy donation_canister to the Internet Computer
 
 ```bash
 dfx deploy --network=ic -m reinstall donation_canister --argument '(variant { testnet })'
+
+# Add the donation_tracker_canister as a controller, for access to the `send` method
+dfx canister --network=ic update-settings --add-controller fj5jn-2qaaa-aaaag-acmfq-cai donation_canister
 ```
 
 #### What this does
