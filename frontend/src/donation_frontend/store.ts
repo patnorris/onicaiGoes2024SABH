@@ -56,6 +56,11 @@ const APPLICATION_LOGO_URL = "https://vdfyi-uaaaa-aaaai-acptq-cai.ic0.app/favico
 //"https%3A%2F%2Fx6occ-biaaa-aaaai-acqzq-cai.icp0.io%2FFutureWebInitiative%5Fimg.png";
 const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
 
+// Global variable to access generally available currencies as payment types
+export let supportedPaymentTypes = writable(
+  ["BTC", "ckBTC"]
+);
+
 // Global variable to keep track of Donation Creation process
 export let currentDonationCreationObject = writable({
   currentActiveFormStepIndex: 1,
