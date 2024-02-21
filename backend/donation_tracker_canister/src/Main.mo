@@ -215,7 +215,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             donor : Types.DonorType = newDonor;
             personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
             rewardsHaveBeenClaimed : Bool = false;
-            hasBeenDistributed : Bool = false;
+            hasBeenDistributed : Bool = false; // TODO: placeholder for future functionality
         };
 
         let newDonationResult = donations.add(newDonation);
