@@ -95,6 +95,13 @@ all-deploy-and-pytest:
 		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
 		stop
 
+.PHONY: bitcoin-core-start
+bitcoin-core-start: 
+	bitcoin-$(VERSION_BITCOIN)/bin/bitcoind \
+		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
+		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
+		--port=18444
+
 .PHONY: bitcoin-core-stop
 bitcoin-core-stop: 
 	bitcoin-$(VERSION_BITCOIN)/bin/bitcoin-cli \

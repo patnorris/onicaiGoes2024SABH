@@ -1,8 +1,10 @@
 # Donation Canister
 
 ## References
-- Initial version based on: https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin 
+
+- Initial version based on: https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin
 - Hackathon PDF refers to:
+
   - https://internetcomputer.org/how-it-works/bitcoin-integration/
   - https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/
 
@@ -22,6 +24,15 @@ For deeper understanding of the ICP < > BTC integration, see the IC wiki article
 - Install the [IC SDK](https://internetcomputer.org/docs/current/developer-docs/setup/install/index.mdx).
 - [Set up a local Bitcoin network](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#setting-up-a-local-bitcoin-network):
 
+  NOTE: On mac I have not been able to get it to run, due to security checks...
+
+  ```bash
+  # On linux, you can run
+  make install-bitcoin-core
+
+  # then start it with:
+  make bitcoin-core-start
+  ```
 
 ## Step 1: Building and deploying donations canister
 
@@ -38,6 +49,7 @@ cd backend/donation_canister
 ```
 
 Note on the submodule:
+
 - The donation_canister depends on [motoko-bitcoin](https://github.com/tgalal/motoko-bitcoin)
 - I added it to the repo as a submodule with:
   ```bash
@@ -62,19 +74,19 @@ We use multiple canisters that we deploy separately on a shared local network. C
 
 File: ~/.config/dfx/networks.json
 Note: log_level options are: "critical", "error", "warning", "info", "debug", "trace"
+
 ```json
 {
   "local": {
     "bitcoin": {
       "enabled": true,
       "log_level": "error",
-      "nodes": [
-        "127.0.0.1:18444"
-      ]
+      "nodes": ["127.0.0.1:18444"]
     }
   }
 }
 ```
+
 ### Deploy local
 
 [Reference](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/#deploying-the-example-canister)
@@ -124,12 +136,12 @@ dfx deploy --network=ic -m reinstall donation_canister --argument '(variant { te
 ```
 
 #### What this does
+
 - `dfx deploy` tells the command line interface to `deploy` the smart contract
 - `--network=ic` tells the command line to deploy the smart contract to the mainnet ICP blockchain
 - `--argument '(variant { testnet })'` passes the argument `Testnet` to initialize the smart contract, telling it to connect to the Bitcoin testnet
 
 **We're initializing the canister with `variant { testnet }`, so that the canister connects to the the [Bitcoin testnet](https://en.bitcoin.it/wiki/Testnet). To be specific, this connects to `Testnet3`, which is the current Bitcoin test network used by the Bitcoin community.**
-
 
 If successful, you should see an output that looks like this:
 
@@ -147,8 +159,8 @@ Your canister is live and ready to use! You can interact with it using either th
 
 In the output above, to see the Candid Web UI for your bitcoin canister, you would use the URL `https://a4gq6-oaaaa-aaaab-qaa4q-cai.raw.icp0.io/?id=<YOUR-CANISTER-ID>`. Here are the two methods you will see:
 
-* `public_key`
-* `sign`
+- `public_key`
+- `sign`
 
 ## Step 2: Generating a Bitcoin address
 
@@ -165,12 +177,11 @@ Or, if you prefer the command line:
 dfx canister --network=ic call donation_canister get_p2pkh_address
 ```
 
-* The Bitcoin address you see will be different from the one above, because the
+- The Bitcoin address you see will be different from the one above, because the
   ECDSA public key your canister retrieves is unique.
 
-* We are generating a Bitcoin testnet address, which can only be
-used for sending/receiving Bitcoin on the Bitcoin testnet.
-
+- We are generating a Bitcoin testnet address, which can only be
+  used for sending/receiving Bitcoin on the Bitcoin testnet.
 
 ## Step 3: Receiving bitcoin
 
@@ -179,7 +190,6 @@ some testnet bitcoin. You can use one of the Bitcoin faucets, such as [coinfauce
 to receive some bitcoin.
 
 Enter your address and click on "Send testnet bitcoins". In the example below we will use Bitcoin address `n31eU1K11m1r58aJMgTyxGonu7wSMoUYe7`, but you would use your own address. The canister will be receiving 0.011 test BTC on the Bitcoin Testnet.
-
 
 Once the transaction has at least one confirmation, which can take a few minutes,
 you'll be able to see it in your canister's balance.
@@ -225,11 +235,11 @@ You can track the status of this transaction using a block explorer. Once the
 transaction has at least one confirmation, you should be able to see it
 reflected in your current balance.
 
-
 ## Security considerations and best practices
 
 If you base your application on this example, we recommend you familiarize yourself with and adhere to the [security best practices](https://internetcomputer.org/docs/current/references/security/) for developing on the Internet Computer. This example may not implement all the best practices.
 
 For example, the following aspects are particularly relevant for this app:
-* [Certify query responses if they are relevant for security](https://internetcomputer.org/docs/current/references/security/general-security-best-practices#certify-query-responses-if-they-are-relevant-for-security), since the app e.g. offers method to read balances.
-* [Use a decentralized governance system like SNS to make a canister have a decentralized controller](https://internetcomputer.org/docs/current/references/security/rust-canister-development-security-best-practices#use-a-decentralized-governance-system-like-sns-to-make-a-canister-have-a-decentralized-controller), since decentralized control may be essential for canisters holding Bitcoin on behalf of users.
+
+- [Certify query responses if they are relevant for security](https://internetcomputer.org/docs/current/references/security/general-security-best-practices#certify-query-responses-if-they-are-relevant-for-security), since the app e.g. offers method to read balances.
+- [Use a decentralized governance system like SNS to make a canister have a decentralized controller](https://internetcomputer.org/docs/current/references/security/rust-canister-development-security-best-practices#use-a-decentralized-governance-system-like-sns-to-make-a-canister-have-a-decentralized-controller), since decentralized control may be essential for canisters holding Bitcoin on behalf of users.
