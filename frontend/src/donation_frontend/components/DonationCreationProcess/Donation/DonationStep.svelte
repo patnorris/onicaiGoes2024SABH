@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { currentDonationCreationObject } from "../../store";
+  import { currentDonationCreationObject } from "../../../store";
 
   let updateToggle = 0;
 

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { store, currentDonationCreationObject } from "../../store";
-  import spinner from "../../assets/loading.gif";
+  import { store, currentDonationCreationObject } from "../../../store";
+  import spinner from "../../../assets/loading.gif";
   
   import type { BitcoinTransaction } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
 

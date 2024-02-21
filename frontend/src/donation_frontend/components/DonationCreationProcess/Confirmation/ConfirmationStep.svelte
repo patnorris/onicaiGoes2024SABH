@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
-  import { store, currentDonationCreationObject } from "../../store";
+  import { store, currentDonationCreationObject } from "../../../store";
   import { push } from "svelte-spa-router";
 
-  import spinner from "../../assets/loading.gif";
+  import spinner from "../../../assets/loading.gif";
 
   let validationErrors = [];
   let confirmNewTotal = false;

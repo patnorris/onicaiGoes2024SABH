@@ -3,11 +3,11 @@
 	import Topnav from "../components/Topnav.svelte";
 	import Footer from "../components/Footer.svelte";
 	import Form from '../components/DonationCreationProcess/DonationCreationForm.svelte';
-	import ProgressBar from '../components/DonationCreationProcess/ProgressBar.svelte';
+	import ProgressBar from '../components/DonationCreationProcess/Helpers/ProgressBar.svelte';
     import { onMount } from "svelte";
 
 	let progressBar;
-	let steps = ['Recipient', 'Bitcoin', 'Transaction', 'Donation', 'Confirmation'];
+	let steps = ['Recipient', 'Currency', 'Transaction', 'Donation', 'Confirmation'];
 	let currentActive = $currentDonationCreationObject.currentActiveFormStepIndex;
 	currentDonationCreationObject.subscribe((value) => currentActive = value.currentActiveFormStepIndex);
 	
@@ -32,7 +32,7 @@
 	<section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
 	  <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">  
 		<h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-		  Donate Bitcoin</h1>
+		  Donate Crypto</h1>
 		<p class="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 lg:px-48 dark:text-gray-200">
 		  {#if !$store.isAuthed}
 			<p id='createSubtext' class="dark:text-gray-400">Log in to be rewarded for your donation! You can also donate without logging in.</p>
