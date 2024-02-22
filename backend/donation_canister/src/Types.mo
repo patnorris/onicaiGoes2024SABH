@@ -27,6 +27,14 @@ module Types {
         amount_in_satoshi : Satoshi;
     };
 
+    //-------------------------------------------------------------------------
+    public type SendRecord = {
+        txid : Text;
+    };
+
+    public type SendRecordResult = Result<SendRecord, ApiError>;
+
+    //-------------------------------------------------------------------------
     public type ECDSAPublicKeyReply = {
         public_key : Blob;
         chain_code : Blob;

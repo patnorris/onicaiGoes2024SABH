@@ -67,8 +67,16 @@ actor class BasicBitcoin(_network : Types.Network) {
   };
 
   /// Sends the given amount of bitcoin from this canister to the given address.
-  /// Returns the transaction ID.
-  public func send(request : SendRequest) : async Text {
-    Utils.bytesToText(await BitcoinWallet.send(NETWORK, DERIVATION_PATH, KEY_NAME, request.destination_address, request.amount_in_satoshi));
+  /// Only controllers of this canister allowed to call.
+  /// - Note that the donation_tracker_canister will be a controller.
+  /// Returns a SendRecordResult, containing the transaction ID
+  public shared (msg) func send(request : SendRequest) : async Types.SendRecordResult {
+    if (not Principal.isController(msg.caller)) {
+      return #Err(#Unauthorized);
+    };
+    let txid = Utils.bytesToText(await BitcoinWallet.send(NETWORK, DERIVATION_PATH, KEY_NAME, request.destination_address, request.amount_in_satoshi));
+
+    let sendRecord = { txid = txid };
+    return #Ok(sendRecord);
   };
 };
