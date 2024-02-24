@@ -1,23 +1,8 @@
 # Donation Canister
 
-## References
-
-- Initial version based on: https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin
-- Hackathon PDF refers to:
-
-  - https://internetcomputer.org/how-it-works/bitcoin-integration/
-  - https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/
-
-- README of bitcoin_basic example refers to:
-  - [Deploying your first Bitcoin dapp](https://internetcomputer.org/docs/current/samples/deploying-your-first-bitcoin-dapp).
-  - [Developing Bitcoin dapps locally](https://internetcomputer.org/docs/current/developer-docs/integrations/bitcoin/local-development).
-
-## Architecture
-
-This example internally leverages the [ECDSA API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key)
+This canister is a slightly modified version of [basic_bitcoin](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin) smart contract, which leverages the [ECDSA API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-ecdsa_public_key)
 and [Bitcoin API](https://internetcomputer.org/docs/current/references/ic-interface-spec/#ic-bitcoin-api) of the Internet Computer.
 
-For deeper understanding of the ICP < > BTC integration, see the IC wiki article on [Bitcoin integration](https://wiki.internetcomputer.org/wiki/Bitcoin_Integration).
 
 ## Step 0: Set up a local Bitcoin network
 
@@ -242,11 +227,10 @@ You can track the status of this transaction using a block explorer. Once the
 transaction has at least one confirmation, you should be able to see it
 reflected in your current balance.
 
-## Security considerations and best practices
+## References
 
-If you base your application on this example, we recommend you familiarize yourself with and adhere to the [security best practices](https://internetcomputer.org/docs/current/references/security/) for developing on the Internet Computer. This example may not implement all the best practices.
-
-For example, the following aspects are particularly relevant for this app:
-
-- [Certify query responses if they are relevant for security](https://internetcomputer.org/docs/current/references/security/general-security-best-practices#certify-query-responses-if-they-are-relevant-for-security), since the app e.g. offers method to read balances.
-- [Use a decentralized governance system like SNS to make a canister have a decentralized controller](https://internetcomputer.org/docs/current/references/security/rust-canister-development-security-best-practices#use-a-decentralized-governance-system-like-sns-to-make-a-canister-have-a-decentralized-controller), since decentralized control may be essential for canisters holding Bitcoin on behalf of users.
+- [basic_bitcoin](https://github.com/dfinity/examples/tree/master/motoko/basic_bitcoin)
+- [bitcoin-integration](https://internetcomputer.org/how-it-works/bitcoin-integration/)
+- [ckbtc-and-bitcoin](https://internetcomputer.org/docs/current/tutorials/developer-journey/level-4/4.3-ckbtc-and-bitcoin/)
+- [Deploying your first Bitcoin dapp](https://internetcomputer.org/docs/current/samples/deploying-your-first-bitcoin-dapp).
+- [Developing Bitcoin dapps locally](https://internetcomputer.org/docs/current/developer-docs/integrations/bitcoin/local-development).
