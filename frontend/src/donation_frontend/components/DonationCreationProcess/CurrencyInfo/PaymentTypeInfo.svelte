@@ -1,6 +1,8 @@
 <script lang="ts">
   import { currentDonationCreationObject } from "../../../store";
   import { onMount } from 'svelte';
+  
+  import NonSupportedPaymentType from '../NonSupportedPaymentType.svelte';
 
   let PaymentInfoComponent;
 
@@ -11,8 +13,8 @@
         break;
       // Add cases for other payment types here
       default:
-        PaymentInfoComponent = null;
-    }
+        PaymentInfoComponent = NonSupportedPaymentType; // Use the non-supported payment type component for unsupported types
+    };
   };
 
   // Reactively update the PaymentInfoComponent based on the selected payment type
