@@ -409,8 +409,6 @@ actor class DonationTracker(_donation_canister_id : Text) {
         };
     };
 
-    // Cannot use await in a query function...???
-    // public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
     public func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
         switch (req.paymentType) {
             case (#BTC) {
@@ -432,7 +430,6 @@ actor class DonationTracker(_donation_canister_id : Text) {
         };
     };
 
-    // public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
     public func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
         switch (req.paymentType) {
             case (#BTC) {
