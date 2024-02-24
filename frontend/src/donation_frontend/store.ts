@@ -94,10 +94,10 @@ export let currentDonationCreationObject = writable({
     peerToPeerPayment: false, // false means that all donations go to one wallet, true that the payment will be made directly from the donor to the recipient's wallet
     inAppPayment: false, // false means that donations are transferred via an external wallet, true that the transaction will be made via a wallet connected to the app
     categorySplit: { // each category is in Satoshi (100,000,000 Satoshi = 1 bitcoin)
-      curriculumDesign: BigInt(0.0),
-      teacherSupport: BigInt(0.0),
-      schoolSupplies: BigInt(0.0),
-      lunchAndSnacks: BigInt(0.0),
+      curriculumDesign: 0.0,
+      teacherSupport: 0.0,
+      schoolSupplies: 0.0,
+      lunchAndSnacks: 0.0,
     },
     personalNote: "",
   },

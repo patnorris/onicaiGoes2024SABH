@@ -1,6 +1,6 @@
 <script lang="ts">
   import { store, currentDonationCreationObject } from "../../../../store";
-  import spinner from "../../../assets/loading.gif";
+  import spinner from "../../../../assets/loading.gif";
   
   import type { BitcoinTransaction } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
 
@@ -90,11 +90,13 @@
     <p>The recipient does not have a BTC address. Please change the payment type.</p>
   {/if}
 {:else}
-  <div class="p-6 space-y-3">
+  <div class="py-6 space-y-3">
     {#if transactionInfo}
-      <div class="p-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
+      <div class="py-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
         <p id='currentTransactionSubtext' class="text-black dark:text-white font-semibold">Great, you have currently selected this transaction:</p>
-        <p class="text-gray-700 dark:text-gray-300">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+        <span class="inline-block break-all">
+          <p class="text-gray-700 dark:text-gray-300">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+        </span>
         <p class="text-gray-700 dark:text-gray-300">Total Value: {transactionInfo.totalValue}</p>
         <p class="text-gray-700 dark:text-gray-300">Value Left to Donate: {amountLeft}</p>
       </div>
@@ -103,7 +105,7 @@
         <button on:click|preventDefault={handleContinue} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Continue
         </button>
-        <p class="dark:text-gray-300">If you prefer, you can also enter another transaction below instead.</p>
+        <p class="dark:text-gray-300">If you prefer, you can also enter another transaction id below instead.</p>
       {:else}
         <p class="dark:text-gray-300">Please use another transaction which has value left to donate.</p>
         <p class="dark:text-gray-300">You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>
