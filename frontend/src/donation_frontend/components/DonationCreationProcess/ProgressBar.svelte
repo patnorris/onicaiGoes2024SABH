@@ -71,7 +71,7 @@
 		justify-content: space-between;
 		position: relative;
 		margin-bottom: 30px;
-		margin-left: 15px;
+		margin-left: 20px;
 		margin-right: 30px;
 		max-width: 100%;
 		/* width: 350px; */
