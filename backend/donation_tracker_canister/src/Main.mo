@@ -191,9 +191,79 @@ actor class DonationTracker(_donation_canister_id : Text) {
 
     };
 
+    private func verifyDonationInput(donationInput : Donation) : async Bool {
+        // Perform basic checks
+        // Total amount has to be a positive number
+        if (donationInput.totalAmount <= 0) {
+            return false;
+        };
+        
+        // Verify that recipientId exists
+        switch (recipientsById.get(donationInput.recipientId)) {
+            case (null) { return false; };
+            case (?recipient) { };
+        };
+
+        // Verify valid allocation
+        var totalAllocated = donationInput.allocation.curriculumDesign;
+        totalAllocated += donationInput.allocation.teacherSupport;
+        totalAllocated += donationInput.allocation.schoolSupplies;
+        totalAllocated += donationInput.allocation.lunchAndSnacks;  
+        if (totalAllocated != donationInput.totalAmount) {
+            return false;
+        };   
+        
+        // Check that personalNote is not longer than 100 characters
+        switch (donationInput.personalNote) {
+            case (null) { };
+            case (?note) {
+                if (note.size() > 100) {
+                    return false;
+                };
+            };
+        };
+
+        // Elaborate check whether paymentType is valid and paymentTransactionId exists and can be used
+        switch (donationInput.paymentType) {
+            case (#BTC) {
+                // Verify the Bitcoin transaction
+                try {
+                    let txCheckResult = await getBtcTransactionDetails({bitcoinTransactionId = donationInput.paymentTransactionId});
+                    switch (txCheckResult) {
+                        case (#Ok(bitcoinTransactionRecord)) {
+                            // bitcoinTransactionId was found and has value
+                            let bitcoinTransaction = bitcoinTransactionRecord.bitcoinTransaction;
+                            // Check that value left on transaction is high enough to donate totalAmount
+                            let valueLeft = bitcoinTransaction.totalValue - bitcoinTransaction.valueDonated;
+                            if (valueLeft <= 0) {
+                                // the transaction doesn't have any value left to donate
+                                return false;
+                            } else if (valueLeft < donationInput.totalAmount) {
+                                // the transaction doesn't have enough value left to donate totalAmount
+                                return false;
+                            };
+                        };
+                        case (_) { return false; }; // bitcoinTransactionId wasn't found or doesn't have value bigger 0
+                    };
+                } catch (error : Error) {
+                    return false;
+                };
+            };
+            // Handle other payment types as they are added
+            case (_) { return false; }; // Fallback: unsupported paymentType
+        };
+        
+        // All checks were successful and the donation input is valid
+        return true;
+    };
+
     public shared (msg) func makeDonation(donationRecord : Types.DonationRecord) : async Types.DtiResult {
         let donationInput = donationRecord.donation;
         // Potential TODO: checks on inputs
+        let donationInputIsValid : Bool = await verifyDonationInput(donationInput);
+        if(not donationInputIsValid) {
+            return #Err(#Other("Invalid Donation input"));
+        };
 
         let newDti = donations.size(); // Simply use index into donations Array as the DTI
         var newDonor : Types.DonorType = #Anonymous;
