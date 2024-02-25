@@ -25,6 +25,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
     let DONATION_CANISTER_ID : Text = _donation_canister_id;
 
     let donationCanister = actor (DONATION_CANISTER_ID) : actor {
+        amiController() : async Types.AuthRecordResult;
         get_p2pkh_address : () -> async Text;
         get_balance : (address : Types.BitcoinAddress) -> async Types.Satoshi;
         get_utxos : (address : Types.BitcoinAddress) -> async Types.GetUtxosResponse;
@@ -75,6 +76,22 @@ actor class DonationTracker(_donation_canister_id : Text) {
         };
         let authRecord = { auth = "You are a controller of this canister." };
         return #Ok(authRecord);
+    };
+
+    // Admin function to verify that donation_tracker_canister is a controller of the donation_canister
+    public shared (msg) func isControllerLogicOk() : async Types.AuthRecordResult {
+        if (not Principal.isController(msg.caller)) {
+            return #Err(#Unauthorized);
+        };
+
+        // Call donation_canister to verify that donation_tracker_canister is a controller
+        try {
+            let authRecordResult : Types.AuthRecordResult = await donationCanister.amiController();
+            return authRecordResult;
+        } catch (error : Error) {
+            // Handle errors, such as donation canister not responding
+            return #Err(#Other("Failed to retrieve controller info for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
+        };
     };
 
     // Initialize recipients and their relationships
@@ -198,6 +215,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             donor : Types.DonorType = newDonor;
             personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
             rewardsHaveBeenClaimed : Bool = false;
+            hasBeenDistributed : Bool = false; // TODO: placeholder for future functionality
         };
 
         let newDonationResult = donations.add(newDonation);
@@ -391,8 +409,6 @@ actor class DonationTracker(_donation_canister_id : Text) {
         };
     };
 
-    // Cannot use await in a query function...???
-    // public query func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
     public func getDonationWalletAddress(req : Types.PaymentTypeRecord) : async Types.DonationAddressResult {
         switch (req.paymentType) {
             case (#BTC) {
@@ -414,7 +430,6 @@ actor class DonationTracker(_donation_canister_id : Text) {
         };
     };
 
-    // public query func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
     public func getTotalDonationAmount(req : Types.PaymentTypeRecord) : async Types.DonationAmountResult {
         switch (req.paymentType) {
             case (#BTC) {
