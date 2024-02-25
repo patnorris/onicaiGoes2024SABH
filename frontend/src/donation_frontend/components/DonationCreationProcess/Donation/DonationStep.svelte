@@ -9,6 +9,7 @@
   let updateToggle = 0;
 
   let availableAmountToDonate = 0.0;
+  let shouldCheckAvailableAmount = true;
   let totalDonationIsBiggerThanAvailableAmountToDonate = false;
   let isValidSplit = true;
 
@@ -40,6 +41,9 @@
       case 'BTC':
         setValuesForBTC();
         break;
+      case 'ckBTC':
+        setValuesForCKBTC();
+        break;
       // Add cases for other supported payment types here
       default:
         isUnsupportedPaymentType = true; // Will show an error
@@ -47,11 +51,20 @@
   };
 
   const setValuesForBTC = () => {
+    shouldCheckAvailableAmount = true;
     // Calculate available amount to donate
     if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
       availableAmountToDonate = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
     };
     $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableAmountToDonate;
+  };
+
+  const setValuesForCKBTC = () => {
+    if ($currentDonationCreationObject.donation.inAppPayment) {
+      shouldCheckAvailableAmount = true;
+    } else {
+      shouldCheckAvailableAmount = false;
+    };
   };
 
   const setPersonalNote = () => {
@@ -163,13 +176,15 @@
       <NonSupportedPaymentType />
     {:else}
       <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
-      <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available amount to donate:</p>
-      <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableAmountToDonate} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, availableAmountToDonate) : ""}</p>
-      <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-        Set Total Donation to Available Amount
-      </button>
-      {#if totalDonationIsBiggerThanAvailableAmountToDonate}
-        <p id='totalDonationTooBigSubtext' class="text-red-500 dark:text-red-400">Your Total Donation cannot be bigger than your available amount!</p>
+      {#if shouldCheckAvailableAmount}
+        <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available amount to donate:</p>
+        <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableAmountToDonate} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, availableAmountToDonate) : ""}</p>
+        <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Set Total Donation to Available Amount
+        </button>
+        {#if totalDonationIsBiggerThanAvailableAmountToDonate}
+          <p id='totalDonationTooBigSubtext' class="text-red-500 dark:text-red-400">Your Total Donation cannot be bigger than your available amount!</p>
+        {/if}
       {/if}
       <div class="mt-4">
         <label for="totalDonation" class="font-semibold block mb-2 text-gray-600 dark:text-gray-300">Total Donation:</label>
