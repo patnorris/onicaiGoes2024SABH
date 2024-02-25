@@ -67,7 +67,7 @@
       timestamp: 0n,
       dti: 0n,
       rewardsHaveBeenClaimed: false,
-      hasBeenDistributed: false,
+      hasBeenDistributed: [false],
       donor: {
         Anonymous: null
       },

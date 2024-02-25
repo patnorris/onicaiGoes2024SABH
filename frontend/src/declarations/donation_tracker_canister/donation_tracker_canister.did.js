@@ -42,7 +42,7 @@ export const idlFactory = ({ IDL }) => {
     'dti' : DTI,
     'rewardsHaveBeenClaimed' : IDL.Bool,
     'paymentTransactionId' : PaymentTransactionId,
-    'hasBeenDistributed' : IDL.Bool,
+    'hasBeenDistributed' : IDL.Opt(IDL.Bool),
     'totalAmount' : Satoshi,
     'timestamp' : IDL.Nat64,
     'paymentType' : PaymentType,
@@ -220,6 +220,7 @@ export const idlFactory = ({ IDL }) => {
     'getTxidstext' : IDL.Func([], [TxidstextResult], []),
     'getUTXOS' : IDL.Func([], [GetUtxosResponseResult], []),
     'initRecipients' : IDL.Func([], [InitRecipientsResult], []),
+    'isControllerLogicOk' : IDL.Func([], [AuthRecordResult], []),
     'listRecipients' : IDL.Func(
         [RecipientFilter],
         [RecipientsResult],

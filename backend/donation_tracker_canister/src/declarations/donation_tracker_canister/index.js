@@ -40,4 +40,4 @@ export const createActor = (canisterId, options = {}) => {
   });
 };
 
-export const donation_tracker_canister = canisterId ? createActor(canisterId) : undefined;
+export const donation_tracker_canister = createActor(canisterId);
