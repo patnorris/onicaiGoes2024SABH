@@ -12,6 +12,10 @@
           currentDonation.donation.currencyUnitText = "Satoshi";
           currentDonation.donation.needsCurrencyUnitAddition = true;
           break;
+        case 'ckBTC':
+          currentDonation.donation.currencyUnitText = "ckSatoshi";
+          currentDonation.donation.needsCurrencyUnitAddition = true;
+          break;
         // Add cases for other supported payment types here
       };
       return currentDonation;

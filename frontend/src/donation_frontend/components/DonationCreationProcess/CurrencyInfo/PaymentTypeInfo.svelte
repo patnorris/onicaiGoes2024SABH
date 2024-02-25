@@ -11,6 +11,9 @@
       case 'BTC':
         PaymentInfoComponent = (await import('./PaymentTypes/BitcoinPaymentInfo.svelte')).default;
         break;
+      case 'ckBTC':
+        PaymentInfoComponent = (await import('./PaymentTypes/CKBTCPaymentInfo.svelte')).default;
+        break;
       // Add cases for other payment types here
       default:
         PaymentInfoComponent = NonSupportedPaymentType; // Use the non-supported payment type component for unsupported types
