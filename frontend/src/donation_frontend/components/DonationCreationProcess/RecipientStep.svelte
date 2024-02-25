@@ -18,7 +18,7 @@
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-1 sm:px-3 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-3xl sm:text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 3: Choose Donation Recipient</h1>
+      Choose Donation Recipient</h1>
     <p class="mt-4 text-gray-600 dark:text-gray-300">Please choose the school or student you would like to donate to.</p>
     <div class="py-3 space-y-3">
       {#key recipientInfo}

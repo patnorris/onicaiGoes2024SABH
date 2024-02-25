@@ -12,14 +12,18 @@
   function validateDonationDetails() {
     validationErrors = []; // Reset errors
 
-    $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId || validationErrors.push('Bitcoin transaction ID is missing. Please provide a Bitcoin Transaction Id on Transaction.');
+    $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId || validationErrors.push('Bitcoin transaction ID is missing. Please provide a Bitcoin Transaction Id on the Transaction step.');
     if ($currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate <= 0) {
-      validationErrors.push('There is no BTC left to donate on this transaction. Please use another Bitcoin Transaction Id on Transaction.');
+      validationErrors.push('There is no BTC left to donate on this transaction. Please use another Bitcoin Transaction Id on the Transaction step.');
     };
-    $currentDonationCreationObject.recipient.recipientId || validationErrors.push('Recipient ID is missing. Please select a recipient on Recipient.');
+    $currentDonationCreationObject.recipient.recipientId || validationErrors.push('Recipient ID is missing. Please select a recipient on the Recipient step.');
     
     if ($currentDonationCreationObject.donation.totalDonation <= 0) {
-      validationErrors.push('Total donation must be greater than 0. Please adjust your donation on Donation.');
+      validationErrors.push('Total donation must be greater than 0. Please adjust your donation on the Donation step.');
+    };
+
+    if ($currentDonationCreationObject.donation.totalDonation > $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate) {
+      validationErrors.push('Total donation cannot be greater than the amount left to donate on the transaction. Please adjust your donation on the Donation step.');
     };
 
     // Validate categorySplit sums up to total donation
@@ -63,7 +67,7 @@
       timestamp: 0n,
       dti: 0n,
       rewardsHaveBeenClaimed: false,
-      hasBeenDistributed: false,
+      hasBeenDistributed: [false],
       donor: {
         Anonymous: null
       },
@@ -92,25 +96,29 @@
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 5: Confirm Donation</h1>
+      Confirm Donation</h1>
     {#if submitDonationSuccess}
       <div class="text-gray-800 dark:text-gray-200">
         <h3>Donation Created</h3>
         <h3>Thank you for donating!</h3>
-        <p>Your Donation Transaction Id (DTI) is {createdDonationTransactionId}.</p>
+        <span class="inline-block break-all">
+          <p>Your Donation Transaction Id (DTI) is {createdDonationTransactionId}.</p>
+        </span>
         <button on:click|preventDefault={viewNewDonation} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">View Donation</button>
       </div>
     {:else}
-      <div class="text-gray-800 dark:text-gray-200">
+      <div class="space-y-2 text-gray-800 dark:text-gray-200">
         <p class="mt-4">Let's double-check that all donation details are looking good.</p>
-        <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
+        <span class="inline-block break-all">
+          <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
+        </span>
         <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientInfo?.name}</p>
         <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType === "BTC" ? "Satoshi" : ""}</p>
         <p>Payment Type: {$currentDonationCreationObject.donation.paymentType}</p>
         <p>Category Split:</p>
         <ul>
           {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}
-            <li>{category}: {btc} Satoshi</li>
+            <li class="py-1">{category}: {btc} Satoshi</li>
           {/each}
         </ul>
         {#if confirmNewTotal}

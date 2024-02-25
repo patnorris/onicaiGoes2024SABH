@@ -11,14 +11,19 @@
     'Lunch and Snacks': "lunchAndSnacks",
   };
 
+  const setPersonalNote = () => {
+    $currentDonationCreationObject.donation.personalNote = personalNote;
+    updateToggle += 1;
+  };
+
   const setCurrentDonationCreationObject = () => {
     $currentDonationCreationObject.donation.totalDonation = totalDonationBTC;
     // only exact split is needed (not percentage)
     let categorySplit = {
-      curriculumDesign: BigInt(0.0),
-      teacherSupport: BigInt(0.0),
-      schoolSupplies: BigInt(0.0),
-      lunchAndSnacks: BigInt(0.0),
+      curriculumDesign: 0.0,
+      teacherSupport: 0.0,
+      schoolSupplies: 0.0,
+      lunchAndSnacks: 0.0,
     };
     for (let category in donationSplits) {
       categorySplit[categoryNameTranslator[category]] = donationSplits[category].btc;
@@ -32,22 +37,25 @@
   let totalDonationIsBiggerThanAvailableBTC = false;
   let isValidSplit = true;
 
-  const calculateAvailableBTC = async () => {
+  // Donation details
+  let totalDonationBTC = $currentDonationCreationObject.donation.totalDonation;
+  let donationSplits = {
+    'Curriculum Design and Development': { percent: 25, btc: $currentDonationCreationObject.donation.categorySplit.curriculumDesign },
+    'Teacher Support': { percent: 25, btc: $currentDonationCreationObject.donation.categorySplit.teacherSupport },
+    'School Supplies': { percent: 25, btc: $currentDonationCreationObject.donation.categorySplit.schoolSupplies },
+    'Lunch and Snacks': { percent: 25, btc: $currentDonationCreationObject.donation.categorySplit.lunchAndSnacks },
+  };
+  let personalNote = $currentDonationCreationObject.donation.personalNote;
+
+  const initiateDonationValues = async () => {
+    // Calculate available BTC
     if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
       availableBTC = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
     };
     $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableBTC;
+    // Adjust donationSplit percentages based on any existing values
+    updatePercentagesBasedOnBTCSplit();
   };
-
-  // Donation details
-  let totalDonationBTC = 0.0;
-  let donationSplits = {
-    'Curriculum Design and Development': { percent: 25, btc: 0.0 },
-    'Teacher Support': { percent: 25, btc: 0.0 },
-    'School Supplies': { percent: 25, btc: 0.0 },
-    'Lunch and Snacks': { percent: 25, btc: 0.0 },
-  };
-  let personalNote = '';
 
   // Function to update the split to be equal
   function updateToEqualDonationSplits() {
@@ -116,14 +124,14 @@
     validateSplits();
   };
 
-  onMount(calculateAvailableBTC);
+  onMount(initiateDonationValues);
 
 </script>
 
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 4: Specify Donation Details</h1>  
+      Specify Donation Details</h1>  
     <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
     <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available bitcoin (from the transaction step):</p>
     <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableBTC} Satoshi (equals {(availableBTC / 100000000.0).toFixed(8)} BTC)</p>
@@ -134,7 +142,7 @@
       <p id='totalDonationTooBigSubtext' class="text-red-500 dark:text-red-400">Your Total Donation cannot be bigger than your available BTC!</p>
     {/if}
     <div class="mt-4">
-      <label for="totalDonation" class="block mb-2 text-gray-600 dark:text-gray-300">Total Donation:</label>
+      <label for="totalDonation" class="font-semibold block mb-2 text-gray-600 dark:text-gray-300">Total Donation:</label>
       <input
         type="number"
         id="totalDonation"
@@ -153,7 +161,7 @@
     <div class="mt-4">
       {#each Object.entries(donationSplits) as [category, categoryValues], index}
         <div class="mt-4">
-          <label class="block mb-2 text-gray-600 dark:text-gray-300">{category}:</label>
+          <label class="font-semibold block mb-2 text-gray-600 dark:text-gray-300">{category}:</label>
           <div>
             <input
               type="number"
@@ -186,6 +194,7 @@
       <textarea
         id="personalNote"
         bind:value={personalNote}
+        on:input={setPersonalNote}
         class="border p-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
         rows="4"
         placeholder="Add a personal note..."

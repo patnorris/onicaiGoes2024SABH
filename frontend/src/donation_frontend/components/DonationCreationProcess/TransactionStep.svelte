@@ -83,12 +83,14 @@
 <section class="bg-white dark:bg-gray-900 bg-[url('/images/hero-pattern.svg')]">
   <div class="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 z-10 relative">
     <h1 class="mb-4 text-4xl font-extrabold tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-      Step 2: Check Bitcoin Transaction</h1>
-    <div class="p-6 space-y-3">
+      Check Bitcoin Transaction</h1>
+    <div class="py-6 space-y-3">
       {#if transactionInfo}
-        <div class="p-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
+        <div class="py-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
           <p id='currentTransactionSubtext' class="text-black dark:text-white font-semibold">Great, you have currently selected this transaction:</p>
-          <p class="text-gray-700 dark:text-gray-300">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+          <span class="inline-block break-all">
+            <p class="text-gray-700 dark:text-gray-300">Transaction ID: {transactionInfo.bitcoinTransactionId}</p>
+          </span>
           <p class="text-gray-700 dark:text-gray-300">Total Value: {transactionInfo.totalValue}</p>
           <p class="text-gray-700 dark:text-gray-300">Value Left to Donate: {amountLeft}</p>
         </div>
@@ -97,7 +99,7 @@
           <button on:click|preventDefault={handleContinue} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Continue
           </button>
-          <p class="dark:text-gray-300">If you prefer, you can also enter another transaction below instead.</p>
+          <p class="dark:text-gray-300">If you prefer, you can also enter another transaction id below instead.</p>
         {:else}
           <p class="dark:text-gray-300">Please use another transaction which has value left to donate.</p>
           <p class="dark:text-gray-300">You can continue by entering the Bitcoin Transaction Id below and clicking "Check Now".</p>

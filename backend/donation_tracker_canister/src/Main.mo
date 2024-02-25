@@ -46,10 +46,8 @@ actor class DonationTracker(_donation_canister_id : Text) {
     stable var donationsStable : [Donation] = [];
 
     // Map each principal to a list of donation indices (DTIs)
-    private var donationsByPrincipal = HashMap.HashMap<Principal, Buffer.Buffer<DTI>>(0, Principal.equal, Principal.hash);
-    //TODO: stable var donationsByPrincipalStable : [(Principal, Buffer.Buffer<DTI>)] = [];
-    // Alternative: use [DTI] instead of Buffer.Buffer<DTI>; less efficient but straightforward to make stable
-    // Or: stable Buffer implementation?
+    private var donationsByPrincipal = HashMap.HashMap<Principal, [DTI]>(0, Principal.equal, Principal.hash);
+    stable var donationsByPrincipalStable : [(Principal, [DTI])] = []; // Alternative: Buffer.Buffer<DTI> instead of [DTI]; more efficient but less straightforward to make stable    
 
     // Store recipients and map each recipientId to the corresponding Recipient record
     private var recipientsById = HashMap.HashMap<Types.RecipientId, Types.Recipient>(0, Text.equal, Text.hash);
@@ -193,9 +191,79 @@ actor class DonationTracker(_donation_canister_id : Text) {
 
     };
 
+    private func verifyDonationInput(donationInput : Donation) : async Bool {
+        // Perform basic checks
+        // Total amount has to be a positive number
+        if (donationInput.totalAmount <= 0) {
+            return false;
+        };
+        
+        // Verify that recipientId exists
+        switch (recipientsById.get(donationInput.recipientId)) {
+            case (null) { return false; };
+            case (?recipient) { };
+        };
+
+        // Verify valid allocation
+        var totalAllocated = donationInput.allocation.curriculumDesign;
+        totalAllocated += donationInput.allocation.teacherSupport;
+        totalAllocated += donationInput.allocation.schoolSupplies;
+        totalAllocated += donationInput.allocation.lunchAndSnacks;  
+        if (totalAllocated != donationInput.totalAmount) {
+            return false;
+        };   
+        
+        // Check that personalNote is not longer than 100 characters
+        switch (donationInput.personalNote) {
+            case (null) { };
+            case (?note) {
+                if (note.size() > 100) {
+                    return false;
+                };
+            };
+        };
+
+        // Elaborate check whether paymentType is valid and paymentTransactionId exists and can be used
+        switch (donationInput.paymentType) {
+            case (#BTC) {
+                // Verify the Bitcoin transaction
+                try {
+                    let txCheckResult = await getBtcTransactionDetails({bitcoinTransactionId = donationInput.paymentTransactionId});
+                    switch (txCheckResult) {
+                        case (#Ok(bitcoinTransactionRecord)) {
+                            // bitcoinTransactionId was found and has value
+                            let bitcoinTransaction = bitcoinTransactionRecord.bitcoinTransaction;
+                            // Check that value left on transaction is high enough to donate totalAmount
+                            let valueLeft = bitcoinTransaction.totalValue - bitcoinTransaction.valueDonated;
+                            if (valueLeft <= 0) {
+                                // the transaction doesn't have any value left to donate
+                                return false;
+                            } else if (valueLeft < donationInput.totalAmount) {
+                                // the transaction doesn't have enough value left to donate totalAmount
+                                return false;
+                            };
+                        };
+                        case (_) { return false; }; // bitcoinTransactionId wasn't found or doesn't have value bigger 0
+                    };
+                } catch (error : Error) {
+                    return false;
+                };
+            };
+            // Handle other payment types as they are added
+            case (_) { return false; }; // Fallback: unsupported paymentType
+        };
+        
+        // All checks were successful and the donation input is valid
+        return true;
+    };
+
     public shared (msg) func makeDonation(donationRecord : Types.DonationRecord) : async Types.DtiResult {
         let donationInput = donationRecord.donation;
         // Potential TODO: checks on inputs
+        let donationInputIsValid : Bool = await verifyDonationInput(donationInput);
+        if(not donationInputIsValid) {
+            return #Err(#Other("Invalid Donation input"));
+        };
 
         let newDti = donations.size(); // Simply use index into donations Array as the DTI
         var newDonor : Types.DonorType = #Anonymous;
@@ -215,19 +283,19 @@ actor class DonationTracker(_donation_canister_id : Text) {
             donor : Types.DonorType = newDonor;
             personalNote : ?Text = donationInput.personalNote; // Optional field for personal note from donor to recipient
             rewardsHaveBeenClaimed : Bool = false;
-            hasBeenDistributed : Bool = false; // TODO: placeholder for future functionality
+            hasBeenDistributed : ?Bool = ?false; // TODO: placeholder for future functionality
         };
 
         let newDonationResult = donations.add(newDonation);
 
         // Update the map for the caller's principal
         if (Principal.isAnonymous(msg.caller)) {} else {
-            let existingDonations = switch (donationsByPrincipal.get(msg.caller)) {
-                case (null) { Buffer.Buffer<DTI>(0) };
+            let existingDonations : [DTI] = switch (donationsByPrincipal.get(msg.caller)) {
+                case (null) { [] };
                 case (?ds) { ds };
             };
-            let addDonationResult = existingDonations.add(newDti);
-            donationsByPrincipal.put(msg.caller, existingDonations);
+            let addDonationResult : [DTI] = Array.append<DTI>(existingDonations, [newDti]);
+            donationsByPrincipal.put(msg.caller, addDonationResult);
         };
 
         let associatedDonations = switch (donationsByTxId.get(donationInput.paymentTransactionId)) {
@@ -273,12 +341,12 @@ actor class DonationTracker(_donation_canister_id : Text) {
                 // No donations found
                 return #Ok({ donations = [] });
             };
-            case (?dtiBuffer) {
+            case (?dtiArray) {
                 // Donations found for user
-                let dtis : [DTI] = Buffer.toArray(dtiBuffer);
+                let dtis : [DTI] = dtiArray;
                 // Iterate over dtis, get donation for each dti
                 // push to return array
-                let userDonations : Buffer.Buffer<Donation> = Buffer.Buffer<Donation>(dtiBuffer.capacity());
+                let userDonations : Buffer.Buffer<Donation> = Buffer.Buffer<Donation>(dtiArray.size());
                 for (i : Nat in dtis.keys()) {
                     userDonations.add(donations.get(dtis[i]));
                 };
@@ -587,7 +655,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
     system func preupgrade() {
         // Copy the runtime state back into the stable variable before upgrade.
         donationsStable := Buffer.toArray<Donation>(donations);
-        //TODO: donationsByPrincipalStable := Iter.toArray(donationsByPrincipal.entries());
+        donationsByPrincipalStable := Iter.toArray(donationsByPrincipal.entries());
         recipientsByIdStable := Iter.toArray(recipientsById.entries());
         studentsBySchoolStable := Iter.toArray(studentsBySchool.entries());
         donationsByTxIdStable := Iter.toArray(donationsByTxId.entries());
@@ -599,8 +667,8 @@ actor class DonationTracker(_donation_canister_id : Text) {
         // After upgrade, reload the runtime state from the stable variable.
         donations := Buffer.fromArray<Donation>(donationsStable);
         donationsStable := [];
-        //TODO: donationsByPrincipal := HashMap.fromIter(Iter.fromArray(donationsByPrincipalStable), donationsByPrincipalStable.size(), Text.equal, Text.hash);
-        //TODO: donationsByPrincipalStable := [];
+        donationsByPrincipal := HashMap.fromIter(Iter.fromArray(donationsByPrincipalStable), donationsByPrincipalStable.size(), Principal.equal, Principal.hash);
+        donationsByPrincipalStable := [];
         recipientsById := HashMap.fromIter(Iter.fromArray(recipientsByIdStable), recipientsByIdStable.size(), Text.equal, Text.hash);
         recipientsByIdStable := [];
         studentsBySchool := HashMap.fromIter(Iter.fromArray(studentsBySchoolStable), studentsBySchoolStable.size(), Text.equal, Text.hash);

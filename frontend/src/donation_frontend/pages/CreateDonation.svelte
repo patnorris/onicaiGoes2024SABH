@@ -7,7 +7,7 @@
     import { onMount } from "svelte";
 
 	let progressBar;
-	let steps = ['Bitcoin', 'Transaction', 'Recipient', 'Donation', 'Confirmation'];
+	let steps = ['Recipient', 'Bitcoin', 'Transaction', 'Donation', 'Confirmation'];
 	let currentActive = $currentDonationCreationObject.currentActiveFormStepIndex;
 	currentDonationCreationObject.subscribe((value) => currentActive = value.currentActiveFormStepIndex);
 	
