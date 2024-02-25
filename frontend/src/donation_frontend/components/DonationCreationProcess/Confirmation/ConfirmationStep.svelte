@@ -43,6 +43,9 @@
       case 'BTC':
         validateBTCSpecifics();
         break;
+      case 'ckBTC':
+        validateCKBTCSpecifics();
+        break;
       // Add cases for other supported payment types here
       default:
         validationErrors.push('Unsupported payment type. Please change your selection.');
@@ -64,6 +67,13 @@
     transactionInfoToDisplay = `Bitcoin Transaction ID: ${$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}`;
     finalPaymentType = { BTC: null };
     finalPaymentTransactionId = $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId;
+  };
+
+  // Specific checks for ckBTC as selected payment type
+  function validateCKBTCSpecifics() {
+    // Set any values to ckBTC specifics
+    transactionInfoToDisplay = `Please make sure your ckBTC transaction was successful.`;
+    finalPaymentType = { CKBTC: null };
   };
 
   // Call validation on component mount
@@ -99,7 +109,7 @@
     const finalDonation : Donation = {
       totalAmount: totalAmountConverted,
       allocation: categorySplitConverted,
-      paymentTransactionId: finalPaymentTransactionId,
+      paymentTransactionId: finalPaymentTransactionId, // This might be filled by the backend, depending on the payment type
       paymentType: finalPaymentType,
       personalNote: [$currentDonationCreationObject.donation.personalNote],
       recipientId: $currentDonationCreationObject.recipient.recipientId,
