@@ -4,6 +4,8 @@
 
   import NonSupportedPaymentType from '../NonSupportedPaymentType.svelte';
 
+  import { calculateCurrencyUnitAddition } from '../../../helpers/utils.js';
+
   let updateToggle = 0;
 
   let availableAmountToDonate = 0.0;
@@ -29,8 +31,8 @@
   };
 
   let isUnsupportedPaymentType = false;
-  let currencyUnitText = "";
-  let needsCurrencyUnitAddition = false;
+  let currencyUnitText = $currentDonationCreationObject.donation.currencyUnitText;
+  let needsCurrencyUnitAddition = $currentDonationCreationObject.donation.needsCurrencyUnitAddition;
 
   // Some values are flexible and need to be set based on which payment type is selected
   const setValuesForPaymentType = () => {
@@ -45,24 +47,11 @@
   };
 
   const setValuesForBTC = () => {
-    currencyUnitText = "Satoshi";
-    needsCurrencyUnitAddition = true;
     // Calculate available amount to donate
     if ($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject) {
       availableAmountToDonate = Number($currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.totalValue - $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionObject.valueDonated);
     };
     $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate = availableAmountToDonate;
-  };
-
-  const calculateCurrencyUnitAddition = (amount) => {
-    switch($currentDonationCreationObject.donation.paymentType) {
-      case 'BTC':
-        return `(equals ${(amount / 100000000.0).toFixed(8)} BTC)`;
-        break;
-      // Add cases for other supported payment types here
-      default:
-        isUnsupportedPaymentType = true; // Will show an error
-    };
   };
 
   const setPersonalNote = () => {
@@ -175,7 +164,7 @@
     {:else}
       <p class="mt-4 text-gray-600 dark:text-gray-300">Please fill out the following details about your donation.</p>
       <p class="font-semibold mt-4 text-gray-600 dark:text-gray-300">Available amount to donate:</p>
-      <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableAmountToDonate} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition(availableAmountToDonate) : ""}</p>
+      <p class="font-semibold py-2 text-gray-600 dark:text-gray-300">{availableAmountToDonate} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, availableAmountToDonate) : ""}</p>
       <button on:click|preventDefault={setTotalDonationToAvailable} class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
         Set Total Donation to Available Amount
       </button>
@@ -194,7 +183,7 @@
           class="border p-2 w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
           placeholder="Enter amount to donate"
         />
-        <p class="text-gray-600 dark:text-gray-300">{currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition(totalDonationAmount) : ""}</p>
+        <p class="text-gray-600 dark:text-gray-300">{currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, totalDonationAmount) : ""}</p>
       </div>
       {#if !isValidSplit}
         <p id='categorySplitNotValidSubtext' class="text-red-500 dark:text-red-400">Your Category split needs to sum up to 100% and to your Total Donation!</p>
@@ -225,7 +214,7 @@
                 bind:value={donationSplits[category].amount}
                 on:input={(e) => updateCategoryDetail(category, parseFloat(e.target.value) || 0.0, true)}
               />
-              <p class="text-gray-600 dark:text-gray-300">{currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition(donationSplits[category].amount) : ""}</p>
+              <p class="text-gray-600 dark:text-gray-300">{currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, donationSplits[category].amount) : ""}</p>
             </div>
           </div>
         {/each}

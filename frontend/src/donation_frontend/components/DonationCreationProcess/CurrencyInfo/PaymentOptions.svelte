@@ -7,6 +7,13 @@
   function updatePaymentType(type) {
     currentDonationCreationObject.update((currentDonation) => {
       currentDonation.donation.paymentType = type;
+      switch(type) {
+        case 'BTC':
+          currentDonation.donation.currencyUnitText = "Satoshi";
+          currentDonation.donation.needsCurrencyUnitAddition = true;
+          break;
+        // Add cases for other supported payment types here
+      };
       return currentDonation;
     });
   }

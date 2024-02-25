@@ -91,6 +91,8 @@ export let currentDonationCreationObject = writable({
   donation: {
     totalDonation: 0.0,
     paymentType: 'BTC',
+    currencyUnitText: "Satoshi",
+    needsCurrencyUnitAddition: true, // false means that the currency unit text is comprehensible on its own, true that the currency unit text needs an additional info behind it (e.g. how many BTC the Satoshi equal to)
     peerToPeerPayment: false, // false means that all donations go to one wallet, true that the payment will be made directly from the donor to the recipient's wallet
     inAppPayment: false, // false means that donations are transferred via an external wallet, true that the transaction will be made via a wallet connected to the app
     categorySplit: { // each category is in Satoshi (100,000,000 Satoshi = 1 bitcoin)
