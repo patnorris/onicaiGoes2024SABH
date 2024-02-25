@@ -5,6 +5,9 @@ export const calculateCurrencyUnitAddition = (paymentType, amount) => {
     case 'BTC':
       return `(equals ${(amount / 100000000.0).toFixed(8)} BTC)`;
       break;
+    case 'ckBTC':
+      return `(equals ${(amount / 100000000.0).toFixed(8)} ckBTC)`;
+      break;
     // Add cases for other supported payment types here
     default:
       return "";
