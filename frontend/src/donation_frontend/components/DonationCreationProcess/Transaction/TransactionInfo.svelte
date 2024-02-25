@@ -15,6 +15,11 @@
           TransactionComponent = module.default;
         });
         break;
+      case 'ckBTC':
+        import('./PaymentTypes/CKBTCTransaction.svelte').then(module => {
+          TransactionComponent = module.default;
+        });
+        break;
       // Add cases for other supported payment types here
       default:
         TransactionComponent = NonSupportedPaymentType; // Use the non-supported payment type component for unsupported types
