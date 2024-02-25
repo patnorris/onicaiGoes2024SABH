@@ -42,7 +42,7 @@ export const idlFactory = ({ IDL }) => {
     'dti' : DTI,
     'rewardsHaveBeenClaimed' : IDL.Bool,
     'paymentTransactionId' : PaymentTransactionId,
-    'hasBeenDistributed' : IDL.Bool,
+    'hasBeenDistributed' : IDL.Opt(IDL.Bool),
     'totalAmount' : Satoshi,
     'timestamp' : IDL.Nat64,
     'paymentType' : PaymentType,
