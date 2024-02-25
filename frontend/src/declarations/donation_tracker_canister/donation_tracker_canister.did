@@ -144,6 +144,7 @@ type DonationTracker =
    getTxidstext: () -> (TxidstextResult);
    getUTXOS: () -> (GetUtxosResponseResult);
    initRecipients: () -> (InitRecipientsResult);
+   isControllerLogicOk: () -> (AuthRecordResult);
    listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
    submitSignUpForm: (SignUpFormInput) -> (text);
@@ -190,7 +191,7 @@ type Donation =
    allocation: DonationCategories;
    donor: DonorType;
    dti: DTI;
-   hasBeenDistributed: bool;
+   hasBeenDistributed: opt bool;
    paymentTransactionId: PaymentTransactionId;
    paymentType: PaymentType;
    personalNote: opt text;
