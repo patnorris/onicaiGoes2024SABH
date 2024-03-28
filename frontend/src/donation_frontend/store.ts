@@ -56,9 +56,18 @@ const APPLICATION_LOGO_URL = "https://vdfyi-uaaaa-aaaai-acptq-cai.ic0.app/favico
 //"https%3A%2F%2Fx6occ-biaaa-aaaai-acqzq-cai.icp0.io%2FFutureWebInitiative%5Fimg.png";
 const AUTH_PATH = "/authenticate/?applicationName="+APPLICATION_NAME+"&applicationLogo="+APPLICATION_LOGO_URL+"#authorize";
 
+// Global variable to access generally available currencies as payment types
+export let supportedPaymentTypes = writable(
+  ["BTC", "ckBTC"]
+);
+
 // Global variable to keep track of Donation Creation process
 export let currentDonationCreationObject = writable({
   currentActiveFormStepIndex: 1,
+  // canister wallet addresses to donate to for different payment types (if not peer-to-peer)
+  donationWalletAddresses: {
+    BTC: "mtKKFKUu49WnU4CCPV9v2eV69pPCVU3kZG",
+  },
   bitcoinTransaction: {
     bitcoinTransactionId: '',
     bitcoinTransactionObject: null, /* e.g. {
@@ -73,10 +82,19 @@ export let currentDonationCreationObject = writable({
     type: '', // "School" or "Student"
     recipientObject: null, // Type Recipient
     recipientInfo: null, // Type SchoolInfo | StudentInfo
+    // recipient wallet addresses to donate to for different payment types (if peer-to-peer)
+    recipientWalletAddresses: {
+      BTC: null, // null means not supported
+      ckBTC: "", // to be filled when specific recipient is selected
+    },
   },
   donation: {
     totalDonation: 0.0,
     paymentType: 'BTC',
+    currencyUnitText: "Satoshi",
+    needsCurrencyUnitAddition: true, // false means that the currency unit text is comprehensible on its own, true that the currency unit text needs an additional info behind it (e.g. how many BTC the Satoshi equal to)
+    peerToPeerPayment: false, // false means that all donations go to one wallet, true that the payment will be made directly from the donor to the recipient's wallet
+    inAppPayment: false, // false means that donations are transferred via an external wallet, true that the transaction will be made via a wallet connected to the app
     categorySplit: { // each category is in Satoshi (100,000,000 Satoshi = 1 bitcoin)
       curriculumDesign: 0.0,
       teacherSupport: 0.0,

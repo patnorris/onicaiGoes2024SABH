@@ -20,11 +20,17 @@
 
     let recipientProfileSelected = $currentDonationCreationObject.recipient.recipientId === recipientId;
 
+    const updateRecipientWalletAddresses = () => {
+      $currentDonationCreationObject.recipient.recipientWalletAddresses.ckBTC = recipientInfo.wallets.filter(([walletType, address]) => walletType.CKBTC && address !== "");
+      // Add cases for other supported payment types here
+    };
+
     const handleClick = async () => {
       $currentDonationCreationObject.recipient.recipientId = recipientId;
       $currentDonationCreationObject.recipient.type = recipientType;
       $currentDonationCreationObject.recipient.recipientObject = recipient;
       $currentDonationCreationObject.recipient.recipientInfo = recipientInfo;
+      updateRecipientWalletAddresses();
 
       if (embedded) {
         recipientProfileSelected = true;

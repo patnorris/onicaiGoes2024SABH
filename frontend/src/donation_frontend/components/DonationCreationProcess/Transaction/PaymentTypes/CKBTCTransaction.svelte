@@ -1,0 +1,3 @@
+<div class="py-6 mt-4 space-y-3 bg-blue-50 dark:bg-blue-800 shadow-md border border-gray-300 dark:border-gray-700 rounded-lg">
+  <p id='currentTransactionSubtext' class="text-black dark:text-white font-semibold">Make sure that the ckBTC transaction was successful. After finalizing the donation, we will check it and the donation will only be valid once verified. Please continue on the next step.</p>
+</div>

@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-	import { currentDonationCreationObject } from "../../store";
+	import { currentDonationCreationObject } from "../../../store";
 
 	export let steps = [];
 	export let currentActive = 1;

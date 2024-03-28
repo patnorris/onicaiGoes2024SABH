@@ -1,30 +1,33 @@
 <script lang="ts">
   import type { Donation } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
-  import { store, currentDonationCreationObject } from "../../store";
+  import { store, currentDonationCreationObject } from "../../../store";
   import { push } from "svelte-spa-router";
 
-  import spinner from "../../assets/loading.gif";
+  import spinner from "../../../assets/loading.gif";
+
+  import { calculateCurrencyUnitAddition } from '../../../helpers/utils.js';
 
   let validationErrors = [];
   let confirmNewTotal = false;
+
+  let currencyUnitText = $currentDonationCreationObject.donation.currencyUnitText;
+  let needsCurrencyUnitAddition = $currentDonationCreationObject.donation.needsCurrencyUnitAddition;
+
+  let transactionInfoToDisplay = "";
+  let finalPaymentType = { BTC: null }; // set BTC as default
+  let finalPaymentTransactionId = "";
 
   // Function to validate the donation details
   function validateDonationDetails() {
     validationErrors = []; // Reset errors
 
-    $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId || validationErrors.push('Bitcoin transaction ID is missing. Please provide a Bitcoin Transaction Id on the Transaction step.');
-    if ($currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate <= 0) {
-      validationErrors.push('There is no BTC left to donate on this transaction. Please use another Bitcoin Transaction Id on the Transaction step.');
-    };
     $currentDonationCreationObject.recipient.recipientId || validationErrors.push('Recipient ID is missing. Please select a recipient on the Recipient step.');
     
     if ($currentDonationCreationObject.donation.totalDonation <= 0) {
       validationErrors.push('Total donation must be greater than 0. Please adjust your donation on the Donation step.');
     };
 
-    if ($currentDonationCreationObject.donation.totalDonation > $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate) {
-      validationErrors.push('Total donation cannot be greater than the amount left to donate on the transaction. Please adjust your donation on the Donation step.');
-    };
+    validatePaymentTypeSpecifics();
 
     // Validate categorySplit sums up to total donation
     const totalSum = Object.values($currentDonationCreationObject.donation.categorySplit).reduce((total, percent) => total + Number(percent), 0);
@@ -32,7 +35,46 @@
       $currentDonationCreationObject.donation.totalDonation = totalSum;
       confirmNewTotal = true;
     };
-  }
+  };
+
+  // Some checks depend on selected payment type
+  function validatePaymentTypeSpecifics() {
+    switch($currentDonationCreationObject.donation.paymentType) {
+      case 'BTC':
+        validateBTCSpecifics();
+        break;
+      case 'ckBTC':
+        validateCKBTCSpecifics();
+        break;
+      // Add cases for other supported payment types here
+      default:
+        validationErrors.push('Unsupported payment type. Please change your selection.');
+    };
+  };
+
+  // Specific checks for BTC as selected payment type
+  function validateBTCSpecifics() {
+    $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId || validationErrors.push('Bitcoin transaction ID is missing. Please provide a Bitcoin Transaction Id on the Transaction step.');
+    if ($currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate <= 0) {
+      validationErrors.push('There is no BTC left to donate on this transaction. Please use another Bitcoin Transaction Id on the Transaction step.');
+    };
+
+    if ($currentDonationCreationObject.donation.totalDonation > $currentDonationCreationObject.bitcoinTransaction.valueLeftToDonate) {
+      validationErrors.push('Total donation cannot be greater than the amount left to donate on the transaction. Please adjust your donation on the Donation step.');
+    };
+
+    // Set any values to BTC specifics
+    transactionInfoToDisplay = `Bitcoin Transaction ID: ${$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}`;
+    finalPaymentType = { BTC: null };
+    finalPaymentTransactionId = $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId;
+  };
+
+  // Specific checks for ckBTC as selected payment type
+  function validateCKBTCSpecifics() {
+    // Set any values to ckBTC specifics
+    transactionInfoToDisplay = `Please make sure your ckBTC transaction was successful.`;
+    finalPaymentType = { CKBTC: null };
+  };
 
   // Call validation on component mount
   validateDonationDetails();
@@ -53,21 +95,28 @@
         // Result<{dti : DTI}, ApiError>;
 
     const totalAmountConverted = BigInt($currentDonationCreationObject.donation.totalDonation);
+    let categorySplit = $currentDonationCreationObject.donation.categorySplit;
+    let categorySplitConverted = {
+      curriculumDesign: BigInt(0.0),
+      teacherSupport: BigInt(0.0),
+      schoolSupplies: BigInt(0.0),
+      lunchAndSnacks: BigInt(0.0),
+    };
+    for (let category in categorySplit) {
+      categorySplitConverted[category] = BigInt(categorySplit[category].amount);
+    };
 
     const finalDonation : Donation = {
       totalAmount: totalAmountConverted,
-      allocation: $currentDonationCreationObject.donation.categorySplit,
-      paymentTransactionId: $currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId,
-      paymentType: {
-        BTC: null
-      },
+      allocation: categorySplitConverted,
+      paymentTransactionId: finalPaymentTransactionId, // This might be filled by the backend, depending on the payment type
+      paymentType: finalPaymentType,
       personalNote: [$currentDonationCreationObject.donation.personalNote],
       recipientId: $currentDonationCreationObject.recipient.recipientId,
       // The following fields will be updated by the backend
       timestamp: 0n,
       dti: 0n,
       rewardsHaveBeenClaimed: false,
-      hasBeenDistributed: [false],
       donor: {
         Anonymous: null
       },
@@ -110,15 +159,15 @@
       <div class="space-y-2 text-gray-800 dark:text-gray-200">
         <p class="mt-4">Let's double-check that all donation details are looking good.</p>
         <span class="inline-block break-all">
-          <p>Bitcoin Transaction ID: {$currentDonationCreationObject.bitcoinTransaction.bitcoinTransactionId}</p>
+          <p>{transactionInfoToDisplay}</p>
         </span>
         <p>Recipient Name: {$currentDonationCreationObject.recipient.recipientInfo?.name}</p>
-        <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {$currentDonationCreationObject.donation.paymentType === "BTC" ? "Satoshi" : ""}</p>
+        <p>Total Donation: {$currentDonationCreationObject.donation.totalDonation} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, $currentDonationCreationObject.donation.totalDonation) : ""}</p>
         <p>Payment Type: {$currentDonationCreationObject.donation.paymentType}</p>
         <p>Category Split:</p>
         <ul>
-          {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, btc]}
-            <li class="py-1">{category}: {btc} Satoshi</li>
+          {#each Object.entries($currentDonationCreationObject.donation.categorySplit) as [category, amount]}
+            <li class="py-1">{category}: {amount} {currencyUnitText} {needsCurrencyUnitAddition ? calculateCurrencyUnitAddition($currentDonationCreationObject.donation.paymentType, amount) : ""}</li>
           {/each}
         </ul>
         {#if confirmNewTotal}

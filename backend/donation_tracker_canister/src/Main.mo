@@ -105,6 +105,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             name = "Green Valley High";
             thumbnail = "./images/school1_thumbnail.png";
             address = "123 Green Valley Rd";
+            wallets = [];
         };
 
         let student1School1 : Types.Recipient =
@@ -114,6 +115,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             thumbnail = "./images/student1School1_thumbnail.png";
             grade = 10;
             schoolId = "school1";
+            wallets = [];
         };
 
         let student2School1 : Types.Recipient =
@@ -123,6 +125,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             thumbnail = "./images/student2School1_thumbnail.png";
             grade = 11;
             schoolId = "school1";
+            wallets = [];
         };
 
         let school2 : Types.Recipient =
@@ -131,6 +134,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             name = "Sunnydale Elementary";
             thumbnail = "./images/school2_thumbnail.png";
             address = "456 Sunnydale St";
+            wallets = [];
         };
 
         let student1School2 : Types.Recipient =
@@ -140,6 +144,7 @@ actor class DonationTracker(_donation_canister_id : Text) {
             thumbnail = "./images/student1School2_thumbnail.png";
             grade = 8;
             schoolId = "school2";
+            wallets = [];
         };
 
         let student2School2 : Types.Recipient =
@@ -149,6 +154,10 @@ actor class DonationTracker(_donation_canister_id : Text) {
             thumbnail = "./images/student2School2_thumbnail.png";
             grade = 9;
             schoolId = "school2";
+            wallets = [{
+                walletType : Types.WalletType = #CKBTC;
+                address : Text = "fsmbm-odyjn-hkwt2-3be4e-h6bg3-yi3pi-f5eny-2rosh-4u6jm-3rwa5-xae";
+            }]; // example ckBTC address
         };
 
         // (re)Initialize recipientsById HashMap
@@ -494,6 +503,10 @@ actor class DonationTracker(_donation_canister_id : Text) {
                     return #Err(#Other("Failed to retrieve BTC donation address for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
             };
+            case (#CKBTC) {
+                // There is no central ckBTC donation address (as it's peer-to-peer)
+                return #Err(#Other("There is no central ckBTC donation wallet address, the donations are peer-to-peer."));
+            };
             // Handle other payment types as they are added
         };
     };
@@ -514,6 +527,10 @@ actor class DonationTracker(_donation_canister_id : Text) {
                     // Handle errors, such as donation canister not responding
                     return #Err(#Other("Failed to retrieve total donation amount for BTC for DONATION_CANISTER_ID = " # DONATION_CANISTER_ID));
                 };
+            };
+            case (#CKBTC) {
+                // There is no central ckBTC donation address to check for here (as it's peer-to-peer)
+                return #Err(#Other("There is no central ckBTC donation wallet address that collects the total amount, the donations are peer-to-peer."));
             };
             // Handle other payment types as they are added
         };

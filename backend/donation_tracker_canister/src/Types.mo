@@ -144,12 +144,26 @@ module Types {
 
     public type RecipientsResult = Result<RecipientOverviewsRecord, ApiError>;
 
-    public type SchoolInfo = RecipientOverview and {
+    public type WalletType = {
+        #BTC;
+        #CKBTC;
+    };
+
+    public type RecipientWallet = {
+        walletType : WalletType;
+        address : Text;
+    };
+
+    public type RecipientDetails = RecipientOverview and {
+        wallets : [RecipientWallet];
+    };
+
+    public type SchoolInfo = RecipientDetails and {
         address : Text;
         // Add more school-specific fields as necessary
     };
 
-    public type StudentInfo = RecipientOverview and {
+    public type StudentInfo = RecipientDetails and {
         grade : Nat;
         schoolId : Text;
         // Add more student-specific fields as necessary
@@ -173,6 +187,7 @@ module Types {
     public type RecipientResult = Result<?RecipientRecord, ApiError>;
 
     //-------------------------------------------------------------------------
+    // for Bitcoin (BTC)
     public type BitcoinTransaction = {
         bitcoinTransactionId : PaymentTransactionId;
         totalValue : Nat64; // Total value of the BTC transaction
@@ -191,8 +206,46 @@ module Types {
     public type BitcoinTransactionResult = Result<BitcoinTransactionRecord, ApiError>;
 
     //-------------------------------------------------------------------------
+    // for ckBTC
+
+    // from https://raw.githubusercontent.com/dfinity/ic/95787355499f3be929f2ab302ed44cdad7c64061/rs/rosetta-api/icrc1/ledger/ledger.did
+    public type Subaccount = Blob;
+
+    public type Account = {
+        owner : Principal;
+        subaccount : ?Subaccount;
+    };
+
+    public type CKBTCTransaction = {
+        kind : Text;
+        mint : ?{
+            amount : Nat;
+            to : Account;
+            memo : ?Blob;
+            created_at_time : ?Nat64;
+        };
+        burn : ?{
+            amount : Nat;
+            from : Account;
+            memo : ?Blob;
+            created_at_time : ?Nat64;
+        };
+        transfer : ?{
+            amount : Nat;
+            from : Account;
+            to : Account;
+            memo : ?Blob;
+            created_at_time : ?Nat64;
+            fee : ?Nat;
+        };
+        timestamp : Nat64;
+    };
+
+    //-------------------------------------------------------------------------
+
     public type PaymentType = {
         #BTC;
+        #CKBTC;
         // Future payment types can be added here as new variants.
     };
 
