@@ -1,5 +1,19 @@
 import { donation_tracker_canister } from "canisters/donation_tracker_canister";
 
+export const calculateCurrencyUnitAddition = (paymentType, amount) => {
+  switch(paymentType) {
+    case 'BTC':
+      return `(equals ${(amount / 100000000.0).toFixed(8)} BTC)`;
+      break;
+    case 'ckBTC':
+      return `(equals ${(amount / 100000000.0).toFixed(8)} ckBTC)`;
+      break;
+    // Add cases for other supported payment types here
+    default:
+      return "";
+  };
+};
+
 export async function submitEmailSignUpForm(emailAddress, pageSubmittedFrom) {
   const input = {
     emailAddress: emailAddress,

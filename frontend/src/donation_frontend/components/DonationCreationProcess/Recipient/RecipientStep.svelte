@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { currentDonationCreationObject } from "../../store";
+  import { currentDonationCreationObject } from "../../../store";
 
-  import RecipientsList from "../RecipientsList.svelte";
-  import RecipientPreview from "../RecipientPreview.svelte";
+  import RecipientsList from "../../RecipientsList.svelte";
+  import RecipientPreview from "../../RecipientPreview.svelte";
 
   import type { SchoolInfo, StudentInfo } from "src/declarations/donation_tracker_canister/donation_tracker_canister.did";
   
