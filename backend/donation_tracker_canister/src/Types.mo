@@ -62,6 +62,7 @@ module Types {
         donor : DonorType;
         personalNote : ?Text; // Optional field for personal note from donor to recipient
         rewardsHaveBeenClaimed : Bool;
+        hasBeenDistributed : ?Bool; // TODO: placeholder for future functionality
     };
 
     //-------------------------------------------------------------------------

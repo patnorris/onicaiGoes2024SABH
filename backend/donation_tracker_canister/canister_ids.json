@@ -1,5 +1,6 @@
 {
   "donation_tracker_canister": {
-    "ic": "fj5jn-2qaaa-aaaag-acmfq-cai"
+    "ic": "fj5jn-2qaaa-aaaag-acmfq-cai",
+    "local": "be2us-64aaa-aaaaa-qaabq-cai"
   }
 }

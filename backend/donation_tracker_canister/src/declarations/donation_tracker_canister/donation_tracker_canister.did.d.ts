@@ -5,6 +5,9 @@ export type ApiError = { 'InvalidId' : null } |
   { 'ZeroAddress' : null } |
   { 'Unauthorized' : null } |
   { 'Other' : string };
+export interface AuthRecord { 'auth' : string }
+export type AuthRecordResult = { 'Ok' : AuthRecord } |
+  { 'Err' : ApiError };
 export interface BitcoinTransaction {
   'totalValue' : bigint,
   'valueDonated' : bigint,
@@ -24,6 +27,7 @@ export interface Donation {
   'dti' : DTI,
   'rewardsHaveBeenClaimed' : boolean,
   'paymentTransactionId' : PaymentTransactionId,
+  'hasBeenDistributed' : [] | [boolean],
   'totalAmount' : Satoshi,
   'timestamp' : bigint,
   'paymentType' : PaymentType,
@@ -57,6 +61,8 @@ export interface DonationRecord { 'donation' : Donation }
 export type DonationResult = { 'Ok' : [] | [DonationRecord] } |
   { 'Err' : ApiError };
 export interface DonationTracker {
+  'amiController' : ActorMethod<[], AuthRecordResult>,
+  'deleteEmailSubscriber' : ActorMethod<[string], boolean>,
   'getBtcTransactionDetails' : ActorMethod<
     [BitcoinTransactionIdRecord],
     BitcoinTransactionResult
@@ -71,6 +77,7 @@ export interface DonationTracker {
     DonationAddressResult
   >,
   'getDonations' : ActorMethod<[DonationFiltersRecord], DonationsResult>,
+  'getEmailSubscribers' : ActorMethod<[], Array<[string, EmailSubscriber]>>,
   'getMyDonations' : ActorMethod<[DonationFiltersRecord], DonationsResult>,
   'getRecipient' : ActorMethod<[RecipientIdRecord], RecipientResult>,
   'getTotalDonationAmount' : ActorMethod<
@@ -79,9 +86,11 @@ export interface DonationTracker {
   >,
   'getTxidstext' : ActorMethod<[], TxidstextResult>,
   'getUTXOS' : ActorMethod<[], GetUtxosResponseResult>,
-  'initRecipients' : ActorMethod<[], initRecipientsResult>,
+  'initRecipients' : ActorMethod<[], InitRecipientsResult>,
+  'isControllerLogicOk' : ActorMethod<[], AuthRecordResult>,
   'listRecipients' : ActorMethod<[RecipientFilter], RecipientsResult>,
   'makeDonation' : ActorMethod<[DonationRecord], DtiResult>,
+  'submitSignUpForm' : ActorMethod<[SignUpFormInput], string>,
   'whoami' : ActorMethod<[], Principal>,
 }
 export interface DonationsRecord { 'donations' : Array<Donation> }
@@ -92,6 +101,11 @@ export type DonorType = { 'Anonymous' : null } |
 export interface DtiRecord { 'dti' : DTI }
 export type DtiResult = { 'Ok' : DtiRecord } |
   { 'Err' : ApiError };
+export interface EmailSubscriber {
+  'subscribedAt' : bigint,
+  'emailAddress' : string,
+  'pageSubmittedFrom' : string,
+}
 export interface Filter {
   'maxAmount' : [] | [bigint],
   'endDate' : [] | [bigint],
@@ -108,6 +122,12 @@ export interface GetUtxosResponseRecord {
   'getUtxosResponse' : GetUtxosResponse,
 }
 export type GetUtxosResponseResult = { 'Ok' : GetUtxosResponseRecord } |
+  { 'Err' : ApiError };
+export interface InitRecipientsRecord {
+  'num_students' : bigint,
+  'num_schools' : bigint,
+}
+export type InitRecipientsResult = { 'Ok' : [] | [InitRecipientsRecord] } |
   { 'Err' : ApiError };
 export interface OutPoint { 'txid' : Uint8Array | number[], 'vout' : number }
 export type Page = Uint8Array | number[];
@@ -142,6 +162,10 @@ export interface SchoolInfo {
   'name' : string,
   'address' : string,
 }
+export interface SignUpFormInput {
+  'emailAddress' : string,
+  'pageSubmittedFrom' : string,
+}
 export interface StudentInfo {
   'id' : string,
   'thumbnail' : string,
@@ -157,10 +181,4 @@ export interface Utxo {
   'value' : Satoshi,
   'outpoint' : OutPoint,
 }
-export interface initRecipientsRecord {
-  'num_students' : bigint,
-  'num_schools' : bigint,
-}
-export type initRecipientsResult = { 'Ok' : [] | [initRecipientsRecord] } |
-  { 'Err' : ApiError };
 export interface _SERVICE extends DonationTracker {}
