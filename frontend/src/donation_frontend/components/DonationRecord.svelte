@@ -15,7 +15,7 @@
 </script>
 
 <div class="text-gray-900 dark:text-gray-200">
-  <div>
+  <div class="pb-6 space-y-2">
     <p>Total Amount: {donation.totalAmount} {Object.keys(donation.paymentType)[0] === "BTC" ? "Satoshi" : ""}</p>
     <p>Payment Type: {Object.keys(donation.paymentType)[0]}</p>
     {#if Object.keys(donation.paymentType)[0] === "BTC"}
@@ -44,6 +44,11 @@
     {#each Object.entries(donation.allocation) as [category, categoryValues], index}
       <p>{categoryNameTranslator[category]}: {categoryValues}</p>
     {/each}
+    {#if donation.personalNote[0]}
+      <span class="inline-block break-all">
+        <p>Personal Note: {donation.personalNote[0]}</p>
+      </span>      
+    {/if}
   </div>
   <RecipientProfile recipientId={donation.recipientId} embedded={false} />
 </div>

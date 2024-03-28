@@ -78,13 +78,16 @@ all-deploy-and-pytest:
 
 	cd backend/donation_canister && \
 		dfx deploy donation_canister --argument '(variant { regtest })' && \
+		dfx canister update-settings --add-controller be2us-64aaa-aaaaa-qaabq-cai donation_canister && \
 		donation_canister_id=$$(dfx canister id donation_canister) && \
 		echo "donation_canister_id: $${donation_canister_id}" && \
 		argument_string=$$'("'$${donation_canister_id}'")' && \
 		echo "argument_string: $${argument_string}" && \
 		cd ../donation_tracker_canister && \
 			dfx deploy donation_tracker_canister --argument $${argument_string} && \
-			dfx canister call donation_tracker_canister initRecipients
+			dfx canister call donation_tracker_canister initRecipients && \
+			donation_tracker_canister_id=$$(dfx canister id donation_tracker_canister) && \
+			echo "donation_tracker_canister_id: $${donation_tracker_canister_id}"
 
 	pytest
 
@@ -94,6 +97,13 @@ all-deploy-and-pytest:
 		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
 		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
 		stop
+
+.PHONY: bitcoin-core-start
+bitcoin-core-start: 
+	bitcoin-$(VERSION_BITCOIN)/bin/bitcoind \
+		-conf=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/bitcoin.conf \
+		-datadir=$(CURDIR)/bitcoin-$(VERSION_BITCOIN)/data \
+		--port=18444
 
 .PHONY: bitcoin-core-stop
 bitcoin-core-stop: 
@@ -149,7 +159,7 @@ install-bitcoin-core:
 # Make sure to source ~/.profile afterwards -> it adds ~/bin to the path if it exists
 .PHONY: install-dfx
 install-dfx:
-	sh -ci "$$(curl -fsSL https://sdk.dfinity.org/install.sh)"
+	DFXVM_INIT_YES=true sh -ci "$$(curl -fsSL https://sdk.dfinity.org/install.sh)"
 
 .PHONY: install-didc
 install-didc:

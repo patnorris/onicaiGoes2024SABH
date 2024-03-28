@@ -1,13 +1,3 @@
-type initRecipientsResult = 
- variant {
-   Err: ApiError;
-   Ok: opt initRecipientsRecord;
- };
-type initRecipientsRecord = 
- record {
-   num_schools: nat;
-   num_students: nat;
- };
 type Utxo = 
  record {
    height: nat32;
@@ -80,6 +70,16 @@ type OutPoint =
    txid: blob;
    vout: nat32;
  };
+type InitRecipientsResult = 
+ variant {
+   Err: ApiError;
+   Ok: opt InitRecipientsRecord;
+ };
+type InitRecipientsRecord = 
+ record {
+   num_schools: nat;
+   num_students: nat;
+ };
 type GetUtxosResponseResult = 
  variant {
    Err: ApiError;
@@ -125,6 +125,7 @@ type DonationsResult =
 type DonationsRecord = record {donations: vec Donation;};
 type DonationTracker = 
  service {
+   amiController: () -> (AuthRecordResult);
    deleteEmailSubscriber: (text) -> (bool);
    getBtcTransactionDetails: (BitcoinTransactionIdRecord) ->
     (BitcoinTransactionResult);
@@ -136,13 +137,14 @@ type DonationTracker =
    getEmailSubscribers: () -> (vec record {
                                      text;
                                      EmailSubscriber;
-                                   });
+                                   }) query;
    getMyDonations: (DonationFiltersRecord) -> (DonationsResult);
    getRecipient: (RecipientIdRecord) -> (RecipientResult) query;
    getTotalDonationAmount: (PaymentTypeRecord) -> (DonationAmountResult);
    getTxidstext: () -> (TxidstextResult);
    getUTXOS: () -> (GetUtxosResponseResult);
-   initRecipients: () -> (initRecipientsResult);
+   initRecipients: () -> (InitRecipientsResult);
+   isControllerLogicOk: () -> (AuthRecordResult);
    listRecipients: (RecipientFilter) -> (RecipientsResult) query;
    makeDonation: (DonationRecord) -> (DtiResult);
    submitSignUpForm: (SignUpFormInput) -> (text);
@@ -189,6 +191,7 @@ type Donation =
    allocation: DonationCategories;
    donor: DonorType;
    dti: DTI;
+   hasBeenDistributed: opt bool;
    paymentTransactionId: PaymentTransactionId;
    paymentType: PaymentType;
    personalNote: opt text;
@@ -215,6 +218,12 @@ type BitcoinTransaction =
    totalValue: nat64;
    valueDonated: nat64;
  };
+type AuthRecordResult = 
+ variant {
+   Err: ApiError;
+   Ok: AuthRecord;
+ };
+type AuthRecord = record {auth: text;};
 type ApiError = 
  variant {
    InvalidId;
@@ -222,4 +231,4 @@ type ApiError =
    Unauthorized;
    ZeroAddress;
  };
-service : () -> DonationTracker
+service : (text) -> DonationTracker

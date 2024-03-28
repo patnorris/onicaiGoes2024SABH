@@ -23,9 +23,14 @@ npm run erase-replica
 ```
 
 4. Deploy your canisters to the replica
+
+Visit backend canister folders, and install those first, using instructions of their READMEs.
+
+Then, deploy the frontend canister and internet identy with:
 ```bash
+dfx deploy internet_identity
+dfx deploy donation_frontend
 dfx generate
-dfx deploy
 ```
 --> Access frontend at http://localhost:4943/?canisterId=ryjl3-tyaaa-aaaaa-aaaba-cai
 
